@@ -839,3 +839,152 @@ async function loadBooks() {
 }
 
 loadBooks();
+   // =====================================================
+// BAZAM-E-SAIM - LOAD BOOKS FROM books.json
+// =====================================================
+
+async function loadBooksFromJSON() {
+  const container = document.getElementById("books-container");
+
+  if (!container) {
+    console.error("books-container not found");
+    return;
+  }
+
+  try {
+    const response = await fetch("./books.json", {
+      cache: "no-store"
+    });
+
+    if (!response.ok) {
+      throw new Error(
+        `books.json load failed: ${response.status}`
+      );
+    }
+
+    const books = await response.json();
+
+    console.log("Books loaded:", books);
+
+    container.innerHTML = "";
+
+    if (!Array.isArray(books) || books.length === 0) {
+      container.innerHTML = `
+        <div class="loading-card">
+          <p>No books available.</p>
+          <p dir="rtl">ابھی کوئی کتاب موجود نہیں۔</p>
+        </div>
+      `;
+      return;
+    }
+
+    // Sirf maximum 5 books
+    books.slice(0, 5).forEach((book) => {
+
+      const card = document.createElement("article");
+
+      card.className = "content-card";
+
+      card.innerHTML = `
+        <div class="card-image">
+
+          <img
+            src="${book.cover}"
+            alt="${book.title}"
+            loading="lazy"
+            onerror="this.src='./logo.png'"
+          >
+
+          <span class="card-badge">
+            BOOK
+          </span>
+
+        </div>
+
+
+        <div class="card-body">
+
+          <h3 class="card-title">
+            ${book.title}
+          </h3>
+
+          <p
+            class="card-title"
+            dir="rtl"
+            style="font-size:0.9rem;"
+          >
+            ${book.titleUrdu || ""}
+          </p>
+
+
+          <p class="card-author">
+            ${book.author || ""}
+          </p>
+
+          <p
+            class="card-author"
+            dir="rtl"
+          >
+            ${book.authorUrdu || ""}
+          </p>
+
+
+          <p class="card-description">
+            ${book.description || ""}
+          </p>
+
+          <p
+            class="card-description"
+            dir="rtl"
+          >
+            ${book.descriptionUrdu || ""}
+          </p>
+
+
+          <a
+            href="${book.url || book.pdf || "#"}"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="card-action"
+          >
+            Read Book
+            <span dir="rtl">کتاب پڑھیں</span>
+          </a>
+
+        </div>
+      `;
+
+      container.appendChild(card);
+
+    });
+
+  } catch (error) {
+
+    console.error(
+      "BOOKS JSON ERROR:",
+      error
+    );
+
+    container.innerHTML = `
+      <div class="loading-card">
+
+        <p>
+          Unable to load books.
+        </p>
+
+        <p dir="rtl">
+          کتابیں لوڈ نہیں ہو سکیں۔
+        </p>
+
+        <small>
+          Check books.json location.
+        </small>
+
+      </div>
+    `;
+  }
+}
+
+
+// Load books
+loadBooksFromJSON();
