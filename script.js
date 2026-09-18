@@ -1,4 +1,3 @@
-```javascript
 /* =========================================================
    BAZAM-E-SAIM
    Main Website JavaScript
@@ -745,4 +744,98 @@ function openContent(
   }
 
   if (type === "videos" |
-```
+async function loadBooks() {
+  const container = document.getElementById("books-container");
+
+  if (!container) return;
+
+  try {
+    const response = await fetch("./books.json");
+
+    if (!response.ok) {
+      throw new Error("books.json load nahi hui");
+    }
+
+    const books = await response.json();
+
+    container.innerHTML = "";
+
+    books.slice(0, 5).forEach((book) => {
+      const card = document.createElement("article");
+
+      card.className = "book-card";
+
+      card.innerHTML = `
+        <div class="book-cover">
+          <img
+            src="${book.cover}"
+            alt="${book.title}"
+            loading="lazy"
+          >
+        </div>
+
+        <div class="book-info">
+
+          <h3>
+            ${book.title}
+          </h3>
+
+          <p dir="rtl">
+            ${book.titleUrdu || ""}
+          </p>
+
+          <span>
+            ${book.author}
+          </span>
+
+          <small dir="rtl">
+            ${book.authorUrdu || ""}
+          </small>
+
+          <p class="book-description">
+            ${book.description || ""}
+          </p>
+
+          <p
+            class="book-description"
+            dir="rtl"
+          >
+            ${book.descriptionUrdu || ""}
+          </p>
+
+          <a
+            href="${book.url || book.pdf}"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="book-open-btn"
+          >
+            <span>Read Book</span>
+            <small>کتاب پڑھیں</small>
+          </a>
+
+        </div>
+      `;
+
+      container.appendChild(card);
+    });
+
+  } catch (error) {
+    console.error("Books Error:", error);
+
+    container.innerHTML = `
+      <div class="loading-card">
+
+        <p>
+          Unable to load books.
+        </p>
+
+        <p dir="rtl">
+          کتابیں لوڈ نہیں ہو سکیں۔
+        </p>
+
+      </div>
+    `;
+  }
+}
+
+loadBooks();
