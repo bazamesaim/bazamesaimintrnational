@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="ur" dir="ltr">
 <head>
   <meta charset="UTF-8">
 
@@ -10,22 +9,7 @@
 
   <meta
     name="description"
-    content="Bazam-E-Saim - Islamic Books, Videos, Shorts and Audio | بزمِ صائم"
-  >
-
-  <meta
-    name="keywords"
-    content="Bazam E Saim, بزم صائم, صائم چشتی, Allama Saim Chishti, Islamic Books, Islamic Videos"
-  >
-
-  <meta
-    name="author"
-    content="Bazam-E-Saim"
-  >
-
-  <meta
-    name="robots"
-    content="index, follow"
+    content="Bazam-E-Saim — اسلامی کتب، ویڈیوز، شارٹس اور آڈیو"
   >
 
   <meta
@@ -33,468 +17,475 @@
     content="ieNFXUckQN-c_OJ0vBdX5C4IsyfDGZ9Irk6qUkKH6zg"
   >
 
-  <link
-    rel="icon"
-    type="image/png"
-    href="./logo.png"
-  >
+  <link rel="icon" type="image/png" href="logo.png">
 
-  <link
-    rel="apple-touch-icon"
-    href="./logo.png"
-  >
+  <link rel="stylesheet" href="style.css">
 
-  <link
-    rel="stylesheet"
-    href="./style.css"
-  >
+  <!-- Firebase -->
+  <script type="module" src="script.js"></script>
 </head>
-
 
 <body>
 
+  <!-- ================= NAVBAR ================= -->
 
-<!-- =====================================================
-     NAVBAR
-===================================================== -->
-
-<header class="site-header">
-
-  <nav class="navbar">
+  <header class="navbar">
 
     <div class="nav-container">
 
-      <a
-        href="#home"
-        class="logo"
-      >
-
-        <img
-          src="./logo.png"
-          alt="Bazam-E-Saim Logo"
-        >
-
-        <div class="logo-text">
-
-          <strong>
-            Bazam-E-Saim
-          </strong>
-
-          <span dir="rtl">
-            بزمِ صائم
-          </span>
-
+      <a href="#home" class="brand">
+        <img src="logo.png" alt="Bazam-E-Saim Logo">
+        <div>
+          <strong>Bazam-E-Saim</strong>
+          <span>بزمِ صائم</span>
         </div>
-
       </a>
 
+      <button class="menu-btn" id="menuBtn">☰</button>
 
-      <div class="nav-links">
+      <nav id="mainNav">
 
         <a href="#home">
-          <span>Home</span>
+          Home
           <small>ہوم</small>
         </a>
 
         <a href="#books">
-          <span>Books</span>
-          <small>کتابیں</small>
+          Books
+          <small>کتب</small>
         </a>
 
         <a href="#videos">
-          <span>Videos</span>
+          Videos
           <small>ویڈیوز</small>
         </a>
 
         <a href="#shorts">
-          <span>Shorts</span>
-          <small>مختصر ویڈیوز</small>
+          Shorts
+          <small>شارٹس</small>
         </a>
 
-        <a href="#audio">
-          <span>Audio</span>
+        <a href="#audios">
+          Audio
           <small>آڈیو</small>
         </a>
 
         <a href="#admin">
-          <span>Admin</span>
+          Admin
           <small>ایڈمن</small>
         </a>
 
-        <button
-          id="signin-btn"
-          type="button"
-        >
-          <span>Sign In</span>
+        <button id="signInBtn" class="nav-login">
+          Sign In
           <small>سائن اِن</small>
         </button>
 
+      </nav>
+
+    </div>
+
+  </header>
+
+
+  <!-- ================= HOME ================= -->
+
+  <main>
+
+    <section id="home" class="hero">
+
+      <div class="hero-overlay"></div>
+
+      <div class="hero-content">
+
+        <img
+          src="logo.png"
+          alt="بزمِ صائم"
+          class="hero-logo"
+        >
+
+        <p class="welcome-en">
+          Welcome to Bazam-E-Saim
+        </p>
+
+        <p class="welcome-ur">
+          بزمِ صائم کی جانب سے آپ کو خوش آمدید
+        </p>
+
+        <p class="hero-text">
+          اسلامی کتب، ویڈیوز، شارٹس اور آڈیو کا خوبصورت ذخیرہ
+        </p>
+
+        <div class="hero-buttons">
+
+          <a href="#books" class="gold-btn">
+            Explore Books
+            <span>کتب دیکھیں</span>
+          </a>
+
+          <a href="#videos" class="dark-btn">
+            Watch Videos
+            <span>ویڈیوز دیکھیں</span>
+          </a>
+
+        </div>
+
       </div>
 
+    </section>
 
-      <button
-        id="mobile-menu-btn"
-        class="mobile-menu-btn"
-        type="button"
-        aria-label="Open Menu"
-      >
-        ☰
-      </button>
 
-    </div>
+    <!-- ================= BOOKS ================= -->
 
-  </nav>
-
-
-  <div
-    id="mobile-nav"
-    class="mobile-nav"
-  >
-
-    <a href="#home">
-      <span>Home</span>
-      <small>ہوم</small>
-    </a>
-
-    <a href="#books">
-      <span>Books</span>
-      <small>کتابیں</small>
-    </a>
-
-    <a href="#videos">
-      <span>Videos</span>
-      <small>ویڈیوز</small>
-    </a>
-
-    <a href="#shorts">
-      <span>Shorts</span>
-      <small>مختصر ویڈیوز</small>
-    </a>
-
-    <a href="#audio">
-      <span>Audio</span>
-      <small>آڈیو</small>
-    </a>
-
-    <a href="#admin">
-      <span>Admin</span>
-      <small>ایڈمن</small>
-    </a>
-
-    <button
-      id="mobile-signin-btn"
-      type="button"
-    >
-      <span>Sign In</span>
-      <small>سائن اِن</small>
-    </button>
-
-  </div>
-
-</header>
-
-
-
-<!-- =====================================================
-     MAIN
-===================================================== -->
-
-<main>
-
-
-<!-- =====================================================
-     HOME
-===================================================== -->
-
-<section
-  id="home"
-  class="hero-section"
->
-
-  <div class="hero-content">
-
-    <div class="hero-bismillah">
-      بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ
-    </div>
-
-
-    <img
-      src="./logo.png"
-      alt="بزمِ صائم"
-      class="hero-logo"
-    >
-
-
-    <h1>
-      Bazam-E-Saim
-    </h1>
-
-
-    <h2 dir="rtl">
-      بزمِ صائم
-    </h2>
-
-
-    <p>
-      Islamic Books, Videos, Shorts & Audio
-    </p>
-
-
-    <p dir="rtl">
-      اسلامی کتابیں، ویڈیوز، مختصر ویڈیوز اور آڈیو
-    </p>
-
-
-    <div class="hero-buttons">
-
-      <a
-        href="#books"
-        class="btn primary-btn"
-      >
-        <span>Explore Books</span>
-        <small>کتابیں دیکھیں</small>
-      </a>
-
-
-      <a
-        href="#videos"
-        class="btn secondary-btn"
-      >
-        <span>Watch Videos</span>
-        <small>ویڈیوز دیکھیں</small>
-      </a>
-
-    </div>
-
-  </div>
-
-</section>
-
-
-
-<!-- =====================================================
-     WELCOME
-===================================================== -->
-
-<section class="welcome-section">
-
-  <div class="section-container">
-
-    <div class="welcome-box">
-
-      <span class="section-kicker">
-        BAZAM-E-SAIM
-      </span>
-
-
-      <h2>
-        Welcome from Bazam-E-Saim
-      </h2>
-
-
-      <h3 dir="rtl">
-        بزمِ صائم کی جانب سے آپ کو خوش آمدید
-      </h3>
-
-
-      <p>
-        Welcome to Bazam-E-Saim. Explore Islamic books,
-        videos, shorts and audio content.
-      </p>
-
-
-      <p dir="rtl">
-        بزمِ صائم میں آپ کو خوش آمدید۔
-        یہاں اسلامی کتابیں، ویڈیوز، مختصر ویڈیوز
-        اور آڈیو مواد ملاحظہ کریں۔
-      </p>
-
-    </div>
-
-  </div>
-
-</section>
-
-
-
-<!-- =====================================================
-     BOOKS
-===================================================== -->
-
-<section
-  id="books"
-  class="content-section"
->
-
-  <div class="section-container">
-
-    <div class="section-header">
+    <section id="books" class="section">
 
       <div class="section-heading">
 
-        <span class="section-kicker">
-          LIBRARY
-        </span>
+        <p class="section-label">
+          Islamic Library
+        </p>
 
         <h2>
           Books
+          <span>کتب</span>
         </h2>
 
-        <p dir="rtl">
-          کتابیں
-        </p>
-
         <p>
-          Selected books of Hazrat Allama Saim Chishti.
-        </p>
-
-        <p dir="rtl">
-          حضرت علامہ صائم چشتی کی منتخب کتابیں۔
+          حضرت علامہ صائم چشتی کی کتب اور دیگر اسلامی کتب
         </p>
 
       </div>
 
+      <div id="booksGrid" class="books-grid">
 
-      <div class="section-actions">
-
-        <button
-          type="button"
-          class="scroll-btn scroll-left"
-          data-target="books-container"
-          aria-label="Previous Books"
-        >
-          ‹
-        </button>
-
-
-        <button
-          type="button"
-          class="scroll-btn scroll-right"
-          data-target="books-container"
-          aria-label="Next Books"
-        >
-          ›
-        </button>
-
-
-        <a
-          href="https://hassanbhai5559-lgtm.github.io/chishti-library/"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="view-all-btn"
-        >
-          <span>
-            More Books
-          </span>
-
-          <small dir="rtl">
-            مزید کتابیں
-          </small>
-        </a>
+        <div class="loading">
+          Books loading...
+          <br>
+          کتب لوڈ ہو رہی ہیں...
+        </div>
 
       </div>
 
-    </div>
+    </section>
 
 
-    <div
-      id="books-container"
-      class="content-grid horizontal-scroll"
-    >
+    <!-- ================= VIDEOS ================= -->
 
-      <div class="loading-card">
-
-        <div class="loader"></div>
-
-        <p>
-          Loading Books...
-        </p>
-
-        <p dir="rtl">
-          کتابیں لوڈ ہو رہی ہیں...
-        </p>
-
-      </div>
-
-    </div>
-
-  </div>
-
-</section>
-
-
-
-<!-- =====================================================
-     VIDEOS
-===================================================== -->
-
-<section
-  id="videos"
-  class="content-section"
->
-
-  <div class="section-container">
-
-    <div class="section-header">
+    <section id="videos" class="section dark-section">
 
       <div class="section-heading">
 
-        <span class="section-kicker">
-          MEHFIL
-        </span>
+        <p class="section-label">
+          Latest Videos
+        </p>
 
         <h2>
           Videos
+          <span>ویڈیوز</span>
         </h2>
 
-        <p dir="rtl">
-          ویڈیوز
+        <p>
+          اسلامی بیانات اور محافل
+        </p>
+
+      </div>
+
+      <div id="videosGrid" class="media-grid">
+
+        <div class="loading">
+          Videos loading...
+          <br>
+          ویڈیوز لوڈ ہو رہی ہیں...
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- ================= SHORTS ================= -->
+
+    <section id="shorts" class="section">
+
+      <div class="section-heading">
+
+        <p class="section-label">
+          Short Videos
+        </p>
+
+        <h2>
+          Shorts
+          <span>مختصر ویڈیوز</span>
+        </h2>
+
+      </div>
+
+      <div id="shortsGrid" class="shorts-grid">
+
+        <div class="loading">
+          Shorts loading...
+          <br>
+          شارٹس لوڈ ہو رہی ہیں...
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- ================= AUDIO ================= -->
+
+    <section id="audios" class="section dark-section">
+
+      <div class="section-heading">
+
+        <p class="section-label">
+          Audio Mehfil
+        </p>
+
+        <h2>
+          Audio
+          <span>آڈیو</span>
+        </h2>
+
+      </div>
+
+      <div id="audiosGrid" class="audio-grid">
+
+        <div class="loading">
+          Audio loading...
+          <br>
+          آڈیو لوڈ ہو رہی ہے...
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- ================= ADMIN ================= -->
+
+    <section id="admin" class="section admin-section">
+
+      <div class="section-heading">
+
+        <p class="section-label">
+          Administration
+        </p>
+
+        <h2>
+          Admin Panel
+          <span>ایڈمن پینل</span>
+        </h2>
+
+      </div>
+
+      <div id="adminLoginMessage" class="admin-message">
+
+        <p>
+          Admin area صرف authorized account کے لیے ہے۔
+        </p>
+
+        <button class="gold-btn" id="adminLoginBtn">
+          Sign In
+          <span>سائن اِن کریں</span>
+        </button>
+
+      </div>
+
+
+      <div id="adminPanel" class="admin-panel hidden">
+
+        <div class="admin-header">
+
+          <div>
+            <h3>Content Upload</h3>
+            <p>مواد اپ لوڈ کریں</p>
+          </div>
+
+          <button id="logoutBtn" class="danger-btn">
+            Logout
+          </button>
+
+        </div>
+
+
+        <form id="uploadForm">
+
+          <label>
+            Content Type
+            <span>مواد کی قسم</span>
+          </label>
+
+          <select id="uploadType" required>
+
+            <option value="videos">
+              Video / ویڈیو
+            </option>
+
+            <option value="shorts">
+              Short / شارٹ
+            </option>
+
+            <option value="audios">
+              Audio / آڈیو
+            </option>
+
+          </select>
+
+
+          <label>
+            Title
+            <span>عنوان</span>
+          </label>
+
+          <input
+            type="text"
+            id="uploadTitle"
+            placeholder="Video title / ویڈیو کا عنوان"
+            required
+          >
+
+
+          <label>
+            Author / Speaker
+            <span>مقرر / مصنف</span>
+          </label>
+
+          <input
+            type="text"
+            id="uploadAuthor"
+            placeholder="Name"
+          >
+
+
+          <label>
+            Media File
+            <span>فائل</span>
+          </label>
+
+          <input
+            type="file"
+            id="uploadFile"
+            required
+          >
+
+
+          <label>
+            Thumbnail
+            <span>تصویر</span>
+          </label>
+
+          <input
+            type="file"
+            id="uploadImage"
+            accept="image/*"
+          >
+
+
+          <button
+            type="submit"
+            class="gold-btn full-btn"
+            id="uploadBtn"
+          >
+            Upload
+            <span>اپ لوڈ کریں</span>
+          </button>
+
+          <div id="uploadProgress"></div>
+
+        </form>
+
+      </div>
+
+    </section>
+
+  </main>
+
+
+  <!-- ================= FOOTER ================= -->
+
+  <footer>
+
+    <div class="footer-content">
+
+      <div class="footer-brand">
+
+        <img src="logo.png" alt="Bazam-E-Saim">
+
+        <h3>Bazam-E-Saim</h3>
+
+        <p>
+          بزمِ صائم کی جانب سے آپ کو خوش آمدید
         </p>
 
         <p>
-          Islamic lectures, mehfils and video content.
-        </p>
-
-        <p dir="rtl">
-          اسلامی بیانات، محافل اور ویڈیوز۔
+          اسلامی علم، کتب، ویڈیوز اور آڈیو کا ذخیرہ
         </p>
 
       </div>
 
 
-      <div class="section-actions">
+      <div class="footer-links">
 
-        <button
-          type="button"
-          class="scroll-btn scroll-left"
-          data-target="videos-container"
-          aria-label="Previous Videos"
-        >
-          ‹
-        </button>
-
-
-        <button
-          type="button"
-          class="scroll-btn scroll-right"
-          data-target="videos-container"
-          aria-label="Next Videos"
-        >
-          ›
-        </button>
-
+        <h4>Social Media</h4>
 
         <a
-          href="#videos"
-          class="view-all-btn"
+          href="https://www.facebook.com/saimchishtiofficial"
+          target="_blank"
         >
-          <span>
-            View All
-          </span>
+          <span class="social-icon facebook">f</span>
+          Facebook
+        </a>
 
-          <small dir="rtl">
-            سب ویڈیوز
-          </small>
+        <a
+          href="https://www.youtube.com/@Saimtv5"
+          target="_blank"
+        >
+          <span class="social-icon youtube">▶</span>
+          YouTube
+        </a>
+
+        <a
+          href="https://www.tiktok.com/@saimtv5"
+          target="_blank"
+        >
+          <span class="social-icon tiktok">♪</span>
+          TikTok
+        </a>
+
+        <a
+          href="https://web.facebook.com/Bazm.Saim"
+          target="_blank"
+        >
+          <span class="social-icon facebook">f</span>
+          Bazm Saim
+        </a>
+
+      </div>
+
+
+      <div class="footer-links">
+
+        <h4>Quick Links</h4>
+
+        <a href="#home">
+          Home / ہوم
+        </a>
+
+        <a href="#books">
+          Books / کتب
+        </a>
+
+        <a href="#videos">
+          Videos / ویڈیوز
+        </a>
+
+        <a href="#shorts">
+          Shorts / شارٹس
+        </a>
+
+        <a href="#audios">
+          Audio / آڈیو
         </a>
 
       </div>
@@ -502,693 +493,113 @@
     </div>
 
 
-    <div
-      id="videos-container"
-      class="content-grid horizontal-scroll"
-    >
+    <div class="copyright">
 
-      <div class="loading-card">
-
-        <div class="loader"></div>
-
-        <p>
-          Loading Videos...
-        </p>
-
-        <p dir="rtl">
-          ویڈیوز لوڈ ہو رہی ہیں...
-        </p>
-
-      </div>
+      © <span id="year"></span>
+      Bazam-E-Saim — بزمِ صائم
 
     </div>
 
-  </div>
-
-</section>
+  </footer>
 
 
+  <!-- ================= SIGN IN MODAL ================= -->
 
-<!-- =====================================================
-     SHORTS
-===================================================== -->
+  <div id="authModal" class="modal hidden">
 
-<section
-  id="shorts"
-  class="content-section"
->
+    <div class="modal-box">
 
-  <div class="section-container">
-
-    <div class="section-header">
-
-      <div class="section-heading">
-
-        <span class="section-kicker">
-          SHORT CONTENT
-        </span>
-
-        <h2>
-          Shorts
-        </h2>
-
-        <p dir="rtl">
-          مختصر ویڈیوز
-        </p>
-
-      </div>
-
-    </div>
-
-
-    <div class="empty-content">
-
-      <div class="empty-icon">
-        ▶
-      </div>
-
-      <h3>
-        Shorts Coming Soon
-      </h3>
-
-      <p dir="rtl">
-        مختصر ویڈیوز جلد شامل کی جائیں گی۔
-      </p>
-
-    </div>
-
-  </div>
-
-</section>
-
-
-
-<!-- =====================================================
-     AUDIO
-===================================================== -->
-
-<section
-  id="audio"
-  class="content-section"
->
-
-  <div class="section-container">
-
-    <div class="section-header">
-
-      <div class="section-heading">
-
-        <span class="section-kicker">
-          AUDIO MEHFIL
-        </span>
-
-        <h2>
-          Audio
-        </h2>
-
-        <p dir="rtl">
-          آڈیو
-        </p>
-
-      </div>
-
-    </div>
-
-
-    <div class="empty-content">
-
-      <div class="empty-icon">
-        🎧
-      </div>
-
-      <h3>
-        Audio Coming Soon
-      </h3>
-
-      <p dir="rtl">
-        آڈیو جلد شامل کی جائے گی۔
-      </p>
-
-    </div>
-
-  </div>
-
-</section>
-
-
-
-<!-- =====================================================
-     ADMIN
-===================================================== -->
-
-<section
-  id="admin"
-  class="admin-section"
->
-
-  <div class="section-container">
-
-    <div class="admin-box">
-
-      <span class="section-kicker">
-        ADMINISTRATION
-      </span>
-
+      <button
+        class="modal-close"
+        id="closeAuth"
+      >
+        ×
+      </button>
 
       <h2>
-        Admin Panel
+        Sign In
       </h2>
 
-
-      <p dir="rtl">
-        ایڈمن پینل
-      </p>
-
-
       <p>
-        Manage Bazam-E-Saim content from the administration panel.
+        سائن اِن کریں
       </p>
 
 
-      <p dir="rtl">
-        بزمِ صائم کے مواد کو ایڈمن پینل سے منظم کریں۔
-      </p>
-
-
-      <a
-        href="#admin"
-        id="open-admin-btn"
-        class="btn primary-btn"
-      >
-        <span>
-          Open Admin
-        </span>
-
-        <small>
-          ایڈمن کھولیں
-        </small>
-      </a>
-
-    </div>
-
-  </div>
-
-</section>
-
-</main>
-
-
-
-<!-- =====================================================
-     VIDEO PLAYER MODAL
-===================================================== -->
-
-<div
-  id="media-modal"
-  class="modal"
-  aria-hidden="true"
->
-
-  <div class="modal-overlay"></div>
-
-
-  <div class="modal-box media-modal-box">
-
-    <button
-      type="button"
-      class="modal-close"
-      data-close-modal="media-modal"
-      aria-label="Close"
-    >
-      ×
-    </button>
-
-
-    <div id="media-modal-body"></div>
-
-  </div>
-
-</div>
-
-
-
-<!-- =====================================================
-     COMMENT MODAL
-===================================================== -->
-
-<div
-  id="comment-modal"
-  class="modal"
-  aria-hidden="true"
->
-
-  <div class="modal-overlay"></div>
-
-
-  <div class="modal-box">
-
-    <button
-      type="button"
-      class="modal-close"
-      data-close-modal="comment-modal"
-      aria-label="Close"
-    >
-      ×
-    </button>
-
-
-    <span class="section-kicker">
-      COMMENTS
-    </span>
-
-
-    <h2>
-      Comments
-    </h2>
-
-
-    <p dir="rtl">
-      تبصرے
-    </p>
-
-
-    <input
-      type="hidden"
-      id="comment-content-id"
-    >
-
-
-    <input
-      type="hidden"
-      id="comment-content-type"
-      value="videos"
-    >
-
-
-    <form id="comment-form">
-
-      <label for="comment-name">
-        Your Name
-        <span dir="rtl">آپ کا نام</span>
-      </label>
-
-
-      <input
-        type="text"
-        id="comment-name"
-        placeholder="Enter your name"
-        required
-      >
-
-
-      <label for="comment-text">
-        Comment
-        <span dir="rtl">تبصرہ</span>
-      </label>
-
-
-      <textarea
-        id="comment-text"
-        rows="4"
-        placeholder="Write your comment..."
-        required
-      ></textarea>
-
-
-      <button
-        type="submit"
-        class="btn primary-btn full-width"
-      >
-        <span>
-          Post Comment
-        </span>
-
-        <small dir="rtl">
-          تبصرہ کریں
-        </small>
-      </button>
-
-    </form>
-
-
-    <div
-      id="comments-list"
-      class="comments-list"
-    ></div>
-
-  </div>
-
-</div>
-
-
-
-<!-- =====================================================
-     SIGN IN MODAL
-===================================================== -->
-
-<div
-  id="signin-modal"
-  class="modal"
-  aria-hidden="true"
->
-
-  <div class="modal-overlay"></div>
-
-
-  <div class="modal-box">
-
-    <button
-      type="button"
-      class="modal-close"
-      data-close-modal="signin-modal"
-    >
-      ×
-    </button>
-
-
-    <span class="section-kicker">
-      ACCOUNT
-    </span>
-
-
-    <h2>
-      Sign In
-    </h2>
-
-
-    <p dir="rtl">
-      سائن اِن کریں
-    </p>
-
-
-    <form id="signin-form">
-
-      <label for="signin-email">
-        Email
-        <span>ای میل</span>
-      </label>
-
-
-      <input
-        type="email"
-        id="signin-email"
-        required
-        placeholder="Enter your email"
-      >
-
-
-      <label for="signin-password">
-        Password
-        <span>پاس ورڈ</span>
-      </label>
-
-
-      <input
-        type="password"
-        id="signin-password"
-        required
-        placeholder="Enter your password"
-      >
-
-
-      <button
-        type="submit"
-        class="btn primary-btn full-width"
-      >
-        <span>
+      <form id="loginForm">
+
+        <input
+          type="email"
+          id="loginEmail"
+          placeholder="Email"
+          required
+        >
+
+        <input
+          type="password"
+          id="loginPassword"
+          placeholder="Password"
+          required
+        >
+
+        <button
+          type="submit"
+          class="gold-btn full-btn"
+        >
           Sign In
-        </span>
+          <span>سائن اِن</span>
+        </button>
 
-        <small>
-          سائن اِن کریں
-        </small>
+      </form>
+
+
+      <div id="authMessage"></div>
+
+    </div>
+
+  </div>
+
+
+  <!-- ================= COMMENT MODAL ================= -->
+
+  <div id="commentModal" class="modal hidden">
+
+    <div class="modal-box comment-box">
+
+      <button
+        class="modal-close"
+        id="closeComments"
+      >
+        ×
       </button>
 
-
-      <p id="signin-message"></p>
-
-    </form>
-
-  </div>
-
-</div>
-
-
-
-<!-- =====================================================
-     TOAST
-===================================================== -->
-
-<div
-  id="toast"
-  class="site-toast"
->
-
-  <span id="toast-message"></span>
-
-</div>
-
-
-
-<!-- =====================================================
-     FOOTER
-===================================================== -->
-
-<footer class="site-footer">
-
-  <div class="footer-container">
-
-
-    <div class="footer-brand">
-
-      <img
-        src="./logo.png"
-        alt="Bazam-E-Saim"
-      >
-
-
-      <h3>
-        Bazam-E-Saim
-      </h3>
-
-
-      <h4 dir="rtl">
-        بزمِ صائم
-      </h4>
-
+      <h2>
+        Comments
+      </h2>
 
       <p>
-        Islamic Books, Videos, Shorts & Audio
+        تبصرے
       </p>
 
+      <div id="commentsList"></div>
 
-      <p dir="rtl">
-        اسلامی کتابیں، ویڈیوز، مختصر ویڈیوز اور آڈیو
-      </p>
+      <form id="commentForm">
 
-    </div>
+        <input
+          type="text"
+          id="commentInput"
+          placeholder="Write a comment / تبصرہ لکھیں"
+          required
+        >
 
+        <button class="gold-btn">
+          Comment
+        </button>
 
-
-    <div class="footer-links">
-
-      <h3>
-        Quick Links
-      </h3>
-
-
-      <p dir="rtl">
-        اہم لنکس
-      </p>
-
-
-      <a href="#home">
-        Home
-      </a>
-
-      <a href="#books">
-        Books
-      </a>
-
-      <a href="#videos">
-        Videos
-      </a>
-
-      <a href="#shorts">
-        Shorts
-      </a>
-
-      <a href="#audio">
-        Audio
-      </a>
-
-      <a href="#admin">
-        Admin
-      </a>
-
-    </div>
-
-
-
-    <div class="footer-links">
-
-      <h3>
-        More Books
-      </h3>
-
-
-      <p dir="rtl">
-        مزید کتابیں
-      </p>
-
-
-      <a
-        href="https://hassanbhai5559-lgtm.github.io/chishti-library/"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        Chishti Library
-      </a>
-
-    </div>
-
-
-
-    <div class="footer-social">
-
-      <h3>
-        Follow Us
-      </h3>
-
-
-      <p dir="rtl">
-        ہمارے ساتھ جڑے رہیں
-      </p>
-
-
-      <a
-        href="https://www.facebook.com/saimchishtiofficial"
-        target="_blank"
-        rel="noopener noreferrer"
-        class="social-link"
-      >
-        <span class="social-icon facebook-icon">
-          f
-        </span>
-
-        <span>
-          Facebook
-          <small dir="rtl">
-            صائم چشتی آفیشل
-          </small>
-        </span>
-      </a>
-
-
-      <a
-        href="https://www.facebook.com/profile.php?id=100063724950961"
-        target="_blank"
-        rel="noopener noreferrer"
-        class="social-link"
-      >
-        <span class="social-icon facebook-icon">
-          f
-        </span>
-
-        <span>
-          Facebook
-          <small dir="rtl">
-            فیس بک پروفائل
-          </small>
-        </span>
-      </a>
-
-
-      <a
-        href="https://web.facebook.com/Bazm.Saim"
-        target="_blank"
-        rel="noopener noreferrer"
-        class="social-link"
-      >
-        <span class="social-icon facebook-icon">
-          f
-        </span>
-
-        <span>
-          Facebook
-          <small dir="rtl">
-            بزمِ صائم
-          </small>
-        </span>
-      </a>
-
-
-      <a
-        href="https://www.youtube.com/@Saimtv5"
-        target="_blank"
-        rel="noopener noreferrer"
-        class="social-link"
-      >
-        <span class="social-icon youtube-icon">
-          ▶
-        </span>
-
-        <span>
-          YouTube
-          <small dir="rtl">
-            صائم ٹی وی 5
-          </small>
-        </span>
-      </a>
-
-
-      <a
-        href="https://www.tiktok.com/@saimtv5"
-        target="_blank"
-        rel="noopener noreferrer"
-        class="social-link"
-      >
-        <span class="social-icon tiktok-icon">
-          ♪
-        </span>
-
-        <span>
-          TikTok
-          <small dir="rtl">
-            صائم ٹی وی 5
-          </small>
-        </span>
-      </a>
+      </form>
 
     </div>
 
   </div>
-
-
-
-  <div class="footer-bottom">
-
-    <p>
-      © <span id="current-year"></span>
-      Bazam-E-Saim
-    </p>
-
-
-    <p dir="rtl">
-      جملہ حقوق محفوظ ہیں۔
-    </p>
-
-  </div>
-
-</footer>
-
-
-
-<script
-  type="module"
-  src="./script.js"
-></script>
-
 
 </body>
 </html>
