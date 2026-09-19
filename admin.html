@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>Bazam-E-Saim Admin</title>
+
+  <link rel="icon" href="logo.png">
+
+  <style>
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: #050505;
+      color: white;
+      min-height: 100vh;
+    }
+
+    header {
+      background: #0d0d0d;
+      border-bottom: 1px solid #d4af37;
+      padding: 15px 25px;
+
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand img {
+      width: 55px;
+      height: 55px;
+      object-fit: contain;
+    }
+
+    .brand h1 {
+      color: #d4af37;
+      font-size: 22px;
+    }
+
+    .logout {
+      border: 1px solid #d4af37;
+      background: transparent;
+      color: #d4af37;
+      padding: 10px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    main {
+      width: 95%;
+      max-width: 1000px;
+      margin: 30px auto;
+    }
+
+    .card {
+      background: #111;
+      border: 1px solid #292929;
+      border-radius: 15px;
+      padding: 25px;
+      margin-bottom: 25px;
+    }
+
+    h2 {
+      color: #d4af37;
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin: 15px 0 7px;
+      color: #ddd;
+    }
+
+    input,
+    textarea,
+    select {
+      width: 100%;
+      padding: 13px;
+      background: #080808;
+      border: 1px solid #444;
+      border-radius: 8px;
+      color: white;
+      font-size: 15px;
+    }
+
+    textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+
+    .upload-btn {
+      margin-top: 20px;
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 8px;
+      background: #d4af37;
+      color: #050505;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .upload-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    #status {
+      margin-top: 15px;
+      color: #d4af37;
+      line-height: 1.6;
+    }
+
+    .user-box {
+      background: #181818;
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+    }
+
+    .user-box img {
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      vertical-align: middle;
+      margin-right: 10px;
+    }
+
+    .login-screen {
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .login-card {
+      max-width: 420px;
+      width: 100%;
+      text-align: center;
+      background: #111;
+      border: 1px solid #d4af37;
+      border-radius: 18px;
+      padding: 35px;
+    }
+
+    .login-card img {
+      width: 100px;
+      margin-bottom: 15px;
+    }
+
+    .google-btn {
+      margin-top: 25px;
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 9px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+  </style>
+
+</head>
+
+<body>
+
+  <!-- LOGIN -->
+
+  <section id="loginScreen" class="login-screen">
+
+    <div class="login-card">
+
+      <img src="logo.png" alt="Bazam-E-Saim">
+
+      <h1 style="color:#d4af37;">
+        Bazam-E-Saim Admin
+      </h1>
+
+      <p style="margin-top:10px;">
+        Admin Sign In
+      </p>
+
+      <button id="adminGoogleLogin" class="google-btn">
+        Continue with Google
+      </button>
+
+      <p id="loginStatus" style="margin-top:15px;"></p>
+
+    </div>
+
+  </section>
+
+
+  <!-- ADMIN -->
+
+  <div id="adminPanel" class="hidden">
+
+    <header>
+
+      <div class="brand">
+
+        <img src="logo.png" alt="Logo">
+
+        <h1>
+          Bazam-E-Saim Admin
+        </h1>
+
+      </div>
+
+      <button id="logoutBtn" class="logout">
+        Logout
+      </button>
+
+    </header>
+
+
+    <main>
+
+      <div class="card">
+
+        <div id="adminUser" class="user-box"></div>
+
+        <h2>
+          Upload Video
+        </h2>
+
+        <label>
+          Video Title
+        </label>
+
+        <input
+          type="text"
+          id="videoTitle"
+          placeholder="Enter video title"
+        >
+
+        <label>
+          Description
+        </label>
+
+        <textarea
+          id="videoDescription"
+          placeholder="Enter video description"
+        ></textarea>
+
+        <label>
+          Video File
+        </label>
+
+        <input
+          type="file"
+          id="videoFile"
+          accept="video/*"
+        >
+
+        <button
+          id="uploadVideoBtn"
+          class="upload-btn"
+        >
+          Upload Video
+        </button>
+
+        <div id="status"></div>
+
+      </div>
+
+
+      <div class="card">
+
+        <h2>
+          Uploaded Videos
+        </h2>
+
+        <div id="videoList">
+          Loading...
+        </div>
+
+      </div>
+
+    </main>
+
+  </div>
+
+
+  <script type="module" src="admin.js"></script>
+
+</body>
+</html>
