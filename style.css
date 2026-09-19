@@ -1,1775 +1,855 @@
-// =====================================================
-// BAZAM-E-SAIM
-// LOAD VIDEOS FROM FIRESTORE
-// =====================================================
+@import url('https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;500;600;700&family=Poppins:wght@400;500;600;700;800&display=swap');
 
-async function loadVideos() {
+:root {
+  --black: #050505;
+  --black2: #0d0d0d;
+  --gold: #d4af37;
+  --gold-light: #f5d76e;
+  --white: #ffffff;
+  --gray: #aaaaaa;
+  --border: rgba(212, 175, 55, 0.25);
+  --card: #111111;
+}
 
-  const container =
-    document.getElementById("videos-container");
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--black);
+  color: var(--white);
+  font-family: "Poppins", "Noto Naskh Arabic", sans-serif;
+  line-height: 1.6;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
 
 
-  if (!container) {
+/* ================= NAVBAR ================= */
 
-    console.error(
-      "videos-container not found."
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: rgba(5, 5, 5, 0.96);
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(15px);
+}
+
+.nav-container {
+  max-width: 1250px;
+  margin: auto;
+  min-height: 78px;
+  padding: 10px 20px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand img {
+  width: 52px;
+  height: 52px;
+  object-fit: contain;
+  border-radius: 50%;
+}
+
+.brand strong {
+  display: block;
+  color: var(--gold);
+  font-size: 18px;
+}
+
+.brand span {
+  display: block;
+  color: white;
+  font-family: "Noto Naskh Arabic";
+  font-size: 17px;
+}
+
+nav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+nav a,
+.nav-login {
+  border: 0;
+  background: transparent;
+  color: white;
+  padding: 8px 11px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s;
+  text-align: center;
+}
+
+nav a:hover,
+.nav-login:hover {
+  color: var(--gold);
+  background: rgba(212, 175, 55, 0.08);
+}
+
+nav small,
+.nav-login small {
+  display: block;
+  font-family: "Noto Naskh Arabic";
+  color: var(--gold);
+  font-size: 13px;
+}
+
+.menu-btn {
+  display: none;
+  background: transparent;
+  color: white;
+  border: 1px solid var(--border);
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+
+/* ================= HERO ================= */
+
+.hero {
+  min-height: 680px;
+  position: relative;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  text-align: center;
+
+  background:
+    radial-gradient(
+      circle at center,
+      rgba(212, 175, 55, 0.15),
+      transparent 45%
+    ),
+    linear-gradient(
+      180deg,
+      #080808,
+      #050505
     );
+}
 
-    return;
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(
+      circle,
+      transparent 20%,
+      rgba(0, 0, 0, 0.55)
+    );
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+  max-width: 900px;
+  padding: 50px 20px;
+}
+
+.hero-logo {
+  width: 220px;
+  height: 220px;
+  object-fit: contain;
+  margin-bottom: 20px;
+
+  filter:
+    drop-shadow(0 0 20px rgba(212, 175, 55, 0.35));
+}
+
+.welcome-en {
+  color: var(--gold);
+  font-size: 27px;
+  font-weight: 700;
+}
+
+.welcome-ur {
+  color: white;
+  font-family: "Noto Naskh Arabic";
+  font-size: 32px;
+  margin-top: 5px;
+}
+
+.hero-text {
+  color: var(--gray);
+  margin: 15px 0 30px;
+  font-family: "Noto Naskh Arabic";
+  font-size: 20px;
+}
+
+.hero-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+
+/* ================= BUTTONS ================= */
+
+.gold-btn,
+.dark-btn,
+.danger-btn {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 10px;
+  padding: 12px 22px;
+
+  cursor: pointer;
+  border: 1px solid var(--gold);
+
+  transition: 0.3s;
+}
+
+.gold-btn {
+  background: var(--gold);
+  color: #050505;
+  font-weight: 700;
+}
+
+.gold-btn:hover {
+  background: var(--gold-light);
+  transform: translateY(-2px);
+}
+
+.gold-btn span,
+.dark-btn span {
+  font-family: "Noto Naskh Arabic";
+  font-weight: 500;
+}
+
+.dark-btn {
+  background: transparent;
+  color: white;
+}
+
+.dark-btn:hover {
+  background: rgba(212, 175, 55, 0.12);
+}
+
+.danger-btn {
+  background: #8d2020;
+  border-color: #b93030;
+  color: white;
+}
+
+.full-btn {
+  width: 100%;
+}
+
+
+/* ================= SECTIONS ================= */
+
+.section {
+  padding: 90px 20px;
+  max-width: 1250px;
+  margin: auto;
+}
+
+.dark-section {
+  max-width: none;
+  background: #090909;
+  border-top: 1px solid #151515;
+  border-bottom: 1px solid #151515;
+}
+
+.dark-section > * {
+  max-width: 1210px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.section-heading {
+  text-align: center;
+  margin-bottom: 45px;
+}
+
+.section-label {
+  color: var(--gold);
+  text-transform: uppercase;
+  font-size: 13px;
+  letter-spacing: 3px;
+}
+
+.section-heading h2 {
+  font-size: 38px;
+  margin: 5px 0;
+}
+
+.section-heading h2 span {
+  display: block;
+  color: var(--gold);
+  font-family: "Noto Naskh Arabic";
+  font-size: 28px;
+}
+
+.section-heading p:last-child {
+  color: var(--gray);
+  font-family: "Noto Naskh Arabic";
+  font-size: 18px;
+}
+
+
+/* ================= BOOKS ================= */
+
+.books-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 20px;
+}
+
+.book-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  transition: 0.3s;
+}
+
+.book-card:hover {
+  transform: translateY(-7px);
+  border-color: var(--gold);
+}
+
+.book-cover {
+  width: 100%;
+  height: 280px;
+  object-fit: cover;
+  background: #181818;
+}
+
+.book-info {
+  padding: 17px;
+}
+
+.book-info h3 {
+  font-size: 17px;
+  margin-bottom: 5px;
+}
+
+.book-urdu {
+  color: var(--gold);
+  font-family: "Noto Naskh Arabic";
+  font-size: 18px;
+}
+
+.book-author {
+  color: var(--gray);
+  font-size: 13px;
+  margin: 8px 0 14px;
+}
+
+.book-btn {
+  width: 100%;
+  text-align: center;
+  display: block;
+  background: var(--gold);
+  color: black;
+  padding: 9px;
+  border-radius: 7px;
+  font-weight: 700;
+}
+
+
+/* ================= MEDIA ================= */
+
+.media-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 22px;
+}
+
+.media-card {
+  background: var(--card);
+  border: 1px solid #252525;
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.media-card video {
+  width: 100%;
+  height: 230px;
+  display: block;
+  background: #000;
+  object-fit: cover;
+}
+
+.media-content {
+  padding: 17px;
+}
+
+.media-content h3 {
+  font-size: 18px;
+}
+
+.media-content p {
+  color: var(--gray);
+  font-size: 13px;
+  margin: 5px 0 14px;
+}
+
+.media-actions {
+  display: flex;
+  gap: 7px;
+  flex-wrap: wrap;
+}
+
+.action-btn {
+  border: 1px solid #333;
+  background: #171717;
+  color: white;
+  padding: 7px 11px;
+  border-radius: 7px;
+  cursor: pointer;
+}
+
+.action-btn:hover {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+
+/* ================= SHORTS ================= */
+
+.shorts-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+}
+
+.short-card {
+  background: #101010;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.short-card video {
+  width: 100%;
+  height: 430px;
+  object-fit: cover;
+  background: #000;
+}
+
+.short-info {
+  padding: 14px;
+}
+
+
+/* ================= AUDIO ================= */
+
+.audio-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18px;
+}
+
+.audio-card {
+  background: #111;
+  border: 1px solid var(--border);
+  padding: 20px;
+  border-radius: 14px;
+}
+
+.audio-card h3 {
+  color: var(--gold);
+}
+
+.audio-card p {
+  color: var(--gray);
+  margin-bottom: 12px;
+}
+
+.audio-card audio {
+  width: 100%;
+}
+
+
+/* ================= ADMIN ================= */
+
+.admin-section {
+  background: #070707;
+}
+
+.admin-message,
+.admin-panel {
+  max-width: 700px;
+  margin: auto;
+  background: #101010;
+  border: 1px solid var(--border);
+  padding: 30px;
+  border-radius: 15px;
+}
+
+.admin-message {
+  text-align: center;
+  color: var(--gray);
+}
+
+.admin-panel {
+  color: white;
+}
+
+.admin-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+}
+
+.admin-header h3 {
+  color: var(--gold);
+}
+
+.admin-header p {
+  font-family: "Noto Naskh Arabic";
+}
+
+.admin-panel label {
+  display: block;
+  margin: 15px 0 7px;
+}
+
+.admin-panel label span {
+  display: block;
+  color: var(--gold);
+  font-family: "Noto Naskh Arabic";
+}
+
+.admin-panel input,
+.admin-panel select,
+.modal-box input {
+  width: 100%;
+  background: #181818;
+  color: white;
+  border: 1px solid #333;
+  border-radius: 8px;
+  padding: 12px;
+  outline: none;
+}
+
+.admin-panel input:focus,
+.admin-panel select:focus,
+.modal-box input:focus {
+  border-color: var(--gold);
+}
+
+#uploadProgress {
+  margin-top: 15px;
+  color: var(--gold);
+}
+
+
+/* ================= MODALS ================= */
+
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 5000;
+
+  background: rgba(0, 0, 0, 0.82);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 20px;
+}
+
+.modal-box {
+  width: min(450px, 100%);
+  position: relative;
+
+  background: #111;
+  border: 1px solid var(--gold);
+  border-radius: 15px;
+  padding: 30px;
+}
+
+.modal-box h2 {
+  color: var(--gold);
+  text-align: center;
+}
+
+.modal-box > p {
+  text-align: center;
+  font-family: "Noto Naskh Arabic";
+  margin-bottom: 20px;
+}
+
+.modal-box form {
+  display: grid;
+  gap: 12px;
+}
+
+.modal-close {
+  position: absolute;
+  top: 10px;
+  right: 13px;
+
+  background: transparent;
+  border: 0;
+  color: white;
+  font-size: 30px;
+  cursor: pointer;
+}
+
+#authMessage {
+  margin-top: 15px;
+  text-align: center;
+}
+
+.comment-box {
+  max-height: 85vh;
+  overflow-y: auto;
+}
+
+.comment-item {
+  background: #181818;
+  border: 1px solid #292929;
+  padding: 10px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+}
+
+.comment-item strong {
+  color: var(--gold);
+}
+
+.comment-item p {
+  color: #ddd;
+}
+
+
+/* ================= FOOTER ================= */
+
+footer {
+  background: #030303;
+  border-top: 1px solid var(--border);
+}
+
+.footer-content {
+  max-width: 1200px;
+  margin: auto;
+  padding: 55px 20px;
+
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 50px;
+}
+
+.footer-brand img {
+  width: 80px;
+}
+
+.footer-brand h3 {
+  color: var(--gold);
+  margin-top: 10px;
+}
+
+.footer-brand p {
+  color: var(--gray);
+  font-family: "Noto Naskh Arabic";
+}
+
+.footer-links h4 {
+  color: var(--gold);
+  margin-bottom: 15px;
+}
+
+.footer-links a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 10px 0;
+  color: #ddd;
+}
+
+.footer-links a:hover {
+  color: var(--gold);
+}
+
+.social-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+
+  background: #222;
+  color: white;
+  font-weight: 700;
+}
+
+.facebook {
+  background: #1877f2;
+}
+
+.youtube {
+  background: #ff0000;
+}
+
+.tiktok {
+  background: #111;
+  border: 1px solid #444;
+}
+
+.copyright {
+  border-top: 1px solid #151515;
+  text-align: center;
+  padding: 20px;
+  color: #777;
+}
+
+
+/* ================= HELPERS ================= */
+
+.loading {
+  text-align: center;
+  color: var(--gold);
+  padding: 30px;
+}
+
+.hidden {
+  display: none !important;
+}
+
+
+/* ================= RESPONSIVE ================= */
+
+@media (max-width: 1050px) {
+
+  .books-grid {
+    grid-template-columns: repeat(3, 1fr);
   }
 
-
-  try {
-
-    container.innerHTML = `
-      <div class="loading-card">
-
-        <div class="loader"></div>
-
-        <p>
-          Loading videos...
-        </p>
-
-        <p dir="rtl">
-          ویڈیوز لوڈ ہو رہی ہیں...
-        </p>
-
-      </div>
-    `;
-
-
-    const videosQuery = query(
-      collection(db, "videos"),
-      orderBy("createdAt", "desc")
-    );
-
-
-    const snapshot =
-      await getDocs(videosQuery);
-
-
-    container.innerHTML = "";
-
-
-    if (snapshot.empty) {
-
-      container.innerHTML = `
-
-        <div class="empty-content">
-
-          <div class="empty-icon">
-            ▶
-          </div>
-
-          <h3>
-            No Videos Yet
-          </h3>
-
-          <p dir="rtl">
-            ابھی کوئی ویڈیو موجود نہیں۔
-          </p>
-
-        </div>
-
-      `;
-
-      return;
-    }
-
-
-    snapshot.forEach((docSnap) => {
-
-      const video =
-        docSnap.data();
-
-
-      createVideoCard(
-        docSnap.id,
-        video,
-        container
-      );
-
-    });
-
-
-  } catch (error) {
-
-    console.error(
-      "Videos loading error:",
-      error
-    );
-
-
-    container.innerHTML = `
-
-      <div class="error-card">
-
-        <h3>
-          Videos could not be loaded
-        </h3>
-
-        <p dir="rtl">
-          ویڈیوز لوڈ نہیں ہو سکیں۔
-        </p>
-
-        <small>
-          ${escapeHTML(
-            error.message || ""
-          )}
-        </small>
-
-      </div>
-
-    `;
-
+  .shorts-grid {
+    grid-template-columns: repeat(3, 1fr);
   }
 
 }
 
 
+@media (max-width: 800px) {
 
-// =====================================================
-// CREATE VIDEO CARD
-// =====================================================
-
-function createVideoCard(
-  videoId,
-  video,
-  container
-) {
-
-  const title =
-    video.title ||
-    "Untitled Video";
-
-
-  const author =
-    video.author ||
-    "Hazrat Allama Saim Chishti";
-
-
-  const videoUrl =
-    video.url ||
-    video.fileUrl ||
-    "";
-
-
-  const thumbnail =
-    video.img ||
-    video.thumbnailUrl ||
-    "./logo.png";
-
-
-  const card =
-    document.createElement("article");
-
-
-  card.className =
-    "content-card video-card";
-
-
-  card.innerHTML = `
-
-    <div class="card-image video-thumbnail">
-
-      <img
-        src="${escapeAttribute(thumbnail)}"
-        alt="${escapeHTML(title)}"
-        loading="lazy"
-      >
-
-
-      <button
-        type="button"
-        class="video-play-btn"
-        data-video-url="${escapeAttribute(videoUrl)}"
-        aria-label="Play video"
-      >
-        ▶
-      </button>
-
-
-      <span class="card-badge">
-        VIDEO
-      </span>
-
-    </div>
-
-
-    <div class="card-body">
-
-      <h3 class="card-title">
-        ${escapeHTML(title)}
-      </h3>
-
-
-      <p class="card-author">
-        ${escapeHTML(author)}
-      </p>
-
-
-      <div class="video-actions">
-
-        <button
-          type="button"
-          class="video-action like-video-btn"
-          data-video-id="${escapeAttribute(videoId)}"
-        >
-          <span>
-            ♡
-          </span>
-
-          <small>
-            Like
-          </small>
-        </button>
-
-
-        <button
-          type="button"
-          class="video-action share-video-btn"
-          data-video-id="${escapeAttribute(videoId)}"
-          data-title="${escapeAttribute(title)}"
-          data-url="${escapeAttribute(videoUrl)}"
-        >
-          <span>
-            ↗
-          </span>
-
-          <small>
-            Share
-          </small>
-        </button>
-
-
-        <button
-          type="button"
-          class="video-action comment-video-btn"
-          data-video-id="${escapeAttribute(videoId)}"
-        >
-          <span>
-            💬
-          </span>
-
-          <small>
-            Comment
-          </small>
-        </button>
-
-      </div>
-
-
-      <button
-        type="button"
-        class="watch-video-btn"
-        data-video-url="${escapeAttribute(videoUrl)}"
-        data-title="${escapeAttribute(title)}"
-      >
-
-        <span>
-          Watch Video
-        </span>
-
-        <small dir="rtl">
-          ویڈیو دیکھیں
-        </small>
-
-      </button>
-
-    </div>
-
-  `;
-
-
-  container.appendChild(card);
-
-
-  // Play button
-
-  const playButton =
-    card.querySelector(
-      ".video-play-btn"
-    );
-
-
-  if (playButton) {
-
-    playButton.addEventListener(
-      "click",
-      () => {
-
-        openVideoPlayer(
-          videoUrl,
-          title
-        );
-
-      }
-    );
-
+  .menu-btn {
+    display: block;
   }
 
+  nav {
+    display: none;
 
-  // Watch button
+    position: absolute;
+    top: 78px;
+    left: 0;
+    right: 0;
 
-  const watchButton =
-    card.querySelector(
-      ".watch-video-btn"
-    );
+    background: #080808;
 
+    flex-direction: column;
+    align-items: stretch;
 
-  if (watchButton) {
-
-    watchButton.addEventListener(
-      "click",
-      () => {
-
-        openVideoPlayer(
-          videoUrl,
-          title
-        );
-
-      }
-    );
-
+    padding: 15px;
+    border-bottom: 1px solid var(--border);
   }
 
-
-  // Like
-
-  const likeButton =
-    card.querySelector(
-      ".like-video-btn"
-    );
-
-
-  if (likeButton) {
-
-    likeButton.addEventListener(
-      "click",
-      () => {
-
-        handleVideoLike(
-          videoId,
-          likeButton
-        );
-
-      }
-    );
-
+  nav.open {
+    display: flex;
   }
 
-
-  // Share
-
-  const shareButton =
-    card.querySelector(
-      ".share-video-btn"
-    );
-
-
-  if (shareButton) {
-
-    shareButton.addEventListener(
-      "click",
-      () => {
-
-        shareVideo(
-          title,
-          videoUrl
-        );
-
-      }
-    );
-
+  nav a,
+  .nav-login {
+    width: 100%;
   }
 
+  .hero {
+    min-height: 600px;
+  }
 
-  // Comment
+  .hero-logo {
+    width: 170px;
+    height: 170px;
+  }
 
-  const commentButton =
-    card.querySelector(
-      ".comment-video-btn"
-    );
+  .welcome-en {
+    font-size: 23px;
+  }
 
+  .welcome-ur {
+    font-size: 27px;
+  }
 
-  if (commentButton) {
+  .media-grid {
+    grid-template-columns: 1fr;
+  }
 
-    commentButton.addEventListener(
-      "click",
-      () => {
+  .shorts-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 
-        openVideoComments(
-          videoId
-        );
-
-      }
-    );
-
+  .footer-content {
+    grid-template-columns: 1fr 1fr;
   }
 
 }
 
 
+@media (max-width: 550px) {
 
-// =====================================================
-// VIDEO PLAYER
-// =====================================================
-
-function openVideoPlayer(
-  videoUrl,
-  title
-) {
-
-  if (!videoUrl) {
-
-    showToast(
-      "Video URL is not available."
-    );
-
-    return;
-
+  .books-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 
-
-  const modal =
-    document.getElementById(
-      "media-modal"
-    );
-
-
-  const body =
-    document.getElementById(
-      "media-modal-body"
-    );
-
-
-  if (!modal || !body) {
-
-    window.open(
-      videoUrl,
-      "_blank",
-      "noopener,noreferrer"
-    );
-
-    return;
-
+  .shorts-grid {
+    grid-template-columns: 1fr 1fr;
   }
 
-
-  body.innerHTML = `
-
-    <div class="video-player-wrapper">
-
-      <h2>
-        ${escapeHTML(title)}
-      </h2>
-
-      <video
-        controls
-        autoplay
-        playsinline
-        class="main-video-player"
-      >
-
-        <source
-          src="${escapeAttribute(videoUrl)}"
-        >
-
-        Your browser does not support video playback.
-
-      </video>
-
-    </div>
-
-  `;
-
-
-  modal.classList.add(
-    "active"
-  );
-
-
-  modal.setAttribute(
-    "aria-hidden",
-    "false"
-  );
-
-}
-
-
-
-// =====================================================
-// LIKE
-// =====================================================
-
-function handleVideoLike(
-  videoId,
-  button
-) {
-
-  const likedKey =
-    `bazam_video_liked_${videoId}`;
-
-
-  const alreadyLiked =
-    localStorage.getItem(
-      likedKey
-    );
-
-
-  if (alreadyLiked) {
-
-    showToast(
-      "You already liked this video."
-    );
-
-    return;
-
+  .audio-grid {
+    grid-template-columns: 1fr;
   }
 
-
-  localStorage.setItem(
-    likedKey,
-    "true"
-  );
-
-
-  button.classList.add(
-    "liked"
-  );
-
-
-  const icon =
-    button.querySelector("span");
-
-
-  if (icon) {
-
-    icon.textContent =
-      "♥";
-
+  .footer-content {
+    grid-template-columns: 1fr;
   }
 
-
-  showToast(
-    "Video liked ❤️"
-  );
-
-}
-
-
-
-// =====================================================
-// SHARE
-// =====================================================
-
-async function shareVideo(
-  title,
-  url
-) {
-
-  if (!url) {
-
-    showToast(
-      "Video link is not available."
-    );
-
-    return;
-
+  .section {
+    padding: 65px 14px;
   }
 
-
-  try {
-
-    if (
-      navigator.share
-    ) {
-
-      await navigator.share({
-
-        title:
-          title ||
-          "Bazam-E-Saim",
-
-        text:
-          `${title || "Video"} - Bazam-E-Saim`,
-
-        url:
-          url
-
-      });
-
-      return;
-
-    }
-
-
-    await navigator.clipboard.writeText(
-      url
-    );
-
-
-    showToast(
-      "Video link copied!"
-    );
-
-
-  } catch (error) {
-
-    console.log(
-      "Share cancelled."
-    );
-
+  .section-heading h2 {
+    font-size: 30px;
   }
-
-}
-
-
-
-// =====================================================
-// COMMENTS
-// =====================================================
-
-function openVideoComments(
-  videoId
-) {
-
-  const modal =
-    document.getElementById(
-      "comment-modal"
-    );
-
-
-  const contentId =
-    document.getElementById(
-      "comment-content-id"
-    );
-
-
-  const contentType =
-    document.getElementById(
-      "comment-content-type"
-    );
-
-
-  if (!modal) {
-
-    showToast(
-      "Comments system is not available."
-    );
-
-    return;
-
-  }
-
-
-  if (contentId) {
-
-    contentId.value =
-      videoId;
-
-  }
-
-
-  if (contentType) {
-
-    contentType.value =
-      "videos";
-
-  }
-
-
-  modal.classList.add(
-    "active"
-  );
-
-
-  modal.setAttribute(
-    "aria-hidden",
-    "false"
-  );
-
-}
-
-
-
-// =====================================================
-// CLOSE MODALS
-// =====================================================
-
-document
-  .querySelectorAll(
-    "[data-close-modal]"
-  )
-  .forEach(button => {
-
-    button.addEventListener(
-      "click",
-      () => {
-
-        const modalId =
-          button.dataset.closeModal;
-
-
-        const modal =
-          document.getElementById(
-            modalId
-          );
-
-
-        if (!modal) {
-          return;
-        }
-
-
-        modal.classList.remove(
-          "active"
-        );
-
-
-        modal.setAttribute(
-          "aria-hidden",
-          "true"
-        );
-
-
-        const body =
-          document.getElementById(
-            "media-modal-body"
-          );
-
-
-        if (
-          modalId ===
-          "media-modal" &&
-          body
-        ) {
-
-          body.innerHTML =
-            "";
-
-        }
-
-      }
-    );
-
-  });
-
-
-
-// =====================================================
-// LOAD VIDEOS
-// =====================================================
-
-loadVideos();
-
-
-
-// =====================================================
-// ESCAPE HTML
-// =====================================================
-
-function escapeHTML(
-  value
-) {
-
-  return String(value)
-
-    .replaceAll(
-      "&",
-      "&amp;"
-    )
-
-    .replaceAll(
-      "<",
-      "&lt;"
-    )
-
-    .replaceAll(
-      ">",
-      "&gt;"
-    )
-
-    .replaceAll(
-      '"',
-      "&quot;"
-    )
-
-    .replaceAll(
-      "'",
-      "&#039;"
-    );
-
-}
-
-
-function escapeAttribute(
-  value
-) {
-
-  return String(value)
-
-    .replaceAll(
-      "&",
-      "&amp;"
-    )
-
-    .replaceAll(
-      '"',
-      "&quot;"
-    )
-
-    .replaceAll(
-      "<",
-      "&lt;"
-    )
-
-    .replaceAll(
-      ">",
-      "&gt;"
-    );
-
-}
-
-
-
-// =====================================================
-// TOAST
-// =====================================================
-
-function showToast(
-  message
-) {
-
-  const toast =
-    document.getElementById(
-      "toast"
-    );
-
-
-  const messageBox =
-    document.getElementById(
-      "toast-message"
-    );
-
-
-  if (
-    !toast ||
-    !messageBox
-  ) {
-
-    alert(message);
-
-    return;
-
-  }
-
-
-  messageBox.textContent =
-    message;
-
-
-  toast.classList.add(
-    "show"
-  );
-
-
-  setTimeout(
-    () => {
-
-      toast.classList.remove(
-        "show"
-      );
-
-    },
-    2500
-  );
-
-}// =====================================================
-// BAZAM-E-SAIM
-// LOAD VIDEOS FROM FIRESTORE
-// =====================================================
-
-async function loadVideos() {
-
-  const container =
-    document.getElementById("videos-container");
-
-
-  if (!container) {
-
-    console.error(
-      "videos-container not found."
-    );
-
-    return;
-  }
-
-
-  try {
-
-    container.innerHTML = `
-      <div class="loading-card">
-
-        <div class="loader"></div>
-
-        <p>
-          Loading videos...
-        </p>
-
-        <p dir="rtl">
-          ویڈیوز لوڈ ہو رہی ہیں...
-        </p>
-
-      </div>
-    `;
-
-
-    const videosQuery = query(
-      collection(db, "videos"),
-      orderBy("createdAt", "desc")
-    );
-
-
-    const snapshot =
-      await getDocs(videosQuery);
-
-
-    container.innerHTML = "";
-
-
-    if (snapshot.empty) {
-
-      container.innerHTML = `
-
-        <div class="empty-content">
-
-          <div class="empty-icon">
-            ▶
-          </div>
-
-          <h3>
-            No Videos Yet
-          </h3>
-
-          <p dir="rtl">
-            ابھی کوئی ویڈیو موجود نہیں۔
-          </p>
-
-        </div>
-
-      `;
-
-      return;
-    }
-
-
-    snapshot.forEach((docSnap) => {
-
-      const video =
-        docSnap.data();
-
-
-      createVideoCard(
-        docSnap.id,
-        video,
-        container
-      );
-
-    });
-
-
-  } catch (error) {
-
-    console.error(
-      "Videos loading error:",
-      error
-    );
-
-
-    container.innerHTML = `
-
-      <div class="error-card">
-
-        <h3>
-          Videos could not be loaded
-        </h3>
-
-        <p dir="rtl">
-          ویڈیوز لوڈ نہیں ہو سکیں۔
-        </p>
-
-        <small>
-          ${escapeHTML(
-            error.message || ""
-          )}
-        </small>
-
-      </div>
-
-    `;
-
-  }
-
-}
-
-
-
-// =====================================================
-// CREATE VIDEO CARD
-// =====================================================
-
-function createVideoCard(
-  videoId,
-  video,
-  container
-) {
-
-  const title =
-    video.title ||
-    "Untitled Video";
-
-
-  const author =
-    video.author ||
-    "Hazrat Allama Saim Chishti";
-
-
-  const videoUrl =
-    video.url ||
-    video.fileUrl ||
-    "";
-
-
-  const thumbnail =
-    video.img ||
-    video.thumbnailUrl ||
-    "./logo.png";
-
-
-  const card =
-    document.createElement("article");
-
-
-  card.className =
-    "content-card video-card";
-
-
-  card.innerHTML = `
-
-    <div class="card-image video-thumbnail">
-
-      <img
-        src="${escapeAttribute(thumbnail)}"
-        alt="${escapeHTML(title)}"
-        loading="lazy"
-      >
-
-
-      <button
-        type="button"
-        class="video-play-btn"
-        data-video-url="${escapeAttribute(videoUrl)}"
-        aria-label="Play video"
-      >
-        ▶
-      </button>
-
-
-      <span class="card-badge">
-        VIDEO
-      </span>
-
-    </div>
-
-
-    <div class="card-body">
-
-      <h3 class="card-title">
-        ${escapeHTML(title)}
-      </h3>
-
-
-      <p class="card-author">
-        ${escapeHTML(author)}
-      </p>
-
-
-      <div class="video-actions">
-
-        <button
-          type="button"
-          class="video-action like-video-btn"
-          data-video-id="${escapeAttribute(videoId)}"
-        >
-          <span>
-            ♡
-          </span>
-
-          <small>
-            Like
-          </small>
-        </button>
-
-
-        <button
-          type="button"
-          class="video-action share-video-btn"
-          data-video-id="${escapeAttribute(videoId)}"
-          data-title="${escapeAttribute(title)}"
-          data-url="${escapeAttribute(videoUrl)}"
-        >
-          <span>
-            ↗
-          </span>
-
-          <small>
-            Share
-          </small>
-        </button>
-
-
-        <button
-          type="button"
-          class="video-action comment-video-btn"
-          data-video-id="${escapeAttribute(videoId)}"
-        >
-          <span>
-            💬
-          </span>
-
-          <small>
-            Comment
-          </small>
-        </button>
-
-      </div>
-
-
-      <button
-        type="button"
-        class="watch-video-btn"
-        data-video-url="${escapeAttribute(videoUrl)}"
-        data-title="${escapeAttribute(title)}"
-      >
-
-        <span>
-          Watch Video
-        </span>
-
-        <small dir="rtl">
-          ویڈیو دیکھیں
-        </small>
-
-      </button>
-
-    </div>
-
-  `;
-
-
-  container.appendChild(card);
-
-
-  // Play button
-
-  const playButton =
-    card.querySelector(
-      ".video-play-btn"
-    );
-
-
-  if (playButton) {
-
-    playButton.addEventListener(
-      "click",
-      () => {
-
-        openVideoPlayer(
-          videoUrl,
-          title
-        );
-
-      }
-    );
-
-  }
-
-
-  // Watch button
-
-  const watchButton =
-    card.querySelector(
-      ".watch-video-btn"
-    );
-
-
-  if (watchButton) {
-
-    watchButton.addEventListener(
-      "click",
-      () => {
-
-        openVideoPlayer(
-          videoUrl,
-          title
-        );
-
-      }
-    );
-
-  }
-
-
-  // Like
-
-  const likeButton =
-    card.querySelector(
-      ".like-video-btn"
-    );
-
-
-  if (likeButton) {
-
-    likeButton.addEventListener(
-      "click",
-      () => {
-
-        handleVideoLike(
-          videoId,
-          likeButton
-        );
-
-      }
-    );
-
-  }
-
-
-  // Share
-
-  const shareButton =
-    card.querySelector(
-      ".share-video-btn"
-    );
-
-
-  if (shareButton) {
-
-    shareButton.addEventListener(
-      "click",
-      () => {
-
-        shareVideo(
-          title,
-          videoUrl
-        );
-
-      }
-    );
-
-  }
-
-
-  // Comment
-
-  const commentButton =
-    card.querySelector(
-      ".comment-video-btn"
-    );
-
-
-  if (commentButton) {
-
-    commentButton.addEventListener(
-      "click",
-      () => {
-
-        openVideoComments(
-          videoId
-        );
-
-      }
-    );
-
-  }
-
-}
-
-
-
-// =====================================================
-// VIDEO PLAYER
-// =====================================================
-
-function openVideoPlayer(
-  videoUrl,
-  title
-) {
-
-  if (!videoUrl) {
-
-    showToast(
-      "Video URL is not available."
-    );
-
-    return;
-
-  }
-
-
-  const modal =
-    document.getElementById(
-      "media-modal"
-    );
-
-
-  const body =
-    document.getElementById(
-      "media-modal-body"
-    );
-
-
-  if (!modal || !body) {
-
-    window.open(
-      videoUrl,
-      "_blank",
-      "noopener,noreferrer"
-    );
-
-    return;
-
-  }
-
-
-  body.innerHTML = `
-
-    <div class="video-player-wrapper">
-
-      <h2>
-        ${escapeHTML(title)}
-      </h2>
-
-      <video
-        controls
-        autoplay
-        playsinline
-        class="main-video-player"
-      >
-
-        <source
-          src="${escapeAttribute(videoUrl)}"
-        >
-
-        Your browser does not support video playback.
-
-      </video>
-
-    </div>
-
-  `;
-
-
-  modal.classList.add(
-    "active"
-  );
-
-
-  modal.setAttribute(
-    "aria-hidden",
-    "false"
-  );
-
-}
-
-
-
-// =====================================================
-// LIKE
-// =====================================================
-
-function handleVideoLike(
-  videoId,
-  button
-) {
-
-  const likedKey =
-    `bazam_video_liked_${videoId}`;
-
-
-  const alreadyLiked =
-    localStorage.getItem(
-      likedKey
-    );
-
-
-  if (alreadyLiked) {
-
-    showToast(
-      "You already liked this video."
-    );
-
-    return;
-
-  }
-
-
-  localStorage.setItem(
-    likedKey,
-    "true"
-  );
-
-
-  button.classList.add(
-    "liked"
-  );
-
-
-  const icon =
-    button.querySelector("span");
-
-
-  if (icon) {
-
-    icon.textContent =
-      "♥";
-
-  }
-
-
-  showToast(
-    "Video liked ❤️"
-  );
-
-}
-
-
-
-// =====================================================
-// SHARE
-// =====================================================
-
-async function shareVideo(
-  title,
-  url
-) {
-
-  if (!url) {
-
-    showToast(
-      "Video link is not available."
-    );
-
-    return;
-
-  }
-
-
-  try {
-
-    if (
-      navigator.share
-    ) {
-
-      await navigator.share({
-
-        title:
-          title ||
-          "Bazam-E-Saim",
-
-        text:
-          `${title || "Video"} - Bazam-E-Saim`,
-
-        url:
-          url
-
-      });
-
-      return;
-
-    }
-
-
-    await navigator.clipboard.writeText(
-      url
-    );
-
-
-    showToast(
-      "Video link copied!"
-    );
-
-
-  } catch (error) {
-
-    console.log(
-      "Share cancelled."
-    );
-
-  }
-
-}
-
-
-
-// =====================================================
-// COMMENTS
-// =====================================================
-
-function openVideoComments(
-  videoId
-) {
-
-  const modal =
-    document.getElementById(
-      "comment-modal"
-    );
-
-
-  const contentId =
-    document.getElementById(
-      "comment-content-id"
-    );
-
-
-  const contentType =
-    document.getElementById(
-      "comment-content-type"
-    );
-
-
-  if (!modal) {
-
-    showToast(
-      "Comments system is not available."
-    );
-
-    return;
-
-  }
-
-
-  if (contentId) {
-
-    contentId.value =
-      videoId;
-
-  }
-
-
-  if (contentType) {
-
-    contentType.value =
-      "videos";
-
-  }
-
-
-  modal.classList.add(
-    "active"
-  );
-
-
-  modal.setAttribute(
-    "aria-hidden",
-    "false"
-  );
-
-}
-
-
-
-// =====================================================
-// CLOSE MODALS
-// =====================================================
-
-document
-  .querySelectorAll(
-    "[data-close-modal]"
-  )
-  .forEach(button => {
-
-    button.addEventListener(
-      "click",
-      () => {
-
-        const modalId =
-          button.dataset.closeModal;
-
-
-        const modal =
-          document.getElementById(
-            modalId
-          );
-
-
-        if (!modal) {
-          return;
-        }
-
-
-        modal.classList.remove(
-          "active"
-        );
-
-
-        modal.setAttribute(
-          "aria-hidden",
-          "true"
-        );
-
-
-        const body =
-          document.getElementById(
-            "media-modal-body"
-          );
-
-
-        if (
-          modalId ===
-          "media-modal" &&
-          body
-        ) {
-
-          body.innerHTML =
-            "";
-
-        }
-
-      }
-    );
-
-  });
-
-
-
-// =====================================================
-// LOAD VIDEOS
-// =====================================================
-
-loadVideos();
-
-
-
-// =====================================================
-// ESCAPE HTML
-// =====================================================
-
-function escapeHTML(
-  value
-) {
-
-  return String(value)
-
-    .replaceAll(
-      "&",
-      "&amp;"
-    )
-
-    .replaceAll(
-      "<",
-      "&lt;"
-    )
-
-    .replaceAll(
-      ">",
-      "&gt;"
-    )
-
-    .replaceAll(
-      '"',
-      "&quot;"
-    )
-
-    .replaceAll(
-      "'",
-      "&#039;"
-    );
-
-}
-
-
-function escapeAttribute(
-  value
-) {
-
-  return String(value)
-
-    .replaceAll(
-      "&",
-      "&amp;"
-    )
-
-    .replaceAll(
-      '"',
-      "&quot;"
-    )
-
-    .replaceAll(
-      "<",
-      "&lt;"
-    )
-
-    .replaceAll(
-      ">",
-      "&gt;"
-    );
-
-}
-
-
-
-// =====================================================
-// TOAST
-// =====================================================
-
-function showToast(
-  message
-) {
-
-  const toast =
-    document.getElementById(
-      "toast"
-    );
-
-
-  const messageBox =
-    document.getElementById(
-      "toast-message"
-    );
-
-
-  if (
-    !toast ||
-    !messageBox
-  ) {
-
-    alert(message);
-
-    return;
-
-  }
-
-
-  messageBox.textContent =
-    message;
-
-
-  toast.classList.add(
-    "show"
-  );
-
-
-  setTimeout(
-    () => {
-
-      toast.classList.remove(
-        "show"
-      );
-
-    },
-    2500
-  );
 
 }
