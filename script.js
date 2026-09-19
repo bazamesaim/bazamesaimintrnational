@@ -1,990 +1,1864 @@
-/* =========================================================
-   BAZAM-E-SAIM
-   Main Website JavaScript
-   Firebase + Books + Videos + Shorts + Audio
-   ========================================================= */
+// =====================================================
+// BAZAM-E-SAIM
+// MAIN SCRIPT
+// =====================================================
 
-import { initializeApp } from
-  "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
+import {
+  initializeApp,
+  getApps,
+  getApp
+} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 
 import {
   getFirestore,
   collection,
   getDocs,
-  doc,
-  updateDoc,
-  increment,
   addDoc,
-  serverTimestamp,
   query,
   orderBy,
-  limit
-} from
-  "https://www.gstatic.com/firebasejs/12.4.0/firebase-firestore.js";
-
-import {
-  getAuth,
-  onAuthStateChanged,
-  signInWithEmailAndPassword,
-  signOut
-} from
-  "https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js";
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 
-/* =========================================================
-   FIREBASE CONFIG
-   IMPORTANT:
-   Replace the placeholder values with your Firebase Web App
-   configuration from Firebase Console.
-   ========================================================= */
+// =====================================================
+// FIREBASE CONFIG
+// =====================================================
 
 const firebaseConfig = {
-  apiKey: "YOUR_FIREBASE_API_KEY",
-  authDomain: "bazamesaim.firebaseapp.com",
-  projectId: "bazamesaim",
-  storageBucket: "bazamesaim.firebasestorage.app",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId: "YOUR_FIREBASE_APP_ID"
+
+  apiKey: "YOUR_API_KEY",
+
+  authDomain:
+    "bazamesaim.firebaseapp.com",
+
+  projectId:
+    "bazamesaim",
+
+  storageBucket:
+    "bazamesaim.firebasestorage.app",
+
+  messagingSenderId:
+    "YOUR_MESSAGING_SENDER_ID",
+
+  appId:
+    "YOUR_APP_ID"
+
 };
 
 
-/* =========================================================
-   FIREBASE INITIALIZATION
-   ========================================================= */
+// =====================================================
+// FIREBASE INITIALIZE
+// =====================================================
 
-let app;
-let db;
-let auth;
-
-try {
-  app = initializeApp(firebaseConfig);
-  db = getFirestore(app);
-  auth = getAuth(app);
-} catch (error) {
-  console.error("Firebase initialization error:", error);
-}
+const app =
+  getApps().length
+    ? getApp()
+    : initializeApp(firebaseConfig);
 
 
-/* =========================================================
-   GLOBAL DATA
-   ========================================================= */
-
-const contentData = {
-  books: [],
-  videos: [],
-  shorts: [],
-  audios: []
-};
+const db =
+  getFirestore(app);
 
 
-/* =========================================================
-   DOM READY
-   ========================================================= */
 
-document.addEventListener("DOMContentLoaded", () => {
-  initializeWebsite();
-});
+// =====================================================
+// DOM READY
+// =====================================================
 
+document.addEventListener(
+  "DOMContentLoaded",
+  () => {
 
-/* =========================================================
-   INITIALIZE WEBSITE
-   ========================================================= */
+    initializeNavigation();
 
-function initializeWebsite() {
-  setupMobileMenu();
-  setupModals();
-  setupScrollButtons();
-  setupNavigation();
-  setupAuth();
-  setupGlobalClicks();
+    initializeScrollButtons();
 
-  loadAllContent();
-}
+    initializeSignIn();
 
+    initializeModals();
 
-/* =========================================================
-   LOAD ALL FIREBASE CONTENT
-   ========================================================= */
+    initializeComments();
 
-async function loadAllContent() {
-  if (!db) {
-    console.error("Firestore is not initialized.");
-    showToast("Firebase connect nahi hua.");
-    return;
+    initializeYear();
+
+    loadBooks();
+
+    loadVideos();
+
   }
-
-  showLoadingStates();
-
-  try {
-    await Promise.all([
-      loadCollection("books"),
-      loadCollection("videos"),
-      loadCollection("shorts"),
-      loadCollection("audios")
-    ]);
-
-    renderAllContent();
-
-    setupAutoScroll();
-
-  } catch (error) {
-    console.error("Content loading error:", error);
-    showToast("Content load nahi ho saka.");
-  }
-}
+);
 
 
-/* =========================================================
-   LOAD COLLECTION
-   ========================================================= */
 
-async function loadCollection(collectionName) {
-  try {
-    const collectionRef = collection(db, collectionName);
+// =====================================================
+// NAVIGATION
+// =====================================================
 
-    let snapshot;
+function initializeNavigation() {
 
-    try {
-      const orderedQuery = query(
-        collectionRef,
-        orderBy("createdAt", "desc"),
-        limit(50)
-      );
-
-      snapshot = await getDocs(orderedQuery);
-
-    } catch (orderError) {
-      /*
-        Agar createdAt kisi document mein missing ho,
-        normal getDocs se data load karne ki koshish.
-      */
-
-      console.warn(
-        `Ordered query failed for ${collectionName}.`,
-        orderError
-      );
-
-      snapshot = await getDocs(collectionRef);
-    }
-
-    contentData[collectionName] = snapshot.docs.map((document) => ({
-      id: document.id,
-      ...document.data()
-    }));
-
-  } catch (error) {
-    console.error(
-      `Error loading ${collectionName}:`,
-      error
+  const mobileButton =
+    document.getElementById(
+      "mobile-menu-btn"
     );
 
-    contentData[collectionName] = [];
-  }
-}
 
-
-/* =========================================================
-   RENDER ALL CONTENT
-   ========================================================= */
-
-function renderAllContent() {
-  renderBooks();
-  renderVideos();
-  renderShorts();
-  renderAudios();
-}
-
-
-/* =========================================================
-   BOOKS
-   ========================================================= */
-
-function renderBooks() {
-  const container = findContentContainer("books");
-
-  if (!container) return;
-
-  const books = contentData.books.slice(0, 20);
-
-  if (!books.length) {
-    renderEmptyState(
-      container,
-      "books",
-      "Abhi koi book upload nahi hui."
-    );
-    return;
-  }
-
-  container.innerHTML = books
-    .map((book) => createContentCard(book, "books"))
-    .join("");
-}
-
-
-/* =========================================================
-   VIDEOS
-   ========================================================= */
-
-function renderVideos() {
-  const container = findContentContainer("videos");
-
-  if (!container) return;
-
-  const videos = contentData.videos.slice(0, 20);
-
-  if (!videos.length) {
-    renderEmptyState(
-      container,
-      "videos",
-      "Abhi koi video upload nahi hui."
-    );
-    return;
-  }
-
-  container.innerHTML = videos
-    .map((video) => createContentCard(video, "videos"))
-    .join("");
-}
-
-
-/* =========================================================
-   SHORTS
-   ========================================================= */
-
-function renderShorts() {
-  const container = findContentContainer("shorts");
-
-  if (!container) return;
-
-  const shorts = contentData.shorts.slice(0, 20);
-
-  if (!shorts.length) {
-    renderEmptyState(
-      container,
-      "shorts",
-      "Abhi koi short upload nahi hui."
-    );
-    return;
-  }
-
-  container.innerHTML = shorts
-    .map((short) => createContentCard(short, "shorts"))
-    .join("");
-}
-
-
-/* =========================================================
-   AUDIOS
-   ========================================================= */
-
-function renderAudios() {
-  const container = findContentContainer("audios");
-
-  if (!container) return;
-
-  const audios = contentData.audios.slice(0, 20);
-
-  if (!audios.length) {
-    renderEmptyState(
-      container,
-      "audios",
-      "Abhi koi audio upload nahi hui."
-    );
-    return;
-  }
-
-  container.innerHTML = audios
-    .map((audio) => createContentCard(audio, "audios"))
-    .join("");
-}
-
-
-/* =========================================================
-   FIND CONTENT CONTAINER
-   Supports different IDs used by the HTML.
-   ========================================================= */
-
-function findContentContainer(type) {
-  const possibleIds = [
-    `${type}-container`,
-    `${type}-list`,
-    `${type}-row`,
-    `${type}-cards`,
-    `${type}-grid`
-  ];
-
-  for (const id of possibleIds) {
-    const element = document.getElementById(id);
-
-    if (element) {
-      return element;
-    }
-  }
-
-  /*
-    Try common class selectors.
-  */
-
-  const classSelectors = [
-    `.cards-${type}`,
-    `.card-container-${type}`,
-    `.${type}-cards`,
-    `.${type}-container`
-  ];
-
-  for (const selector of classSelectors) {
-    const element = document.querySelector(selector);
-
-    if (element) {
-      return element;
-    }
-  }
-
-  return null;
-}
-
-
-/* =========================================================
-   CREATE CONTENT CARD
-   ========================================================= */
-
-function createContentCard(item, type) {
-  const id = escapeHtml(item.id || "");
-
-  const title =
-    escapeHtml(item.title || "Untitled");
-
-  const author =
-    escapeHtml(
-      item.author ||
-      item.speaker ||
-      "Bazam-E-Saim"
+  const mobileNav =
+    document.getElementById(
+      "mobile-nav"
     );
 
-  const description =
-    escapeHtml(
-      item.description ||
-      "Bazam-E-Saim collection"
-    );
 
-  const likes =
-    Number(item.likes || 0);
+  if (
+    mobileButton &&
+    mobileNav
+  ) {
 
-  const image =
-    item.imageUrl ||
-    item.thumbnailUrl ||
-    createPlaceholderImage(type);
+    mobileButton.addEventListener(
+      "click",
+      () => {
 
-  const safeImage = escapeAttribute(image);
+        mobileNav.classList.toggle(
+          "active"
+        );
 
-  const mediaUrl =
-    item.fileUrl ||
-    item.videoUrl ||
-    item.audioUrl ||
-    "";
-
-  const safeMediaUrl =
-    escapeAttribute(mediaUrl);
-
-  return `
-    <article
-      class="content-card"
-      data-id="${id}"
-      data-type="${type}"
-    >
-
-      <div class="card-image">
-
-        <img
-          src="${safeImage}"
-          alt="${title}"
-          loading="lazy"
-          onerror="this.src='${createPlaceholderImage(type)}'"
-        />
-
-        <span class="card-badge">
-          ${getTypeLabel(type)}
-        </span>
-
-        ${
-          mediaUrl
-            ? `
-              <button
-                class="play-button"
-                type="button"
-                data-action="view"
-                data-id="${id}"
-                data-type="${type}"
-                data-url="${safeMediaUrl}"
-                aria-label="Open ${title}"
-              >
-                ▶
-              </button>
-            `
-            : ""
-        }
-
-      </div>
-
-      <div class="card-body">
-
-        <h3 class="card-title">
-          ${title}
-        </h3>
-
-        <div class="card-author">
-          ${author}
-        </div>
-
-        <p class="card-description">
-          ${description}
-        </p>
-
-        <div class="card-actions">
-
-          <button
-            type="button"
-            class="card-action like-btn"
-            data-action="like"
-            data-id="${id}"
-            data-type="${type}"
-          >
-            ♥
-            <span class="like-count">
-              ${likes}
-            </span>
-          </button>
-
-          <button
-            type="button"
-            class="card-action"
-            data-action="share"
-            data-id="${id}"
-            data-type="${type}"
-          >
-            ↗ Share
-          </button>
-
-          <button
-            type="button"
-            class="card-action"
-            data-action="comment"
-            data-id="${id}"
-            data-type="${type}"
-          >
-            💬
-          </button>
-
-        </div>
-
-      </div>
-
-    </article>
-  `;
-}
-
-
-/* =========================================================
-   TYPE LABEL
-   ========================================================= */
-
-function getTypeLabel(type) {
-  const labels = {
-    books: "BOOK",
-    videos: "VIDEO",
-    shorts: "SHORT",
-    audios: "AUDIO"
-  };
-
-  return labels[type] || "MEDIA";
-}
-
-
-/* =========================================================
-   PLACEHOLDER IMAGE
-   ========================================================= */
-
-function createPlaceholderImage(type) {
-  const text = encodeURIComponent(
-    getTypeLabel(type)
-  );
-
-  return `https://placehold.co/800x1000/111111/D4AF37?text=${text}`;
-}
-
-
-/* =========================================================
-   EMPTY STATE
-   ========================================================= */
-
-function renderEmptyState(
-  container,
-  type,
-  message
-) {
-  container.innerHTML = `
-    <div class="empty-state">
-      <h3>${getTypeLabel(type)}</h3>
-      <p>${escapeHtml(message)}</p>
-    </div>
-  `;
-}
-
-
-/* =========================================================
-   GLOBAL CLICK HANDLER
-   ========================================================= */
-
-function setupGlobalClicks() {
-  document.addEventListener("click", async (event) => {
-    const actionElement =
-      event.target.closest("[data-action]");
-
-    if (!actionElement) return;
-
-    const action =
-      actionElement.dataset.action;
-
-    const id =
-      actionElement.dataset.id;
-
-    const type =
-      actionElement.dataset.type;
-
-    if (!action || !id || !type) {
-      return;
-    }
-
-    if (action === "like") {
-      await handleLike(
-        actionElement,
-        id,
-        type
-      );
-    }
-
-    if (action === "share") {
-      await handleShare(
-        id,
-        type
-      );
-    }
-
-    if (action === "comment") {
-      openCommentModal(
-        id,
-        type
-      );
-    }
-
-    if (action === "view") {
-      openContent(
-        id,
-        type
-      );
-    }
-  });
-}
-
-
-/* =========================================================
-   LIKE
-   ========================================================= */
-
-async function handleLike(
-  button,
-  id,
-  type
-) {
-  if (!db) {
-    showToast("Firebase available nahi hai.");
-    return;
-  }
-
-  if (button.classList.contains("liked")) {
-    showToast("Aap is content ko pehle hi like kar chuke hain.");
-    return;
-  }
-
-  try {
-    const contentRef =
-      doc(db, type, id);
-
-    await updateDoc(
-      contentRef,
-      {
-        likes: increment(1)
       }
     );
 
-    button.classList.add("liked");
 
-    const countElement =
-      button.querySelector(".like-count");
+    mobileNav
+      .querySelectorAll("a")
+      .forEach(link => {
 
-    if (countElement) {
-      const current =
-        Number(countElement.textContent || 0);
+        link.addEventListener(
+          "click",
+          () => {
 
-      countElement.textContent =
-        current + 1;
-    }
+            mobileNav.classList.remove(
+              "active"
+            );
 
-    showToast("Liked ❤️");
+          }
+        );
 
-  } catch (error) {
-    console.error("Like error:", error);
-    showToast("Like save nahi ho saka.");
+      });
+
   }
+
+
+  document
+    .querySelectorAll(
+      'a[href^="#"]'
+    )
+    .forEach(link => {
+
+      link.addEventListener(
+        "click",
+        event => {
+
+          const id =
+            link.getAttribute(
+              "href"
+            );
+
+
+          if (
+            !id ||
+            id === "#"
+          ) {
+            return;
+          }
+
+
+          const target =
+            document.querySelector(
+              id
+            );
+
+
+          if (!target) {
+            return;
+          }
+
+
+          event.preventDefault();
+
+
+          target.scrollIntoView({
+            behavior: "smooth"
+          });
+
+        }
+      );
+
+    });
+
 }
 
 
-/* =========================================================
-   SHARE
-   ========================================================= */
 
-async function handleShare(
-  id,
-  type
-) {
-  const item =
-    contentData[type]?.find(
-      (content) => content.id === id
+// =====================================================
+// BOOKS FROM books.json
+// =====================================================
+
+async function loadBooks() {
+
+  const container =
+    document.getElementById(
+      "books-container"
     );
 
-  if (!item) {
-    showToast("Content nahi mila.");
+
+  if (!container) {
     return;
   }
 
-  const title =
-    item.title ||
-    "Bazam-E-Saim";
-
-  const shareUrl =
-    `${window.location.origin}${window.location.pathname}#${type}/${id}`;
-
-  const shareData = {
-    title: title,
-    text:
-      `${title} — Bazam-E-Saim`,
-    url: shareUrl
-  };
 
   try {
-    if (
-      navigator.share &&
-      window.isSecureContext
-    ) {
-      await navigator.share(shareData);
-      return;
+
+    const response =
+      await fetch(
+        "./books.json",
+        {
+          cache: "no-store"
+        }
+      );
+
+
+    if (!response.ok) {
+
+      throw new Error(
+        `books.json error: ${response.status}`
+      );
+
     }
 
-    await navigator.clipboard.writeText(
-      shareUrl
-    );
 
-    showToast(
-      "Link copy ho gaya."
-    );
+    const books =
+      await response.json();
+
+
+    container.innerHTML =
+      "";
+
+
+    if (
+      !Array.isArray(books) ||
+      books.length === 0
+    ) {
+
+      container.innerHTML = `
+
+        <div class="empty-content">
+
+          <h3>
+            No Books Available
+          </h3>
+
+          <p dir="rtl">
+            ابھی کوئی کتاب موجود نہیں۔
+          </p>
+
+        </div>
+
+      `;
+
+      return;
+
+    }
+
+
+    books
+      .slice(0, 5)
+      .forEach(
+        (book, index) => {
+
+          createBookCard(
+            book,
+            index,
+            container
+          );
+
+        }
+      );
+
 
   } catch (error) {
-    console.warn(
-      "Share cancelled or failed:",
+
+    console.error(
+      "Books error:",
       error
     );
+
+
+    container.innerHTML = `
+
+      <div class="error-card">
+
+        <h3>
+          Books could not be loaded
+        </h3>
+
+        <p dir="rtl">
+          کتابیں لوڈ نہیں ہو سکیں۔
+        </p>
+
+      </div>
+
+    `;
+
   }
+
 }
 
 
-/* =========================================================
-   OPEN CONTENT
-   ========================================================= */
 
-function openContent(
-  id,
-  type
+// =====================================================
+// BOOK CARD
+// =====================================================
+
+function createBookCard(
+  book,
+  index,
+  container
 ) {
-  const item =
-    contentData[type]?.find(
-      (content) => content.id === id
+
+  const card =
+    document.createElement(
+      "article"
     );
 
-  if (!item) return;
 
-  const mediaUrl =
-    item.fileUrl ||
-    item.videoUrl ||
-    item.audioUrl;
+  card.className =
+    "content-card book-card";
 
-  if (!mediaUrl) {
-    showToast("Is content ki file available nahi hai.");
+
+  const title =
+    book.title ||
+    "Book";
+
+
+  const titleUrdu =
+    book.titleUrdu ||
+    "";
+
+
+  const author =
+    book.author ||
+    "Hazrat Allama Saim Chishti";
+
+
+  const authorUrdu =
+    book.authorUrdu ||
+    "حضرت علامہ صائم چشتی";
+
+
+  const description =
+    book.description ||
+    "";
+
+
+  const descriptionUrdu =
+    book.descriptionUrdu ||
+    "";
+
+
+  const cover =
+    book.cover ||
+    "./logo.png";
+
+
+  const url =
+    book.url ||
+    book.pdf ||
+    "#";
+
+
+  card.innerHTML = `
+
+    <div class="card-image">
+
+      <img
+        src="${escapeAttribute(cover)}"
+        alt="${escapeHTML(title)}"
+        loading="lazy"
+      >
+
+      <span class="card-badge">
+        BOOK
+      </span>
+
+    </div>
+
+
+    <div class="card-body">
+
+      <span class="book-number">
+        Book ${index + 1}
+      </span>
+
+
+      <h3 class="card-title">
+        ${escapeHTML(title)}
+      </h3>
+
+
+      <h4
+        class="urdu-title"
+        dir="rtl"
+      >
+        ${escapeHTML(titleUrdu)}
+      </h4>
+
+
+      <p class="card-author">
+        ${escapeHTML(author)}
+      </p>
+
+
+      <p
+        class="card-author"
+        dir="rtl"
+      >
+        ${escapeHTML(authorUrdu)}
+      </p>
+
+
+      <p class="card-description">
+        ${escapeHTML(description)}
+      </p>
+
+
+      <p
+        class="card-description"
+        dir="rtl"
+      >
+        ${escapeHTML(descriptionUrdu)}
+      </p>
+
+
+      <div class="book-actions">
+
+        <a
+          href="${escapeAttribute(url)}"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="card-action"
+        >
+
+          <span>
+            Read Book
+          </span>
+
+          <small dir="rtl">
+            کتاب پڑھیں
+          </small>
+
+        </a>
+
+
+        <button
+          type="button"
+          class="share-book-btn"
+        >
+          ↗
+        </button>
+
+      </div>
+
+    </div>
+
+  `;
+
+
+  const shareButton =
+    card.querySelector(
+      ".share-book-btn"
+    );
+
+
+  if (shareButton) {
+
+    shareButton.addEventListener(
+      "click",
+      () => {
+
+        shareContent(
+          title,
+          url
+        );
+
+      }
+    );
+
+  }
+
+
+  container.appendChild(
+    card
+  );
+
+}
+
+
+
+// =====================================================
+// VIDEOS FROM FIRESTORE
+// =====================================================
+
+async function loadVideos() {
+
+  const container =
+    document.getElementById(
+      "videos-container"
+    );
+
+
+  if (!container) {
     return;
   }
 
-  /*
-    Books:
-    PDF directly open.
 
-    Videos:
-    Video player page/modal if available.
+  try {
 
-    Audio:
-    Audio player.
-  */
+    container.innerHTML = `
 
-  if (type === "books") {
+      <div class="loading-card">
+
+        <div class="loader"></div>
+
+        <p>
+          Loading Videos...
+        </p>
+
+        <p dir="rtl">
+          ویڈیوز لوڈ ہو رہی ہیں...
+        </p>
+
+      </div>
+
+    `;
+
+
+    let snapshot;
+
+
+    try {
+
+      const videosQuery =
+        query(
+          collection(
+            db,
+            "videos"
+          ),
+          orderBy(
+            "createdAt",
+            "desc"
+          )
+        );
+
+
+      snapshot =
+        await getDocs(
+          videosQuery
+        );
+
+    } catch (orderError) {
+
+      console.warn(
+        "createdAt ordering failed. Loading videos without order.",
+        orderError
+      );
+
+
+      snapshot =
+        await getDocs(
+          collection(
+            db,
+            "videos"
+          )
+        );
+
+    }
+
+
+    container.innerHTML =
+      "";
+
+
+    if (snapshot.empty) {
+
+      container.innerHTML = `
+
+        <div class="empty-content">
+
+          <div class="empty-icon">
+            ▶
+          </div>
+
+          <h3>
+            No Videos Yet
+          </h3>
+
+          <p dir="rtl">
+            ابھی کوئی ویڈیو موجود نہیں۔
+          </p>
+
+        </div>
+
+      `;
+
+      return;
+
+    }
+
+
+    snapshot.forEach(
+      documentSnapshot => {
+
+        createVideoCard(
+          documentSnapshot.id,
+          documentSnapshot.data(),
+          container
+        );
+
+      }
+    );
+
+
+  } catch (error) {
+
+    console.error(
+      "Videos loading error:",
+      error
+    );
+
+
+    container.innerHTML = `
+
+      <div class="error-card">
+
+        <h3>
+          Videos could not be loaded
+        </h3>
+
+        <p dir="rtl">
+          ویڈیوز لوڈ نہیں ہو سکیں۔
+        </p>
+
+        <small>
+          ${escapeHTML(
+            error.message ||
+            ""
+          )}
+        </small>
+
+      </div>
+
+    `;
+
+  }
+
+}
+
+
+
+// =====================================================
+// VIDEO CARD
+// =====================================================
+
+function createVideoCard(
+  videoId,
+  video,
+  container
+) {
+
+  const title =
+    video.title ||
+    "Untitled Video";
+
+
+  const author =
+    video.author ||
+    "Hazrat Allama Saim Chishti";
+
+
+  const videoUrl =
+    video.url ||
+    video.fileUrl ||
+    "";
+
+
+  const thumbnail =
+    video.img ||
+    video.thumbnailUrl ||
+    "./logo.png";
+
+
+  const card =
+    document.createElement(
+      "article"
+    );
+
+
+  card.className =
+    "content-card video-card";
+
+
+  card.innerHTML = `
+
+    <div class="card-image video-thumbnail">
+
+      <img
+        src="${escapeAttribute(thumbnail)}"
+        alt="${escapeHTML(title)}"
+        loading="lazy"
+      >
+
+
+      <button
+        type="button"
+        class="video-play-btn"
+        aria-label="Play video"
+      >
+        ▶
+      </button>
+
+
+      <span class="card-badge">
+        VIDEO
+      </span>
+
+    </div>
+
+
+    <div class="card-body">
+
+      <h3 class="card-title">
+        ${escapeHTML(title)}
+      </h3>
+
+
+      <p class="card-author">
+        ${escapeHTML(author)}
+      </p>
+
+
+      <div class="video-actions">
+
+        <button
+          type="button"
+          class="video-action like-video-btn"
+        >
+
+          <span>
+            ♡
+          </span>
+
+          <small>
+            Like
+          </small>
+
+        </button>
+
+
+        <button
+          type="button"
+          class="video-action share-video-btn"
+        >
+
+          <span>
+            ↗
+          </span>
+
+          <small>
+            Share
+          </small>
+
+        </button>
+
+
+        <button
+          type="button"
+          class="video-action comment-video-btn"
+        >
+
+          <span>
+            💬
+          </span>
+
+          <small>
+            Comment
+          </small>
+
+        </button>
+
+      </div>
+
+
+      <button
+        type="button"
+        class="watch-video-btn"
+      >
+
+        <span>
+          Watch Video
+        </span>
+
+        <small dir="rtl">
+          ویڈیو دیکھیں
+        </small>
+
+      </button>
+
+    </div>
+
+  `;
+
+
+  container.appendChild(
+    card
+  );
+
+
+  const playButton =
+    card.querySelector(
+      ".video-play-btn"
+    );
+
+
+  const watchButton =
+    card.querySelector(
+      ".watch-video-btn"
+    );
+
+
+  if (playButton) {
+
+    playButton.addEventListener(
+      "click",
+      () => {
+
+        openVideoPlayer(
+          videoUrl,
+          title
+        );
+
+      }
+    );
+
+  }
+
+
+  if (watchButton) {
+
+    watchButton.addEventListener(
+      "click",
+      () => {
+
+        openVideoPlayer(
+          videoUrl,
+          title
+        );
+
+      }
+    );
+
+  }
+
+
+  const likeButton =
+    card.querySelector(
+      ".like-video-btn"
+    );
+
+
+  if (likeButton) {
+
+    likeButton.addEventListener(
+      "click",
+      () => {
+
+        likeVideo(
+          videoId,
+          likeButton
+        );
+
+      }
+    );
+
+  }
+
+
+  const shareButton =
+    card.querySelector(
+      ".share-video-btn"
+    );
+
+
+  if (shareButton) {
+
+    shareButton.addEventListener(
+      "click",
+      () => {
+
+        shareContent(
+          title,
+          videoUrl
+        );
+
+      }
+    );
+
+  }
+
+
+  const commentButton =
+    card.querySelector(
+      ".comment-video-btn"
+    );
+
+
+  if (commentButton) {
+
+    commentButton.addEventListener(
+      "click",
+      () => {
+
+        openComments(
+          videoId
+        );
+
+      }
+    );
+
+  }
+
+}
+
+
+
+// =====================================================
+// VIDEO PLAYER
+// =====================================================
+
+function openVideoPlayer(
+  url,
+  title
+) {
+
+  if (!url) {
+
+    showToast(
+      "Video URL is not available."
+    );
+
+    return;
+
+  }
+
+
+  const modal =
+    document.getElementById(
+      "media-modal"
+    );
+
+
+  const body =
+    document.getElementById(
+      "media-modal-body"
+    );
+
+
+  if (!modal || !body) {
+
     window.open(
-      mediaUrl,
+      url,
       "_blank",
       "noopener,noreferrer"
     );
 
     return;
+
   }
 
-  if (type === "videos" |
-async function loadBooks() {
-  const container = document.getElementById("books-container");
 
-  if (!container) return;
+  body.innerHTML = `
 
-  try {
-    const response = await fetch("./books.json");
+    <h2>
+      ${escapeHTML(title)}
+    </h2>
 
-    if (!response.ok) {
-      throw new Error("books.json load nahi hui");
-    }
 
-    const books = await response.json();
+    <video
+      class="main-video-player"
+      controls
+      autoplay
+      playsinline
+    >
 
-    container.innerHTML = "";
+      <source
+        src="${escapeAttribute(url)}"
+      >
 
-    books.slice(0, 5).forEach((book) => {
-      const card = document.createElement("article");
+      Your browser does not support video playback.
 
-      card.className = "book-card";
+    </video>
 
-      card.innerHTML = `
-        <div class="book-cover">
-          <img
-            src="${book.cover}"
-            alt="${book.title}"
-            loading="lazy"
-          >
-        </div>
+  `;
 
-        <div class="book-info">
 
-          <h3>
-            ${book.title}
-          </h3>
+  modal.classList.add(
+    "active"
+  );
 
-          <p dir="rtl">
-            ${book.titleUrdu || ""}
-          </p>
 
-          <span>
-            ${book.author}
-          </span>
+  modal.setAttribute(
+    "aria-hidden",
+    "false"
+  );
 
-          <small dir="rtl">
-            ${book.authorUrdu || ""}
-          </small>
-
-          <p class="book-description">
-            ${book.description || ""}
-          </p>
-
-          <p
-            class="book-description"
-            dir="rtl"
-          >
-            ${book.descriptionUrdu || ""}
-          </p>
-
-          <a
-            href="${book.url || book.pdf}"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="book-open-btn"
-          >
-            <span>Read Book</span>
-            <small>کتاب پڑھیں</small>
-          </a>
-
-        </div>
-      `;
-
-      container.appendChild(card);
-    });
-
-  } catch (error) {
-    console.error("Books Error:", error);
-
-    container.innerHTML = `
-      <div class="loading-card">
-
-        <p>
-          Unable to load books.
-        </p>
-
-        <p dir="rtl">
-          کتابیں لوڈ نہیں ہو سکیں۔
-        </p>
-
-      </div>
-    `;
-  }
 }
 
-loadBooks();
-   // =====================================================
-// BAZAM-E-SAIM - LOAD BOOKS FROM books.json
+
+
+// =====================================================
+// LIKE
 // =====================================================
 
-async function loadBooksFromJSON() {
-  const container = document.getElementById("books-container");
+function likeVideo(
+  videoId,
+  button
+) {
 
-  if (!container) {
-    console.error("books-container not found");
+  const key =
+    `bazam-like-${videoId}`;
+
+
+  if (
+    localStorage.getItem(
+      key
+    )
+  ) {
+
+    showToast(
+      "You already liked this video."
+    );
+
+    return;
+
+  }
+
+
+  localStorage.setItem(
+    key,
+    "true"
+  );
+
+
+  button.classList.add(
+    "liked"
+  );
+
+
+  const icon =
+    button.querySelector(
+      "span"
+    );
+
+
+  if (icon) {
+
+    icon.textContent =
+      "♥";
+
+  }
+
+
+  showToast(
+    "Video liked ❤️"
+  );
+
+}
+
+
+
+// =====================================================
+// SHARE
+// =====================================================
+
+async function shareContent(
+  title,
+  url
+) {
+
+  if (!url) {
+
+    showToast(
+      "Link is not available."
+    );
+
+    return;
+
+  }
+
+
+  try {
+
+    if (
+      navigator.share
+    ) {
+
+      await navigator.share({
+
+        title:
+          title ||
+          "Bazam-E-Saim",
+
+        text:
+          `${title || "Content"} - Bazam-E-Saim`,
+
+        url:
+          url
+
+      });
+
+      return;
+
+    }
+
+
+    await navigator.clipboard.writeText(
+      url
+    );
+
+
+    showToast(
+      "Link copied!"
+    );
+
+
+  } catch (error) {
+
+    console.log(
+      "Share cancelled."
+    );
+
+  }
+
+}
+
+
+
+// =====================================================
+// COMMENTS
+// =====================================================
+
+let currentCommentVideoId =
+  null;
+
+
+function openComments(
+  videoId
+) {
+
+  currentCommentVideoId =
+    videoId;
+
+
+  const modal =
+    document.getElementById(
+      "comment-modal"
+    );
+
+
+  if (!modal) {
     return;
   }
 
+
+  loadComments(
+    videoId
+  );
+
+
+  modal.classList.add(
+    "active"
+  );
+
+
+  modal.setAttribute(
+    "aria-hidden",
+    "false"
+  );
+
+}
+
+
+
+// =====================================================
+// LOAD COMMENTS
+// =====================================================
+
+async function loadComments(
+  videoId
+) {
+
+  const list =
+    document.getElementById(
+      "comments-list"
+    );
+
+
+  if (!list) {
+    return;
+  }
+
+
+  list.innerHTML = `
+
+    <p>
+      Loading comments...
+    </p>
+
+  `;
+
+
   try {
-    const response = await fetch("./books.json", {
-      cache: "no-store"
-    });
 
-    if (!response.ok) {
-      throw new Error(
-        `books.json load failed: ${response.status}`
+    const snapshot =
+      await getDocs(
+        collection(
+          db,
+          "videos",
+          videoId,
+          "comments"
+        )
       );
-    }
 
-    const books = await response.json();
 
-    console.log("Books loaded:", books);
+    list.innerHTML =
+      "";
 
-    container.innerHTML = "";
 
-    if (!Array.isArray(books) || books.length === 0) {
-      container.innerHTML = `
-        <div class="loading-card">
-          <p>No books available.</p>
-          <p dir="rtl">ابھی کوئی کتاب موجود نہیں۔</p>
-        </div>
+    if (snapshot.empty) {
+
+      list.innerHTML = `
+
+        <p dir="rtl">
+          ابھی کوئی تبصرہ نہیں۔
+        </p>
+
       `;
+
       return;
+
     }
 
-    // Sirf maximum 5 books
-    books.slice(0, 5).forEach((book) => {
 
-      const card = document.createElement("article");
+    snapshot.forEach(
+      commentDoc => {
 
-      card.className = "content-card";
-
-      card.innerHTML = `
-        <div class="card-image">
-
-          <img
-            src="${book.cover}"
-            alt="${book.title}"
-            loading="lazy"
-            onerror="this.src='./logo.png'"
-          >
-
-          <span class="card-badge">
-            BOOK
-          </span>
-
-        </div>
+        const comment =
+          commentDoc.data();
 
 
-        <div class="card-body">
+        const item =
+          document.createElement(
+            "div"
+          );
 
-          <h3 class="card-title">
-            ${book.title}
-          </h3>
 
-          <p
-            class="card-title"
-            dir="rtl"
-            style="font-size:0.9rem;"
-          >
-            ${book.titleUrdu || ""}
+        item.className =
+          "comment-item";
+
+
+        item.innerHTML = `
+
+          <strong>
+            ${escapeHTML(
+              comment.name ||
+              "Guest"
+            )}
+          </strong>
+
+          <p>
+            ${escapeHTML(
+              comment.text ||
+              ""
+            )}
           </p>
 
-
-          <p class="card-author">
-            ${book.author || ""}
-          </p>
-
-          <p
-            class="card-author"
-            dir="rtl"
-          >
-            ${book.authorUrdu || ""}
-          </p>
+        `;
 
 
-          <p class="card-description">
-            ${book.description || ""}
-          </p>
+        list.appendChild(
+          item
+        );
 
-          <p
-            class="card-description"
-            dir="rtl"
-          >
-            ${book.descriptionUrdu || ""}
-          </p>
+      }
+    );
 
-
-          <a
-            href="${book.url || book.pdf || "#"}"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="card-action"
-          >
-            Read Book
-            <span dir="rtl">کتاب پڑھیں</span>
-          </a>
-
-        </div>
-      `;
-
-      container.appendChild(card);
-
-    });
 
   } catch (error) {
 
     console.error(
-      "BOOKS JSON ERROR:",
+      "Comments error:",
       error
     );
 
-    container.innerHTML = `
-      <div class="loading-card">
 
-        <p>
-          Unable to load books.
-        </p>
+    list.innerHTML = `
 
-        <p dir="rtl">
-          کتابیں لوڈ نہیں ہو سکیں۔
-        </p>
+      <p>
+        Comments could not be loaded.
+      </p>
 
-        <small>
-          Check books.json location.
-        </small>
-
-      </div>
     `;
+
   }
+
 }
 
 
-// Load books
-loadBooksFromJSON();
+
+// =====================================================
+// POST COMMENT
+// =====================================================
+
+function initializeComments() {
+
+  const form =
+    document.getElementById(
+      "comment-form"
+    );
+
+
+  if (!form) {
+    return;
+  }
+
+
+  form.addEventListener(
+    "submit",
+    async event => {
+
+      event.preventDefault();
+
+
+      if (!currentCommentVideoId) {
+
+        showToast(
+          "Please select a video first."
+        );
+
+        return;
+
+      }
+
+
+      const nameInput =
+        document.getElementById(
+          "comment-name"
+        );
+
+
+      const textInput =
+        document.getElementById(
+          "comment-text"
+        );
+
+
+      const name =
+        nameInput.value.trim();
+
+
+      const text =
+        textInput.value.trim();
+
+
+      if (
+        !name ||
+        !text
+      ) {
+
+        return;
+
+      }
+
+
+      try {
+
+        await addDoc(
+
+          collection(
+            db,
+            "videos",
+            currentCommentVideoId,
+            "comments"
+          ),
+
+          {
+            name:
+              name,
+
+            text:
+              text,
+
+            createdAt:
+              serverTimestamp()
+          }
+
+        );
+
+
+        nameInput.value =
+          "";
+
+        textInput.value =
+          "";
+
+
+        showToast(
+          "Comment posted."
+        );
+
+
+        loadComments(
+          currentCommentVideoId
+        );
+
+
+      } catch (error) {
+
+        console.error(
+          "Comment error:",
+          error
+        );
+
+
+        showToast(
+          "Comment could not be posted."
+        );
+
+      }
+
+    }
+  );
+
+}
+
+
+
+// =====================================================
+// MODALS
+// =====================================================
+
+function initializeModals() {
+
+  document
+    .querySelectorAll(
+      "[data-close-modal]"
+    )
+    .forEach(button => {
+
+      button.addEventListener(
+        "click",
+        () => {
+
+          const id =
+            button.dataset.closeModal;
+
+
+          closeModal(id);
+
+        }
+      );
+
+    });
+
+
+  document
+    .querySelectorAll(
+      ".modal-overlay"
+    )
+    .forEach(overlay => {
+
+      overlay.addEventListener(
+        "click",
+        () => {
+
+          const modal =
+            overlay.closest(
+              ".modal"
+            );
+
+
+          if (modal) {
+
+            closeModal(
+              modal.id
+            );
+
+          }
+
+        }
+      );
+
+    });
+
+}
+
+
+
+// =====================================================
+// CLOSE MODAL
+// =====================================================
+
+function closeModal(
+  id
+) {
+
+  const modal =
+    document.getElementById(
+      id
+    );
+
+
+  if (!modal) {
+    return;
+  }
+
+
+  modal.classList.remove(
+    "active"
+  );
+
+
+  modal.setAttribute(
+    "aria-hidden",
+    "true"
+  );
+
+
+  const video =
+    modal.querySelector(
+      "video"
+    );
+
+
+  if (video) {
+
+    video.pause();
+
+    video.removeAttribute(
+      "src"
+    );
+
+  }
+
+}
+
+
+
+// =====================================================
+// SIGN IN
+// =====================================================
+
+function initializeSignIn() {
+
+  const buttons = [
+
+    document.getElementById(
+      "signin-btn"
+    ),
+
+    document.getElementById(
+      "mobile-signin-btn"
+    )
+
+  ];
+
+
+  const modal =
+    document.getElementById(
+      "signin-modal"
+    );
+
+
+  buttons.forEach(
+    button => {
+
+      if (!button) {
+        return;
+      }
+
+
+      button.addEventListener(
+        "click",
+        () => {
+
+          if (!modal) {
+            return;
+          }
+
+
+          modal.classList.add(
+            "active"
+          );
+
+
+          modal.setAttribute(
+            "aria-hidden",
+            "false"
+          );
+
+        }
+      );
+
+    }
+  );
+
+
+  const form =
+    document.getElementById(
+      "signin-form"
+    );
+
+
+  if (form) {
+
+    form.addEventListener(
+      "submit",
+      event => {
+
+        event.preventDefault();
+
+
+        const message =
+          document.getElementById(
+            "signin-message"
+          );
+
+
+        if (message) {
+
+          message.textContent =
+            "Sign in will be connected with Firebase Auth.";
+
+        }
+
+      }
+    );
+
+  }
+
+}
+
+
+
+// =====================================================
+// SCROLL BUTTONS
+// =====================================================
+
+function initializeScrollButtons() {
+
+  document
+    .querySelectorAll(
+      ".scroll-btn"
+    )
+    .forEach(button => {
+
+      button.addEventListener(
+        "click",
+        () => {
+
+          const targetId =
+            button.dataset.target;
+
+
+          const target =
+            document.getElementById(
+              targetId
+            );
+
+
+          if (!target) {
+            return;
+          }
+
+
+          const amount =
+            Math.max(
+              300,
+              target.clientWidth * 0.8
+            );
+
+
+          const isLeft =
+            button.classList.contains(
+              "scroll-left"
+            );
+
+
+          target.scrollBy({
+
+            left:
+              isLeft
+                ? -amount
+                : amount,
+
+            behavior:
+              "smooth"
+
+          });
+
+        }
+      );
+
+    });
+
+}
+
+
+
+// =====================================================
+// YEAR
+// =====================================================
+
+function initializeYear() {
+
+  const year =
+    document.getElementById(
+      "current-year"
+    );
+
+
+  if (year) {
+
+    year.textContent =
+      new Date().getFullYear();
+
+  }
+
+}
+
+
+
+// =====================================================
+// TOAST
+// =====================================================
+
+function showToast(
+  message
+) {
+
+  const toast =
+    document.getElementById(
+      "toast"
+    );
+
+
+  const text =
+    document.getElementById(
+      "toast-message"
+    );
+
+
+  if (!toast || !text) {
+
+    alert(message);
+
+    return;
+
+  }
+
+
+  text.textContent =
+    message;
+
+
+  toast.classList.add(
+    "show"
+  );
+
+
+  setTimeout(
+    () => {
+
+      toast.classList.remove(
+        "show"
+      );
+
+    },
+    2500
+  );
+
+}
+
+
+
+// =====================================================
+// SECURITY HELPERS
+// =====================================================
+
+function escapeHTML(
+  value
+) {
+
+  return String(value)
+
+    .replaceAll(
+      "&",
+      "&amp;"
+    )
+
+    .replaceAll(
+      "<",
+      "&lt;"
+    )
+
+    .replaceAll(
+      ">",
+      "&gt;"
+    )
+
+    .replaceAll(
+      '"',
+      "&quot;"
+    )
+
+    .replaceAll(
+      "'",
+      "&#039;"
+    );
+
+}
+
+
+function escapeAttribute(
+  value
+) {
+
+  return String(value)
+
+    .replaceAll(
+      "&",
+      "&amp;"
+    )
+
+    .replaceAll(
+      '"',
+      "&quot;"
+    )
+
+    .replaceAll(
+      "<",
+      "&lt;"
+    )
+
+    .replaceAll(
+      ">",
+      "&gt;"
+    );
+
+}
