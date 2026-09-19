@@ -1,2353 +1,1775 @@
-/* =========================================================
-   BAZAM-E-SAIM
-   Premium Black & Golden Theme
-   CSS matched with current index.html
-   ========================================================= */
+// =====================================================
+// BAZAM-E-SAIM
+// LOAD VIDEOS FROM FIRESTORE
+// =====================================================
 
-:root {
-  --black: #050505;
-  --black-2: #0a0a0a;
-  --black-3: #111111;
-  --card: #121212;
+async function loadVideos() {
 
-  --gold: #d4af37;
-  --gold-light: #f3d778;
-  --gold-dark: #9f7c16;
+  const container =
+    document.getElementById("videos-container");
 
-  --white: #ffffff;
-  --text: #eeeeee;
-  --muted: #a6a6a6;
 
-  --border: rgba(212, 175, 55, 0.25);
-  --border-light: rgba(255, 255, 255, 0.09);
+  if (!container) {
 
-  --shadow: 0 18px 45px rgba(0, 0, 0, 0.55);
-
-  --radius: 14px;
-  --transition: 0.3s ease;
-
-  --container: 1400px;
-}
-
-/* =========================================================
-   RESET
-   ========================================================= */
-
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-html {
-  scroll-behavior: smooth;
-  scroll-padding-top: 82px;
-}
-
-body {
-  min-height: 100vh;
-  overflow-x: hidden;
-
-  background:
-    radial-gradient(
-      circle at 50% -20%,
-      rgba(212, 175, 55, 0.05),
-      transparent 35%
-    ),
-    var(--black);
-
-  color: var(--text);
-
-  font-family:
-    Inter,
-    system-ui,
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    Arial,
-    Helvetica,
-    sans-serif;
-
-  line-height: 1.6;
-}
-
-body.modal-open {
-  overflow: hidden;
-}
-
-a {
-  color: inherit;
-  text-decoration: none;
-}
-
-button,
-input,
-textarea,
-select {
-  font: inherit;
-}
-
-button {
-  cursor: pointer;
-}
-
-img {
-  display: block;
-  max-width: 100%;
-}
-
-ul,
-ol {
-  list-style: none;
-}
-
-/* =========================================================
-   SCROLLBAR
-   ========================================================= */
-
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: #050505;
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--gold-dark);
-  border-radius: 20px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--gold);
-}
-
-/* Firefox */
-
-* {
-  scrollbar-color: var(--gold-dark) #050505;
-  scrollbar-width: thin;
-}
-
-/* =========================================================
-   SELECTION
-   ========================================================= */
-
-::selection {
-  background: var(--gold);
-  color: #050505;
-}
-
-/* =========================================================
-   GLOBAL CONTAINERS
-   ========================================================= */
-
-.section-container,
-.nav-container,
-.footer-container {
-  width: min(var(--container), calc(100% - 40px));
-  margin: 0 auto;
-}
-
-/* =========================================================
-   HEADER
-   ========================================================= */
-
-.site-header {
-  position: relative;
-  z-index: 9999;
-}
-
-/* =========================================================
-   NAVBAR
-   ========================================================= */
-
-.navbar {
-  position: sticky;
-  top: 0;
-  z-index: 9999;
-
-  width: 100%;
-
-  background: rgba(5, 5, 5, 0.94);
-
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-
-  border-bottom: 1px solid var(--border);
-
-  box-shadow:
-    0 8px 30px rgba(0, 0, 0, 0.25);
-}
-
-.nav-container {
-  min-height: 78px;
-
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-
-  gap: 25px;
-}
-
-/* =========================================================
-   LOGO
-   ========================================================= */
-
-.logo {
-  display: inline-flex;
-  align-items: center;
-
-  gap: 11px;
-
-  flex-shrink: 0;
-
-  color: var(--white);
-
-  font-size: 1.25rem;
-  font-weight: 800;
-
-  letter-spacing: 0.3px;
-
-  transition: var(--transition);
-}
-
-.logo:hover {
-  color: var(--gold);
-}
-
-.logo-image {
-  width: 48px;
-  height: 48px;
-
-  object-fit: contain;
-
-  border-radius: 50%;
-
-  background: #080808;
-
-  border: 1px solid rgba(212, 175, 55, 0.4);
-
-  box-shadow:
-    0 0 20px rgba(212, 175, 55, 0.08);
-}
-
-.logo-text {
-  color: var(--white);
-}
-
-.logo:hover .logo-text {
-  color: var(--gold);
-}
-
-/* =========================================================
-   DESKTOP NAV
-   ========================================================= */
-
-.nav-links {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-
-  gap: 25px;
-
-  margin-left: auto;
-}
-
-.nav-link {
-  position: relative;
-
-  display: inline-flex;
-  align-items: center;
-
-  min-height: 42px;
-
-  color: #d1d1d1;
-
-  font-size: 0.92rem;
-  font-weight: 650;
-
-  transition:
-    color var(--transition),
-    transform var(--transition);
-}
-
-.nav-link::after {
-  content: "";
-
-  position: absolute;
-
-  left: 0;
-  bottom: 3px;
-
-  width: 0;
-  height: 2px;
-
-  border-radius: 10px;
-
-  background: var(--gold);
-
-  transition: width var(--transition);
-}
-
-.nav-link:hover {
-  color: var(--gold);
-}
-
-.nav-link:hover::after {
-  width: 100%;
-}
-
-/* Admin */
-
-.admin-nav-link {
-  color: var(--gold);
-}
-
-.admin-nav-link::after {
-  width: 100%;
-  opacity: 0.35;
-}
-
-.admin-nav-link:hover::after {
-  opacity: 1;
-}
-
-/* =========================================================
-   SIGN IN BUTTON
-   ========================================================= */
-
-.signin-btn {
-  min-height: 40px;
-
-  padding: 8px 17px;
-
-  border: 1px solid var(--gold);
-  border-radius: 8px;
-
-  background: var(--gold);
-  color: #050505;
-
-  font-size: 0.86rem;
-  font-weight: 800;
-
-  transition: var(--transition);
-}
-
-.signin-btn:hover {
-  background: var(--gold-light);
-
-  transform: translateY(-2px);
-
-  box-shadow:
-    0 8px 20px rgba(212, 175, 55, 0.16);
-}
-
-/* =========================================================
-   MOBILE MENU BUTTON
-   ========================================================= */
-
-.mobile-menu-btn {
-  display: none;
-
-  width: 44px;
-  height: 44px;
-
-  align-items: center;
-  justify-content: center;
-
-  border: 1px solid var(--border);
-  border-radius: 9px;
-
-  background: #111111;
-  color: var(--gold);
-
-  font-size: 1.35rem;
-
-  transition: var(--transition);
-}
-
-.mobile-menu-btn:hover {
-  border-color: var(--gold);
-  background: rgba(212, 175, 55, 0.08);
-}
-
-/* =========================================================
-   MOBILE NAV
-   ========================================================= */
-
-.mobile-nav {
-  display: none;
-
-  position: fixed;
-
-  top: 78px;
-  left: 0;
-  right: 0;
-
-  z-index: 9998;
-
-  padding: 12px 20px 18px;
-
-  background: rgba(7, 7, 7, 0.98);
-
-  border-bottom: 1px solid var(--border);
-
-  box-shadow:
-    0 18px 40px rgba(0, 0, 0, 0.45);
-
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-}
-
-.mobile-nav.active {
-  display: flex;
-
-  flex-direction: column;
-
-  gap: 4px;
-}
-
-.mobile-nav a {
-  display: block;
-
-  padding: 12px 14px;
-
-  border-radius: 8px;
-
-  color: #d5d5d5;
-
-  font-weight: 650;
-
-  transition: var(--transition);
-}
-
-.mobile-nav a:hover {
-  background: rgba(212, 175, 55, 0.08);
-  color: var(--gold);
-}
-
-.mobile-nav a[href="#admin"] {
-  color: var(--gold);
-}
-
-.mobile-nav button {
-  width: 100%;
-
-  margin-top: 7px;
-
-  padding: 11px 15px;
-
-  border: 1px solid var(--gold);
-  border-radius: 8px;
-
-  background: var(--gold);
-  color: #050505;
-
-  font-weight: 800;
-}
-
-.mobile-nav button:hover {
-  background: var(--gold-light);
-}
-
-/* =========================================================
-   HERO
-   ========================================================= */
-
-.hero-section {
-  position: relative;
-
-  min-height: 680px;
-
-  display: flex;
-  align-items: center;
-
-  overflow: hidden;
-
-  background:
-    radial-gradient(
-      circle at 80% 25%,
-      rgba(212, 175, 55, 0.14),
-      transparent 32%
-    ),
-    radial-gradient(
-      circle at 15% 75%,
-      rgba(212, 175, 55, 0.07),
-      transparent 30%
-    ),
-    linear-gradient(
-      135deg,
-      #050505 0%,
-      #0a0a0a 50%,
-      #070707 100%
-    );
-}
-
-.hero-section::before {
-  content: "";
-
-  position: absolute;
-  inset: 0;
-
-  background:
-    linear-gradient(
-      90deg,
-      rgba(5, 5, 5, 0.98) 0%,
-      rgba(5, 5, 5, 0.78) 48%,
-      rgba(5, 5, 5, 0.92) 100%
+    console.error(
+      "videos-container not found."
     );
 
-  pointer-events: none;
-}
+    return;
+  }
 
-.hero-section::after {
-  content: "";
 
-  position: absolute;
+  try {
 
-  width: 500px;
-  height: 500px;
+    container.innerHTML = `
+      <div class="loading-card">
 
-  right: -180px;
-  top: 50%;
+        <div class="loader"></div>
 
-  transform: translateY(-50%);
+        <p>
+          Loading videos...
+        </p>
 
-  border-radius: 50%;
+        <p dir="rtl">
+          ویڈیوز لوڈ ہو رہی ہیں...
+        </p>
 
-  border: 1px solid rgba(212, 175, 55, 0.08);
+      </div>
+    `;
 
-  box-shadow:
-    0 0 100px rgba(212, 175, 55, 0.04);
 
-  pointer-events: none;
-}
-
-.hero-overlay {
-  position: absolute;
-  inset: 0;
-
-  background:
-    linear-gradient(
-      180deg,
-      rgba(5, 5, 5, 0.15),
-      rgba(5, 5, 5, 0.4)
+    const videosQuery = query(
+      collection(db, "videos"),
+      orderBy("createdAt", "desc")
     );
 
-  pointer-events: none;
-}
 
-.hero-content {
-  position: relative;
+    const snapshot =
+      await getDocs(videosQuery);
 
-  z-index: 2;
 
-  width: min(var(--container), calc(100% - 40px));
+    container.innerHTML = "";
 
-  margin: 0 auto;
 
-  max-width: 800px;
+    if (snapshot.empty) {
 
-  padding: 100px 0;
-}
+      container.innerHTML = `
 
-.hero-badge {
-  display: inline-block;
+        <div class="empty-content">
 
-  margin-bottom: 18px;
+          <div class="empty-icon">
+            ▶
+          </div>
 
-  padding: 7px 13px;
+          <h3>
+            No Videos Yet
+          </h3>
 
-  border: 1px solid var(--border);
-  border-radius: 999px;
+          <p dir="rtl">
+            ابھی کوئی ویڈیو موجود نہیں۔
+          </p>
 
-  background: rgba(212, 175, 55, 0.06);
+        </div>
 
-  color: var(--gold);
+      `;
 
-  font-size: 0.82rem;
-  font-weight: 700;
+      return;
+    }
 
-  letter-spacing: 1px;
-}
 
-.hero-content h1 {
-  margin-bottom: 16px;
+    snapshot.forEach((docSnap) => {
 
-  color: var(--white);
+      const video =
+        docSnap.data();
 
-  font-size: clamp(3rem, 7vw, 6rem);
 
-  line-height: 1;
+      createVideoCard(
+        docSnap.id,
+        video,
+        container
+      );
 
-  font-weight: 900;
+    });
 
-  letter-spacing: -2px;
-}
 
-.hero-content > p:not(.hero-description) {
-  margin-bottom: 18px;
+  } catch (error) {
 
-  color: var(--gold);
-
-  font-size: clamp(1.15rem, 2vw, 1.55rem);
-
-  font-weight: 700;
-}
-
-.hero-description {
-  max-width: 700px;
-
-  margin-bottom: 32px;
-
-  color: #bdbdbd;
-
-  font-size: 1rem;
-  line-height: 1.8;
-}
-
-/* =========================================================
-   BUTTONS
-   ========================================================= */
-
-.btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-
-  min-height: 44px;
-
-  padding: 10px 20px;
-
-  border-radius: 9px;
-
-  border: 1px solid transparent;
-
-  font-weight: 750;
-
-  transition:
-    transform var(--transition),
-    background var(--transition),
-    color var(--transition),
-    border-color var(--transition),
-    box-shadow var(--transition);
-}
-
-.btn:hover {
-  transform: translateY(-2px);
-}
-
-.btn-primary {
-  background: var(--gold);
-  color: #050505;
-
-  border-color: var(--gold);
-}
-
-.btn-primary:hover {
-  background: var(--gold-light);
-
-  box-shadow:
-    0 10px 25px rgba(212, 175, 55, 0.15);
-}
-
-.btn-secondary {
-  background: transparent;
-
-  color: var(--gold);
-
-  border-color: var(--gold);
-}
-
-.btn-secondary:hover {
-  background: var(--gold);
-  color: #050505;
-}
-
-.hero-buttons {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-}
-
-.full-width {
-  width: 100%;
-}
-
-/* =========================================================
-   INTRO SECTION
-   ========================================================= */
-
-.intro-section {
-  padding: 75px 0;
-
-  background:
-    linear-gradient(
-      180deg,
-      #080808,
-      #0b0b0b
+    console.error(
+      "Videos loading error:",
+      error
     );
 
-  border-top: 1px solid rgba(255, 255, 255, 0.04);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+
+    container.innerHTML = `
+
+      <div class="error-card">
+
+        <h3>
+          Videos could not be loaded
+        </h3>
+
+        <p dir="rtl">
+          ویڈیوز لوڈ نہیں ہو سکیں۔
+        </p>
+
+        <small>
+          ${escapeHTML(
+            error.message || ""
+          )}
+        </small>
+
+      </div>
+
+    `;
+
+  }
+
 }
 
-.section-heading.centered {
-  max-width: 800px;
 
-  margin: 0 auto;
 
-  text-align: center;
-}
+// =====================================================
+// CREATE VIDEO CARD
+// =====================================================
 
-.section-heading.centered p {
-  max-width: 650px;
+function createVideoCard(
+  videoId,
+  video,
+  container
+) {
 
-  margin: 10px auto 0;
-}
+  const title =
+    video.title ||
+    "Untitled Video";
 
-/* =========================================================
-   CONTENT SECTIONS
-   ========================================================= */
 
-.content-section {
-  position: relative;
+  const author =
+    video.author ||
+    "Hazrat Allama Saim Chishti";
 
-  padding: 75px 0;
 
-  background: var(--black);
-}
+  const videoUrl =
+    video.url ||
+    video.fileUrl ||
+    "";
 
-.content-section:nth-of-type(even) {
-  background: var(--black-2);
-}
 
-.content-section::before {
-  content: "";
+  const thumbnail =
+    video.img ||
+    video.thumbnailUrl ||
+    "./logo.png";
 
-  position: absolute;
 
-  top: 0;
-  left: 50%;
+  const card =
+    document.createElement("article");
 
-  width: min(1000px, 80%);
-  height: 1px;
 
-  transform: translateX(-50%);
+  card.className =
+    "content-card video-card";
 
-  background:
-    linear-gradient(
-      90deg,
-      transparent,
-      rgba(212, 175, 55, 0.12),
-      transparent
-    );
-}
 
-/* =========================================================
-   SECTION HEADER
-   ========================================================= */
+  card.innerHTML = `
 
-.section-header {
-  display: flex;
+    <div class="card-image video-thumbnail">
 
-  align-items: flex-end;
-  justify-content: space-between;
+      <img
+        src="${escapeAttribute(thumbnail)}"
+        alt="${escapeHTML(title)}"
+        loading="lazy"
+      >
 
-  gap: 25px;
 
-  margin-bottom: 28px;
-}
+      <button
+        type="button"
+        class="video-play-btn"
+        data-video-url="${escapeAttribute(videoUrl)}"
+        aria-label="Play video"
+      >
+        ▶
+      </button>
 
-.section-heading {
-  max-width: 760px;
-}
 
-.section-kicker {
-  display: inline-block;
+      <span class="card-badge">
+        VIDEO
+      </span>
 
-  margin-bottom: 7px;
+    </div>
 
-  color: var(--gold);
 
-  font-size: 0.75rem;
-  font-weight: 800;
+    <div class="card-body">
 
-  letter-spacing: 2.5px;
+      <h3 class="card-title">
+        ${escapeHTML(title)}
+      </h3>
 
-  text-transform: uppercase;
-}
 
-.section-heading h2 {
-  color: var(--white);
+      <p class="card-author">
+        ${escapeHTML(author)}
+      </p>
 
-  font-size: clamp(1.8rem, 3vw, 2.65rem);
 
-  line-height: 1.15;
+      <div class="video-actions">
 
-  font-weight: 850;
-}
+        <button
+          type="button"
+          class="video-action like-video-btn"
+          data-video-id="${escapeAttribute(videoId)}"
+        >
+          <span>
+            ♡
+          </span>
 
-.section-heading p {
-  margin-top: 9px;
+          <small>
+            Like
+          </small>
+        </button>
 
-  color: var(--muted);
 
-  font-size: 0.95rem;
-}
+        <button
+          type="button"
+          class="video-action share-video-btn"
+          data-video-id="${escapeAttribute(videoId)}"
+          data-title="${escapeAttribute(title)}"
+          data-url="${escapeAttribute(videoUrl)}"
+        >
+          <span>
+            ↗
+          </span>
 
-.section-actions {
-  display: flex;
+          <small>
+            Share
+          </small>
+        </button>
 
-  align-items: center;
 
-  gap: 8px;
+        <button
+          type="button"
+          class="video-action comment-video-btn"
+          data-video-id="${escapeAttribute(videoId)}"
+        >
+          <span>
+            💬
+          </span>
 
-  flex-shrink: 0;
-}
+          <small>
+            Comment
+          </small>
+        </button>
 
-/* =========================================================
-   VIEW ALL
-   ========================================================= */
+      </div>
 
-.view-all-btn {
-  display: inline-flex;
 
-  align-items: center;
-  justify-content: center;
+      <button
+        type="button"
+        class="watch-video-btn"
+        data-video-url="${escapeAttribute(videoUrl)}"
+        data-title="${escapeAttribute(title)}"
+      >
 
-  min-height: 38px;
+        <span>
+          Watch Video
+        </span>
 
-  padding: 7px 14px;
+        <small dir="rtl">
+          ویڈیو دیکھیں
+        </small>
 
-  border: 1px solid var(--border);
-  border-radius: 8px;
+      </button>
 
-  background: rgba(212, 175, 55, 0.03);
+    </div>
 
-  color: var(--gold);
+  `;
 
-  font-size: 0.82rem;
-  font-weight: 750;
 
-  transition: var(--transition);
-}
+  container.appendChild(card);
 
-.view-all-btn:hover {
-  background: var(--gold);
 
-  border-color: var(--gold);
+  // Play button
 
-  color: #050505;
-
-  transform: translateY(-2px);
-}
-
-/* =========================================================
-   SCROLL BUTTONS
-   ========================================================= */
-
-.scroll-btn {
-  width: 39px;
-  height: 39px;
-
-  display: inline-flex;
-
-  align-items: center;
-  justify-content: center;
-
-  flex-shrink: 0;
-
-  border: 1px solid var(--border);
-  border-radius: 8px;
-
-  background: #111111;
-
-  color: var(--gold);
-
-  font-size: 1.4rem;
-  line-height: 1;
-
-  transition: var(--transition);
-}
-
-.scroll-btn:hover {
-  background: var(--gold);
-
-  border-color: var(--gold);
-
-  color: #050505;
-
-  transform: translateY(-2px);
-}
-
-/* =========================================================
-   CONTENT GRID / HORIZONTAL SCROLLER
-   ========================================================= */
-
-.content-grid {
-  display: flex;
-
-  gap: 18px;
-
-  width: 100%;
-}
-
-.horizontal-scroll {
-  overflow-x: auto;
-
-  scroll-behavior: smooth;
-
-  scroll-snap-type: x mandatory;
-
-  scrollbar-width: none;
-
-  padding: 5px 3px 18px;
-}
-
-.horizontal-scroll::-webkit-scrollbar {
-  display: none;
-}
-
-/*
-   DESKTOP
-   Exactly 5 cards visible.
-*/
-
-.content-card {
-  position: relative;
-
-  flex: 0 0 calc((100% - 72px) / 5);
-
-  min-width: 0;
-
-  scroll-snap-align: start;
-
-  overflow: hidden;
-
-  background:
-    linear-gradient(
-      145deg,
-      #171717,
-      #0c0c0c
+  const playButton =
+    card.querySelector(
+      ".video-play-btn"
     );
 
-  border: 1px solid var(--border);
 
-  border-radius: var(--radius);
+  if (playButton) {
 
-  box-shadow: var(--shadow);
+    playButton.addEventListener(
+      "click",
+      () => {
 
-  transition:
-    transform var(--transition),
-    border-color var(--transition),
-    box-shadow var(--transition);
-}
+        openVideoPlayer(
+          videoUrl,
+          title
+        );
 
-.content-card:hover {
-  transform: translateY(-6px);
-
-  border-color: rgba(212, 175, 55, 0.7);
-
-  box-shadow:
-    0 20px 50px rgba(0, 0, 0, 0.65),
-    0 0 25px rgba(212, 175, 55, 0.07);
-}
-
-/* =========================================================
-   CARD IMAGE
-   ========================================================= */
-
-.card-image {
-  position: relative;
-
-  width: 100%;
-
-  aspect-ratio: 4 / 5;
-
-  overflow: hidden;
-
-  background:
-    linear-gradient(
-      135deg,
-      #191919,
-      #0d0d0d
-    );
-}
-
-.card-image img {
-  width: 100%;
-  height: 100%;
-
-  object-fit: cover;
-
-  transition:
-    transform 0.55s ease,
-    filter 0.35s ease;
-}
-
-.content-card:hover .card-image img {
-  transform: scale(1.06);
-  filter: brightness(1.05);
-}
-
-.card-image::after {
-  content: "";
-
-  position: absolute;
-
-  inset: 0;
-
-  background:
-    linear-gradient(
-      to top,
-      rgba(0, 0, 0, 0.72),
-      transparent 48%
+      }
     );
 
-  pointer-events: none;
-}
+  }
 
-/* =========================================================
-   CARD BADGE
-   ========================================================= */
 
-.card-badge {
-  position: absolute;
+  // Watch button
 
-  top: 10px;
-  left: 10px;
-
-  z-index: 3;
-
-  padding: 5px 9px;
-
-  border: 1px solid rgba(212, 175, 55, 0.35);
-
-  border-radius: 6px;
-
-  background: rgba(0, 0, 0, 0.78);
-
-  color: var(--gold);
-
-  font-size: 0.68rem;
-  font-weight: 800;
-
-  text-transform: uppercase;
-
-  backdrop-filter: blur(6px);
-}
-
-/* =========================================================
-   PLAY BUTTON
-   ========================================================= */
-
-.play-button {
-  position: absolute;
-
-  top: 50%;
-  left: 50%;
-
-  z-index: 4;
-
-  width: 56px;
-  height: 56px;
-
-  display: inline-flex;
-
-  align-items: center;
-  justify-content: center;
-
-  transform: translate(-50%, -50%);
-
-  border: 2px solid var(--gold);
-
-  border-radius: 50%;
-
-  background: rgba(0, 0, 0, 0.78);
-
-  color: var(--gold);
-
-  font-size: 1.25rem;
-
-  transition: var(--transition);
-}
-
-.play-button:hover {
-  background: var(--gold);
-
-  color: #050505;
-
-  transform:
-    translate(-50%, -50%)
-    scale(1.08);
-
-  box-shadow:
-    0 0 25px rgba(212, 175, 55, 0.22);
-}
-
-/* =========================================================
-   CARD BODY
-   ========================================================= */
-
-.card-body {
-  padding: 15px;
-}
-
-.card-title {
-  display: -webkit-box;
-
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-
-  overflow: hidden;
-
-  min-height: 2.7em;
-
-  color: var(--white);
-
-  font-size: 0.98rem;
-
-  font-weight: 750;
-
-  line-height: 1.35;
-}
-
-.card-author {
-  margin-top: 5px;
-  margin-bottom: 8px;
-
-  overflow: hidden;
-
-  color: var(--gold);
-
-  font-size: 0.78rem;
-
-  white-space: nowrap;
-
-  text-overflow: ellipsis;
-}
-
-.card-description {
-  display: -webkit-box;
-
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-
-  overflow: hidden;
-
-  margin-bottom: 12px;
-
-  color: #999999;
-
-  font-size: 0.78rem;
-
-  line-height: 1.45;
-}
-
-/* =========================================================
-   CARD ACTIONS
-   ========================================================= */
-
-.card-actions {
-  display: flex;
-
-  align-items: center;
-
-  gap: 6px;
-
-  padding-top: 10px;
-
-  border-top: 1px solid rgba(255, 255, 255, 0.07);
-}
-
-.card-action {
-  flex: 1;
-
-  min-width: 0;
-
-  height: 34px;
-
-  display: inline-flex;
-
-  align-items: center;
-  justify-content: center;
-
-  gap: 4px;
-
-  overflow: hidden;
-
-  padding: 0 5px;
-
-  border: 1px solid rgba(255, 255, 255, 0.11);
-
-  border-radius: 7px;
-
-  background: #171717;
-
-  color: #c9c9c9;
-
-  font-size: 0.69rem;
-  font-weight: 650;
-
-  white-space: nowrap;
-
-  transition: var(--transition);
-}
-
-.card-action:hover {
-  background: rgba(212, 175, 55, 0.08);
-
-  border-color: var(--gold);
-
-  color: var(--gold);
-}
-
-.card-action.like-btn.liked {
-  background: rgba(212, 175, 55, 0.1);
-
-  border-color: var(--gold);
-
-  color: var(--gold);
-}
-
-/* =========================================================
-   LOADING CARD
-   ========================================================= */
-
-.loading-card {
-  width: 100%;
-
-  min-height: 230px;
-
-  display: flex;
-
-  flex-direction: column;
-
-  align-items: center;
-  justify-content: center;
-
-  gap: 14px;
-
-  border: 1px dashed var(--border);
-
-  border-radius: var(--radius);
-
-  background: #0c0c0c;
-
-  color: var(--muted);
-}
-
-.loading-card p {
-  font-size: 0.9rem;
-}
-
-.loader {
-  width: 38px;
-  height: 38px;
-
-  border: 3px solid rgba(212, 175, 55, 0.18);
-
-  border-top-color: var(--gold);
-
-  border-radius: 50%;
-
-  animation: spin 0.8s linear infinite;
-}
-
-/* =========================================================
-   EMPTY MESSAGE
-   ========================================================= */
-
-.empty-state {
-  width: 100%;
-
-  min-height: 220px;
-
-  display: flex;
-
-  flex-direction: column;
-
-  align-items: center;
-  justify-content: center;
-
-  padding: 30px;
-
-  text-align: center;
-
-  border: 1px dashed var(--border);
-
-  border-radius: var(--radius);
-
-  background:
-    linear-gradient(
-      145deg,
-      #101010,
-      #090909
-    );
-}
-
-.empty-state h3 {
-  margin-bottom: 7px;
-
-  color: var(--gold);
-}
-
-.empty-state p {
-  color: var(--muted);
-
-  font-size: 0.88rem;
-}
-
-/* =========================================================
-   CTA
-   ========================================================= */
-
-.cta-section {
-  padding: 80px 0;
-
-  background:
-    radial-gradient(
-      circle at center,
-      rgba(212, 175, 55, 0.08),
-      transparent 45%
-    ),
-    #080808;
-}
-
-.cta-box {
-  max-width: 900px;
-
-  margin: 0 auto;
-
-  padding: 55px 35px;
-
-  text-align: center;
-
-  border: 1px solid var(--border);
-
-  border-radius: 18px;
-
-  background:
-    linear-gradient(
-      145deg,
-      #131313,
-      #090909
+  const watchButton =
+    card.querySelector(
+      ".watch-video-btn"
     );
 
-  box-shadow:
-    0 25px 60px rgba(0, 0, 0, 0.45);
-}
 
-.cta-box h2 {
-  margin-bottom: 10px;
+  if (watchButton) {
 
-  color: var(--white);
+    watchButton.addEventListener(
+      "click",
+      () => {
 
-  font-size: clamp(2rem, 4vw, 3rem);
+        openVideoPlayer(
+          videoUrl,
+          title
+        );
 
-  line-height: 1.15;
-}
-
-.cta-box p {
-  max-width: 650px;
-
-  margin: 0 auto 24px;
-
-  color: var(--muted);
-}
-
-/* =========================================================
-   MODALS
-   ========================================================= */
-
-.modal {
-  position: fixed;
-
-  inset: 0;
-
-  z-index: 10000;
-
-  display: none;
-
-  align-items: center;
-  justify-content: center;
-
-  padding: 20px;
-
-  background: rgba(0, 0, 0, 0.84);
-
-  backdrop-filter: blur(9px);
-  -webkit-backdrop-filter: blur(9px);
-}
-
-.modal.show,
-.modal.active {
-  display: flex;
-}
-
-.modal-overlay {
-  position: absolute;
-
-  inset: 0;
-
-  cursor: pointer;
-}
-
-.modal-content {
-  position: relative;
-
-  z-index: 2;
-
-  width: min(500px, 100%);
-
-  max-height: 90vh;
-
-  overflow-y: auto;
-
-  padding: 30px;
-
-  border: 1px solid var(--border);
-
-  border-radius: 17px;
-
-  background:
-    linear-gradient(
-      145deg,
-      #151515,
-      #0b0b0b
+      }
     );
 
-  box-shadow:
-    0 30px 90px rgba(0, 0, 0, 0.8);
-
-  animation: modalIn 0.25s ease;
-}
-
-@keyframes modalIn {
-  from {
-    opacity: 0;
-    transform: translateY(12px) scale(0.98);
   }
 
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
 
-.modal-header {
-  margin-bottom: 22px;
-}
+  // Like
 
-.modal-header h2 {
-  color: var(--white);
-
-  font-size: 1.65rem;
-
-  line-height: 1.2;
-}
-
-.modal-header p {
-  margin-top: 7px;
-
-  color: var(--muted);
-
-  font-size: 0.88rem;
-}
-
-.modal-close {
-  position: absolute;
-
-  top: 12px;
-  right: 14px;
-
-  z-index: 5;
-
-  width: 36px;
-  height: 36px;
-
-  display: inline-flex;
-
-  align-items: center;
-  justify-content: center;
-
-  border: 1px solid rgba(255, 255, 255, 0.08);
-
-  border-radius: 50%;
-
-  background: #1a1a1a;
-
-  color: #aaa;
-
-  font-size: 1.25rem;
-
-  transition: var(--transition);
-}
-
-.modal-close:hover {
-  background: var(--gold);
-
-  color: #050505;
-
-  border-color: var(--gold);
-}
-
-/* =========================================================
-   FORMS
-   ========================================================= */
-
-.form-group {
-  margin-bottom: 17px;
-}
-
-.form-group label {
-  display: block;
-
-  margin-bottom: 7px;
-
-  color: #dddddd;
-
-  font-size: 0.87rem;
-
-  font-weight: 650;
-}
-
-.form-group input,
-.form-group textarea,
-.form-control {
-  width: 100%;
-
-  min-height: 45px;
-
-  padding: 10px 13px;
-
-  border: 1px solid rgba(212, 175, 55, 0.2);
-
-  border-radius: 8px;
-
-  outline: none;
-
-  background: #090909;
-
-  color: var(--white);
-
-  transition: var(--transition);
-}
-
-.form-group textarea,
-textarea.form-control {
-  min-height: 115px;
-
-  resize: vertical;
-}
-
-.form-group input::placeholder,
-.form-group textarea::placeholder,
-.form-control::placeholder {
-  color: #666666;
-}
-
-.form-group input:focus,
-.form-group textarea:focus,
-.form-control:focus {
-  border-color: var(--gold);
-
-  box-shadow:
-    0 0 0 3px rgba(212, 175, 55, 0.07);
-}
-
-.form-message {
-  min-height: 20px;
-
-  margin-top: 12px;
-
-  color: var(--muted);
-
-  font-size: 0.84rem;
-}
-
-/* =========================================================
-   COMMENTS
-   ========================================================= */
-
-.comments-list {
-  max-height: 320px;
-
-  overflow-y: auto;
-
-  margin-bottom: 22px;
-
-  padding-right: 4px;
-}
-
-.comment-item {
-  padding: 13px;
-
-  margin-bottom: 9px;
-
-  border: 1px solid rgba(255, 255, 255, 0.07);
-
-  border-radius: 9px;
-
-  background: #0d0d0d;
-}
-
-.comment-item strong {
-  color: var(--gold);
-}
-
-.comment-item p {
-  margin-top: 5px;
-
-  color: #c2c2c2;
-
-  font-size: 0.87rem;
-}
-
-.empty-message {
-  padding: 25px 10px;
-
-  text-align: center;
-
-  color: var(--muted);
-
-  font-size: 0.88rem;
-}
-
-/* =========================================================
-   MEDIA MODAL
-   ========================================================= */
-
-.media-modal-content {
-  width: min(1000px, 100%);
-
-  padding: 22px;
-}
-
-#media-modal-body {
-  width: 100%;
-}
-
-#media-modal-body video,
-#media-modal-body iframe {
-  width: 100%;
-
-  min-height: 500px;
-
-  display: block;
-
-  border: 0;
-
-  border-radius: 10px;
-
-  background: #000;
-}
-
-#media-modal-body audio {
-  width: 100%;
-
-  margin-top: 20px;
-}
-
-.media-player {
-  width: 100%;
-
-  padding: 14px;
-
-  border: 1px solid var(--border);
-
-  border-radius: 12px;
-
-  background: #090909;
-}
-
-.media-player video,
-.media-player audio {
-  width: 100%;
-}
-
-/* =========================================================
-   TOAST
-   ========================================================= */
-
-.toast {
-  position: fixed;
-
-  right: 20px;
-  bottom: 20px;
-
-  z-index: 11000;
-
-  display: none;
-
-  max-width: min(380px, calc(100% - 40px));
-
-  padding: 13px 17px;
-
-  border: 1px solid var(--border);
-
-  border-radius: 9px;
-
-  background: #111111;
-
-  color: #eeeeee;
-
-  box-shadow:
-    0 18px 40px rgba(0, 0, 0, 0.6);
-}
-
-.toast.show {
-  display: block;
-
-  animation: toastIn 0.3s ease;
-}
-
-#toast-message {
-  font-size: 0.86rem;
-}
-
-@keyframes toastIn {
-  from {
-    opacity: 0;
-    transform: translateY(12px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* =========================================================
-   FOOTER
-   ========================================================= */
-
-.site-footer {
-  padding: 60px 0 24px;
-
-  border-top: 1px solid var(--border);
-
-  background:
-    linear-gradient(
-      180deg,
-      #050505,
-      #020202
+  const likeButton =
+    card.querySelector(
+      ".like-video-btn"
     );
+
+
+  if (likeButton) {
+
+    likeButton.addEventListener(
+      "click",
+      () => {
+
+        handleVideoLike(
+          videoId,
+          likeButton
+        );
+
+      }
+    );
+
+  }
+
+
+  // Share
+
+  const shareButton =
+    card.querySelector(
+      ".share-video-btn"
+    );
+
+
+  if (shareButton) {
+
+    shareButton.addEventListener(
+      "click",
+      () => {
+
+        shareVideo(
+          title,
+          videoUrl
+        );
+
+      }
+    );
+
+  }
+
+
+  // Comment
+
+  const commentButton =
+    card.querySelector(
+      ".comment-video-btn"
+    );
+
+
+  if (commentButton) {
+
+    commentButton.addEventListener(
+      "click",
+      () => {
+
+        openVideoComments(
+          videoId
+        );
+
+      }
+    );
+
+  }
+
 }
 
-.footer-container {
-  display: grid;
 
-  grid-template-columns:
-    minmax(280px, 2fr)
-    minmax(150px, 1fr)
-    minmax(150px, 1fr);
 
-  gap: 45px;
+// =====================================================
+// VIDEO PLAYER
+// =====================================================
+
+function openVideoPlayer(
+  videoUrl,
+  title
+) {
+
+  if (!videoUrl) {
+
+    showToast(
+      "Video URL is not available."
+    );
+
+    return;
+
+  }
+
+
+  const modal =
+    document.getElementById(
+      "media-modal"
+    );
+
+
+  const body =
+    document.getElementById(
+      "media-modal-body"
+    );
+
+
+  if (!modal || !body) {
+
+    window.open(
+      videoUrl,
+      "_blank",
+      "noopener,noreferrer"
+    );
+
+    return;
+
+  }
+
+
+  body.innerHTML = `
+
+    <div class="video-player-wrapper">
+
+      <h2>
+        ${escapeHTML(title)}
+      </h2>
+
+      <video
+        controls
+        autoplay
+        playsinline
+        class="main-video-player"
+      >
+
+        <source
+          src="${escapeAttribute(videoUrl)}"
+        >
+
+        Your browser does not support video playback.
+
+      </video>
+
+    </div>
+
+  `;
+
+
+  modal.classList.add(
+    "active"
+  );
+
+
+  modal.setAttribute(
+    "aria-hidden",
+    "false"
+  );
+
 }
 
-.footer-brand p {
-  max-width: 350px;
 
-  margin-top: 13px;
 
-  color: #858585;
+// =====================================================
+// LIKE
+// =====================================================
 
-  font-size: 0.88rem;
+function handleVideoLike(
+  videoId,
+  button
+) {
+
+  const likedKey =
+    `bazam_video_liked_${videoId}`;
+
+
+  const alreadyLiked =
+    localStorage.getItem(
+      likedKey
+    );
+
+
+  if (alreadyLiked) {
+
+    showToast(
+      "You already liked this video."
+    );
+
+    return;
+
+  }
+
+
+  localStorage.setItem(
+    likedKey,
+    "true"
+  );
+
+
+  button.classList.add(
+    "liked"
+  );
+
+
+  const icon =
+    button.querySelector("span");
+
+
+  if (icon) {
+
+    icon.textContent =
+      "♥";
+
+  }
+
+
+  showToast(
+    "Video liked ❤️"
+  );
+
 }
 
-.footer-logo {
-  display: inline-flex;
 
-  align-items: center;
 
-  gap: 10px;
+// =====================================================
+// SHARE
+// =====================================================
 
-  color: var(--white);
+async function shareVideo(
+  title,
+  url
+) {
 
-  font-size: 1.15rem;
+  if (!url) {
 
-  font-weight: 800;
+    showToast(
+      "Video link is not available."
+    );
+
+    return;
+
+  }
+
+
+  try {
+
+    if (
+      navigator.share
+    ) {
+
+      await navigator.share({
+
+        title:
+          title ||
+          "Bazam-E-Saim",
+
+        text:
+          `${title || "Video"} - Bazam-E-Saim`,
+
+        url:
+          url
+
+      });
+
+      return;
+
+    }
+
+
+    await navigator.clipboard.writeText(
+      url
+    );
+
+
+    showToast(
+      "Video link copied!"
+    );
+
+
+  } catch (error) {
+
+    console.log(
+      "Share cancelled."
+    );
+
+  }
+
 }
 
-.footer-logo img {
-  width: 42px;
-  height: 42px;
 
-  object-fit: contain;
 
-  border-radius: 50%;
+// =====================================================
+// COMMENTS
+// =====================================================
 
-  border: 1px solid rgba(212, 175, 55, 0.35);
+function openVideoComments(
+  videoId
+) {
+
+  const modal =
+    document.getElementById(
+      "comment-modal"
+    );
+
+
+  const contentId =
+    document.getElementById(
+      "comment-content-id"
+    );
+
+
+  const contentType =
+    document.getElementById(
+      "comment-content-type"
+    );
+
+
+  if (!modal) {
+
+    showToast(
+      "Comments system is not available."
+    );
+
+    return;
+
+  }
+
+
+  if (contentId) {
+
+    contentId.value =
+      videoId;
+
+  }
+
+
+  if (contentType) {
+
+    contentType.value =
+      "videos";
+
+  }
+
+
+  modal.classList.add(
+    "active"
+  );
+
+
+  modal.setAttribute(
+    "aria-hidden",
+    "false"
+  );
+
 }
 
-.footer-logo:hover {
-  color: var(--gold);
+
+
+// =====================================================
+// CLOSE MODALS
+// =====================================================
+
+document
+  .querySelectorAll(
+    "[data-close-modal]"
+  )
+  .forEach(button => {
+
+    button.addEventListener(
+      "click",
+      () => {
+
+        const modalId =
+          button.dataset.closeModal;
+
+
+        const modal =
+          document.getElementById(
+            modalId
+          );
+
+
+        if (!modal) {
+          return;
+        }
+
+
+        modal.classList.remove(
+          "active"
+        );
+
+
+        modal.setAttribute(
+          "aria-hidden",
+          "true"
+        );
+
+
+        const body =
+          document.getElementById(
+            "media-modal-body"
+          );
+
+
+        if (
+          modalId ===
+          "media-modal" &&
+          body
+        ) {
+
+          body.innerHTML =
+            "";
+
+        }
+
+      }
+    );
+
+  });
+
+
+
+// =====================================================
+// LOAD VIDEOS
+// =====================================================
+
+loadVideos();
+
+
+
+// =====================================================
+// ESCAPE HTML
+// =====================================================
+
+function escapeHTML(
+  value
+) {
+
+  return String(value)
+
+    .replaceAll(
+      "&",
+      "&amp;"
+    )
+
+    .replaceAll(
+      "<",
+      "&lt;"
+    )
+
+    .replaceAll(
+      ">",
+      "&gt;"
+    )
+
+    .replaceAll(
+      '"',
+      "&quot;"
+    )
+
+    .replaceAll(
+      "'",
+      "&#039;"
+    );
+
 }
 
-.footer-links {
-  display: flex;
 
-  flex-direction: column;
+function escapeAttribute(
+  value
+) {
 
-  align-items: flex-start;
+  return String(value)
 
-  gap: 8px;
+    .replaceAll(
+      "&",
+      "&amp;"
+    )
+
+    .replaceAll(
+      '"',
+      "&quot;"
+    )
+
+    .replaceAll(
+      "<",
+      "&lt;"
+    )
+
+    .replaceAll(
+      ">",
+      "&gt;"
+    );
+
 }
 
-.footer-links h3 {
-  margin-bottom: 7px;
 
-  color: var(--gold);
 
-  font-size: 0.95rem;
+// =====================================================
+// TOAST
+// =====================================================
+
+function showToast(
+  message
+) {
+
+  const toast =
+    document.getElementById(
+      "toast"
+    );
+
+
+  const messageBox =
+    document.getElementById(
+      "toast-message"
+    );
+
+
+  if (
+    !toast ||
+    !messageBox
+  ) {
+
+    alert(message);
+
+    return;
+
+  }
+
+
+  messageBox.textContent =
+    message;
+
+
+  toast.classList.add(
+    "show"
+  );
+
+
+  setTimeout(
+    () => {
+
+      toast.classList.remove(
+        "show"
+      );
+
+    },
+    2500
+  );
+
+}// =====================================================
+// BAZAM-E-SAIM
+// LOAD VIDEOS FROM FIRESTORE
+// =====================================================
+
+async function loadVideos() {
+
+  const container =
+    document.getElementById("videos-container");
+
+
+  if (!container) {
+
+    console.error(
+      "videos-container not found."
+    );
+
+    return;
+  }
+
+
+  try {
+
+    container.innerHTML = `
+      <div class="loading-card">
+
+        <div class="loader"></div>
+
+        <p>
+          Loading videos...
+        </p>
+
+        <p dir="rtl">
+          ویڈیوز لوڈ ہو رہی ہیں...
+        </p>
+
+      </div>
+    `;
+
+
+    const videosQuery = query(
+      collection(db, "videos"),
+      orderBy("createdAt", "desc")
+    );
+
+
+    const snapshot =
+      await getDocs(videosQuery);
+
+
+    container.innerHTML = "";
+
+
+    if (snapshot.empty) {
+
+      container.innerHTML = `
+
+        <div class="empty-content">
+
+          <div class="empty-icon">
+            ▶
+          </div>
+
+          <h3>
+            No Videos Yet
+          </h3>
+
+          <p dir="rtl">
+            ابھی کوئی ویڈیو موجود نہیں۔
+          </p>
+
+        </div>
+
+      `;
+
+      return;
+    }
+
+
+    snapshot.forEach((docSnap) => {
+
+      const video =
+        docSnap.data();
+
+
+      createVideoCard(
+        docSnap.id,
+        video,
+        container
+      );
+
+    });
+
+
+  } catch (error) {
+
+    console.error(
+      "Videos loading error:",
+      error
+    );
+
+
+    container.innerHTML = `
+
+      <div class="error-card">
+
+        <h3>
+          Videos could not be loaded
+        </h3>
+
+        <p dir="rtl">
+          ویڈیوز لوڈ نہیں ہو سکیں۔
+        </p>
+
+        <small>
+          ${escapeHTML(
+            error.message || ""
+          )}
+        </small>
+
+      </div>
+
+    `;
+
+  }
+
 }
 
-.footer-links a {
-  color: #8e8e8e;
 
-  font-size: 0.86rem;
 
-  transition: var(--transition);
+// =====================================================
+// CREATE VIDEO CARD
+// =====================================================
+
+function createVideoCard(
+  videoId,
+  video,
+  container
+) {
+
+  const title =
+    video.title ||
+    "Untitled Video";
+
+
+  const author =
+    video.author ||
+    "Hazrat Allama Saim Chishti";
+
+
+  const videoUrl =
+    video.url ||
+    video.fileUrl ||
+    "";
+
+
+  const thumbnail =
+    video.img ||
+    video.thumbnailUrl ||
+    "./logo.png";
+
+
+  const card =
+    document.createElement("article");
+
+
+  card.className =
+    "content-card video-card";
+
+
+  card.innerHTML = `
+
+    <div class="card-image video-thumbnail">
+
+      <img
+        src="${escapeAttribute(thumbnail)}"
+        alt="${escapeHTML(title)}"
+        loading="lazy"
+      >
+
+
+      <button
+        type="button"
+        class="video-play-btn"
+        data-video-url="${escapeAttribute(videoUrl)}"
+        aria-label="Play video"
+      >
+        ▶
+      </button>
+
+
+      <span class="card-badge">
+        VIDEO
+      </span>
+
+    </div>
+
+
+    <div class="card-body">
+
+      <h3 class="card-title">
+        ${escapeHTML(title)}
+      </h3>
+
+
+      <p class="card-author">
+        ${escapeHTML(author)}
+      </p>
+
+
+      <div class="video-actions">
+
+        <button
+          type="button"
+          class="video-action like-video-btn"
+          data-video-id="${escapeAttribute(videoId)}"
+        >
+          <span>
+            ♡
+          </span>
+
+          <small>
+            Like
+          </small>
+        </button>
+
+
+        <button
+          type="button"
+          class="video-action share-video-btn"
+          data-video-id="${escapeAttribute(videoId)}"
+          data-title="${escapeAttribute(title)}"
+          data-url="${escapeAttribute(videoUrl)}"
+        >
+          <span>
+            ↗
+          </span>
+
+          <small>
+            Share
+          </small>
+        </button>
+
+
+        <button
+          type="button"
+          class="video-action comment-video-btn"
+          data-video-id="${escapeAttribute(videoId)}"
+        >
+          <span>
+            💬
+          </span>
+
+          <small>
+            Comment
+          </small>
+        </button>
+
+      </div>
+
+
+      <button
+        type="button"
+        class="watch-video-btn"
+        data-video-url="${escapeAttribute(videoUrl)}"
+        data-title="${escapeAttribute(title)}"
+      >
+
+        <span>
+          Watch Video
+        </span>
+
+        <small dir="rtl">
+          ویڈیو دیکھیں
+        </small>
+
+      </button>
+
+    </div>
+
+  `;
+
+
+  container.appendChild(card);
+
+
+  // Play button
+
+  const playButton =
+    card.querySelector(
+      ".video-play-btn"
+    );
+
+
+  if (playButton) {
+
+    playButton.addEventListener(
+      "click",
+      () => {
+
+        openVideoPlayer(
+          videoUrl,
+          title
+        );
+
+      }
+    );
+
+  }
+
+
+  // Watch button
+
+  const watchButton =
+    card.querySelector(
+      ".watch-video-btn"
+    );
+
+
+  if (watchButton) {
+
+    watchButton.addEventListener(
+      "click",
+      () => {
+
+        openVideoPlayer(
+          videoUrl,
+          title
+        );
+
+      }
+    );
+
+  }
+
+
+  // Like
+
+  const likeButton =
+    card.querySelector(
+      ".like-video-btn"
+    );
+
+
+  if (likeButton) {
+
+    likeButton.addEventListener(
+      "click",
+      () => {
+
+        handleVideoLike(
+          videoId,
+          likeButton
+        );
+
+      }
+    );
+
+  }
+
+
+  // Share
+
+  const shareButton =
+    card.querySelector(
+      ".share-video-btn"
+    );
+
+
+  if (shareButton) {
+
+    shareButton.addEventListener(
+      "click",
+      () => {
+
+        shareVideo(
+          title,
+          videoUrl
+        );
+
+      }
+    );
+
+  }
+
+
+  // Comment
+
+  const commentButton =
+    card.querySelector(
+      ".comment-video-btn"
+    );
+
+
+  if (commentButton) {
+
+    commentButton.addEventListener(
+      "click",
+      () => {
+
+        openVideoComments(
+          videoId
+        );
+
+      }
+    );
+
+  }
+
 }
 
-.footer-links a:hover {
-  color: var(--gold);
 
-  transform: translateX(3px);
+
+// =====================================================
+// VIDEO PLAYER
+// =====================================================
+
+function openVideoPlayer(
+  videoUrl,
+  title
+) {
+
+  if (!videoUrl) {
+
+    showToast(
+      "Video URL is not available."
+    );
+
+    return;
+
+  }
+
+
+  const modal =
+    document.getElementById(
+      "media-modal"
+    );
+
+
+  const body =
+    document.getElementById(
+      "media-modal-body"
+    );
+
+
+  if (!modal || !body) {
+
+    window.open(
+      videoUrl,
+      "_blank",
+      "noopener,noreferrer"
+    );
+
+    return;
+
+  }
+
+
+  body.innerHTML = `
+
+    <div class="video-player-wrapper">
+
+      <h2>
+        ${escapeHTML(title)}
+      </h2>
+
+      <video
+        controls
+        autoplay
+        playsinline
+        class="main-video-player"
+      >
+
+        <source
+          src="${escapeAttribute(videoUrl)}"
+        >
+
+        Your browser does not support video playback.
+
+      </video>
+
+    </div>
+
+  `;
+
+
+  modal.classList.add(
+    "active"
+  );
+
+
+  modal.setAttribute(
+    "aria-hidden",
+    "false"
+  );
+
 }
 
-.footer-bottom {
-  width: min(var(--container), calc(100% - 40px));
 
-  margin: 45px auto 0;
 
-  padding-top: 20px;
+// =====================================================
+// LIKE
+// =====================================================
 
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
+function handleVideoLike(
+  videoId,
+  button
+) {
 
-  text-align: center;
+  const likedKey =
+    `bazam_video_liked_${videoId}`;
 
-  color: #5f5f5f;
 
-  font-size: 0.78rem;
+  const alreadyLiked =
+    localStorage.getItem(
+      likedKey
+    );
+
+
+  if (alreadyLiked) {
+
+    showToast(
+      "You already liked this video."
+    );
+
+    return;
+
+  }
+
+
+  localStorage.setItem(
+    likedKey,
+    "true"
+  );
+
+
+  button.classList.add(
+    "liked"
+  );
+
+
+  const icon =
+    button.querySelector("span");
+
+
+  if (icon) {
+
+    icon.textContent =
+      "♥";
+
+  }
+
+
+  showToast(
+    "Video liked ❤️"
+  );
+
 }
 
-/* =========================================================
-   SEARCH / FILTER SUPPORT
-   ========================================================= */
 
-.search-box {
-  position: relative;
 
-  width: 100%;
+// =====================================================
+// SHARE
+// =====================================================
 
-  max-width: 500px;
+async function shareVideo(
+  title,
+  url
+) {
+
+  if (!url) {
+
+    showToast(
+      "Video link is not available."
+    );
+
+    return;
+
+  }
+
+
+  try {
+
+    if (
+      navigator.share
+    ) {
+
+      await navigator.share({
+
+        title:
+          title ||
+          "Bazam-E-Saim",
+
+        text:
+          `${title || "Video"} - Bazam-E-Saim`,
+
+        url:
+          url
+
+      });
+
+      return;
+
+    }
+
+
+    await navigator.clipboard.writeText(
+      url
+    );
+
+
+    showToast(
+      "Video link copied!"
+    );
+
+
+  } catch (error) {
+
+    console.log(
+      "Share cancelled."
+    );
+
+  }
+
 }
 
-.search-box input {
-  width: 100%;
 
-  height: 46px;
 
-  padding: 0 15px;
+// =====================================================
+// COMMENTS
+// =====================================================
 
-  border: 1px solid var(--border);
+function openVideoComments(
+  videoId
+) {
 
-  border-radius: 9px;
+  const modal =
+    document.getElementById(
+      "comment-modal"
+    );
 
-  outline: none;
 
-  background: #101010;
+  const contentId =
+    document.getElementById(
+      "comment-content-id"
+    );
 
-  color: var(--white);
+
+  const contentType =
+    document.getElementById(
+      "comment-content-type"
+    );
+
+
+  if (!modal) {
+
+    showToast(
+      "Comments system is not available."
+    );
+
+    return;
+
+  }
+
+
+  if (contentId) {
+
+    contentId.value =
+      videoId;
+
+  }
+
+
+  if (contentType) {
+
+    contentType.value =
+      "videos";
+
+  }
+
+
+  modal.classList.add(
+    "active"
+  );
+
+
+  modal.setAttribute(
+    "aria-hidden",
+    "false"
+  );
+
 }
 
-.search-box input:focus {
-  border-color: var(--gold);
 
-  box-shadow:
-    0 0 0 3px rgba(212, 175, 55, 0.07);
+
+// =====================================================
+// CLOSE MODALS
+// =====================================================
+
+document
+  .querySelectorAll(
+    "[data-close-modal]"
+  )
+  .forEach(button => {
+
+    button.addEventListener(
+      "click",
+      () => {
+
+        const modalId =
+          button.dataset.closeModal;
+
+
+        const modal =
+          document.getElementById(
+            modalId
+          );
+
+
+        if (!modal) {
+          return;
+        }
+
+
+        modal.classList.remove(
+          "active"
+        );
+
+
+        modal.setAttribute(
+          "aria-hidden",
+          "true"
+        );
+
+
+        const body =
+          document.getElementById(
+            "media-modal-body"
+          );
+
+
+        if (
+          modalId ===
+          "media-modal" &&
+          body
+        ) {
+
+          body.innerHTML =
+            "";
+
+        }
+
+      }
+    );
+
+  });
+
+
+
+// =====================================================
+// LOAD VIDEOS
+// =====================================================
+
+loadVideos();
+
+
+
+// =====================================================
+// ESCAPE HTML
+// =====================================================
+
+function escapeHTML(
+  value
+) {
+
+  return String(value)
+
+    .replaceAll(
+      "&",
+      "&amp;"
+    )
+
+    .replaceAll(
+      "<",
+      "&lt;"
+    )
+
+    .replaceAll(
+      ">",
+      "&gt;"
+    )
+
+    .replaceAll(
+      '"',
+      "&quot;"
+    )
+
+    .replaceAll(
+      "'",
+      "&#039;"
+    );
+
 }
 
-.filters {
-  display: flex;
 
-  flex-wrap: wrap;
+function escapeAttribute(
+  value
+) {
 
-  gap: 9px;
+  return String(value)
 
-  margin-bottom: 22px;
+    .replaceAll(
+      "&",
+      "&amp;"
+    )
+
+    .replaceAll(
+      '"',
+      "&quot;"
+    )
+
+    .replaceAll(
+      "<",
+      "&lt;"
+    )
+
+    .replaceAll(
+      ">",
+      "&gt;"
+    );
+
 }
 
-.filter-btn {
-  padding: 8px 14px;
 
-  border: 1px solid var(--border);
 
-  border-radius: 8px;
+// =====================================================
+// TOAST
+// =====================================================
 
-  background: #101010;
+function showToast(
+  message
+) {
 
-  color: #aaa;
+  const toast =
+    document.getElementById(
+      "toast"
+    );
 
-  font-size: 0.84rem;
 
-  transition: var(--transition);
-}
+  const messageBox =
+    document.getElementById(
+      "toast-message"
+    );
 
-.filter-btn:hover,
-.filter-btn.active {
-  background: var(--gold);
 
-  border-color: var(--gold);
+  if (
+    !toast ||
+    !messageBox
+  ) {
 
-  color: #050505;
-}
+    alert(message);
 
-/* =========================================================
-   ADMIN DASHBOARD SUPPORT
-   ========================================================= */
+    return;
 
-.dashboard {
-  min-height: 100vh;
-
-  background: #070707;
-}
-
-.admin-sidebar {
-  background: #0b0b0b;
-
-  border-right: 1px solid var(--border);
-}
-
-.admin-sidebar a {
-  color: #aaa;
-
-  transition: var(--transition);
-}
-
-.admin-sidebar a:hover,
-.admin-sidebar a.active {
-  background: rgba(212, 175, 55, 0.08);
-
-  color: var(--gold);
-}
-
-.admin-card {
-  background: #101010;
-
-  border: 1px solid var(--border);
-
-  border-radius: 12px;
-
-  box-shadow: var(--shadow);
-}
-
-.stat-card {
-  padding: 22px;
-}
-
-.stat-card h4 {
-  margin-bottom: 5px;
-
-  color: #999;
-
-  font-size: 0.85rem;
-}
-
-.stat-card .stat-number {
-  color: var(--gold);
-
-  font-size: 2rem;
-
-  font-weight: 850;
-}
-
-/* =========================================================
-   ADMIN TABLE
-   ========================================================= */
-
-.table-wrapper {
-  width: 100%;
-
-  overflow-x: auto;
-
-  border: 1px solid var(--border);
-
-  border-radius: 12px;
-}
-
-table {
-  width: 100%;
-
-  min-width: 650px;
-
-  border-collapse: collapse;
-
-  background: #0d0d0d;
-}
-
-thead {
-  background: #151515;
-}
-
-th,
-td {
-  padding: 13px 15px;
-
-  text-align: left;
-
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-}
-
-th {
-  color: var(--gold);
-
-  font-size: 0.82rem;
-}
-
-td {
-  color: #bbb;
-
-  font-size: 0.84rem;
-}
-
-tbody tr:hover {
-  background: rgba(212, 175, 55, 0.035);
-}
-
-.btn-delete {
-  padding: 6px 11px;
-
-  border: 1px solid rgba(220, 70, 70, 0.4);
-
-  border-radius: 7px;
-
-  background: transparent;
-
-  color: #e88;
-
-  transition: var(--transition);
-}
-
-.btn-delete:hover {
-  background: #a52d2d;
-
-  border-color: #a52d2d;
-
-  color: #fff;
-}
-
-/* =========================================================
-   ANIMATIONS
-   ========================================================= */
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-/* =========================================================
-   ACCESSIBILITY
-   ========================================================= */
-
-button:focus-visible,
-a:focus-visible,
-input:focus-visible,
-textarea:focus-visible,
-select:focus-visible {
-  outline: 2px solid var(--gold);
-
-  outline-offset: 3px;
-}
-
-/* =========================================================
-   TABLET
-   ========================================================= */
-
-@media (max-width: 1150px) {
-
-  .nav-links {
-    gap: 17px;
   }
 
-  /*
-    3 cards visible
-  */
 
-  .content-card {
-    flex-basis: calc((100% - 36px) / 3);
-  }
+  messageBox.textContent =
+    message;
 
-  .footer-container {
-    grid-template-columns:
-      2fr 1fr 1fr;
-  }
-}
 
-/* =========================================================
-   MOBILE
-   ========================================================= */
+  toast.classList.add(
+    "show"
+  );
 
-@media (max-width: 800px) {
 
-  .section-container,
-  .nav-container,
-  .footer-container,
-  .footer-bottom {
-    width: min(100% - 28px, var(--container));
-  }
+  setTimeout(
+    () => {
 
-  /* Navbar */
+      toast.classList.remove(
+        "show"
+      );
 
-  .nav-container {
-    min-height: 68px;
-  }
+    },
+    2500
+  );
 
-  .nav-links {
-    display: none;
-  }
-
-  .mobile-menu-btn {
-    display: inline-flex;
-  }
-
-  .mobile-nav {
-    top: 68px;
-  }
-
-  /* Logo */
-
-  .logo-image {
-    width: 42px;
-    height: 42px;
-  }
-
-  .logo {
-    font-size: 1.08rem;
-  }
-
-  /* Hero */
-
-  .hero-section {
-    min-height: 590px;
-  }
-
-  .hero-content {
-    width: min(100% - 28px, var(--container));
-
-    padding: 75px 0;
-  }
-
-  .hero-content h1 {
-    font-size: clamp(2.5rem, 12vw, 4.4rem);
-
-    letter-spacing: -1.5px;
-  }
-
-  .hero-description {
-    font-size: 0.92rem;
-  }
-
-  /* Sections */
-
-  .content-section {
-    padding: 55px 0;
-  }
-
-  .intro-section {
-    padding: 55px 0;
-  }
-
-  .section-header {
-    align-items: flex-start;
-  }
-
-  /*
-    2 cards visible
-  */
-
-  .content-card {
-    flex-basis: calc((100% - 14px) / 2);
-  }
-
-  .card-body {
-    padding: 12px;
-  }
-
-  .card-title {
-    font-size: 0.88rem;
-  }
-
-  .card-author {
-    font-size: 0.74rem;
-  }
-
-  .card-action {
-    font-size: 0.64rem;
-
-    padding: 0 3px;
-  }
-
-  /* CTA */
-
-  .cta-section {
-    padding: 60px 0;
-  }
-
-  .cta-box {
-    padding: 42px 20px;
-  }
-
-  /* Footer */
-
-  .footer-container {
-    grid-template-columns: 1fr 1fr;
-
-    gap: 30px;
-  }
-}
-
-/* =========================================================
-   SMALL MOBILE
-   ========================================================= */
-
-@media (max-width: 500px) {
-
-  .section-container,
-  .nav-container,
-  .footer-container,
-  .footer-bottom {
-    width: calc(100% - 22px);
-  }
-
-  .logo-text {
-    display: none;
-  }
-
-  .logo-image {
-    width: 42px;
-    height: 42px;
-  }
-
-  .mobile-menu-btn {
-    width: 42px;
-    height: 42px;
-  }
-
-  .hero-section {
-    min-height: 540px;
-  }
-
-  .hero-content {
-    padding: 65px 0;
-  }
-
-  .hero-badge {
-    font-size: 0.7rem;
-  }
-
-  .hero-content h1 {
-    font-size: clamp(2.3rem, 14vw, 3.6rem);
-  }
-
-  .hero-buttons {
-    flex-direction: column;
-
-    align-items: stretch;
-  }
-
-  .hero-buttons .btn {
-    width: 100%;
-
-    text-align: center;
-  }
-
-  .section-header {
-    flex-direction: column;
-
-    align-items: flex-start;
-  }
-
-  .section-actions {
-    width: 100%;
-
-    justify-content: flex-start;
-
-    flex-wrap: wrap;
-  }
-
-  .view-all-btn {
-    margin-left: auto;
-  }
-
-  /*
-    Small phone:
-    approximately 1.35 cards visible
-  */
-
-  .content-card {
-    flex: 0 0 73%;
-  }
-
-  .card-image {
-    aspect-ratio: 4 / 5;
-  }
-
-  .card-action {
-    font-size: 0.62rem;
-  }
-
-  .footer-container {
-    grid-template-columns: 1fr;
-  }
-
-  .modal {
-    padding: 12px;
-  }
-
-  .modal-content {
-    padding: 25px 16px;
-  }
-
-  .media-modal-content {
-    padding: 15px;
-  }
-
-  #media-modal-body video,
-  #media-modal-body iframe {
-    min-height: 250px;
-  }
-
-  .toast {
-    right: 11px;
-    bottom: 11px;
-
-    max-width: calc(100% - 22px);
-  }
-}
-
-/* =========================================================
-   REDUCED MOTION
-   ========================================================= */
-
-@media (prefers-reduced-motion: reduce) {
-
-  html {
-    scroll-behavior: auto;
-  }
-
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
-  }
 }
