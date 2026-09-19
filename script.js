@@ -1,12 +1,11 @@
 // =====================================================
 // BAZAM-E-SAIM
-// MAIN SCRIPT
+// Firebase + Books + Videos + Shorts + Audio
 // =====================================================
 
+// Firebase CDN
 import {
-  initializeApp,
-  getApps,
-  getApp
+  initializeApp
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 
 import {
@@ -19,291 +18,324 @@ import {
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
+import {
+  getStorage,
+  ref,
+  uploadBytes,
+  getDownloadURL
+} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
+
+import {
+  getAuth,
+  signInWithEmailAndPassword,
+  signOut,
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
 
 // =====================================================
 // FIREBASE CONFIG
 // =====================================================
 
 const firebaseConfig = {
-
-  apiKey: "YOUR_API_KEY",
-
-  authDomain:
-    "bazamesaim.firebaseapp.com",
-
-  projectId:
-    "bazamesaim",
-
-  storageBucket:
-    "bazamesaim.firebasestorage.app",
-
-  messagingSenderId:
-    "YOUR_MESSAGING_SENDER_ID",
-
-  appId:
-    "YOUR_APP_ID"
-
+  apiKey: "AIzaSyBFzwp8jL3J1oUxAeDDq23T2CmydtgTa1k",
+  authDomain: "bazamesaiminternational.firebaseapp.com",
+  projectId: "bazamesaiminternational",
+  storageBucket: "bazamesaiminternational.firebasestorage.app",
+  messagingSenderId: "879282438130",
+  appId: "1:879282438130:web:a285d48f427e6659e3f56b",
+  measurementId: "G-S79YY7WPWX"
 };
 
 
 // =====================================================
-// FIREBASE INITIALIZE
+// INITIALIZE FIREBASE
 // =====================================================
 
-const app =
-  getApps().length
-    ? getApp()
-    : initializeApp(firebaseConfig);
+const app = initializeApp(firebaseConfig);
 
+const db = getFirestore(app);
 
-const db =
-  getFirestore(app);
+const storage = getStorage(app);
 
+const auth = getAuth(app);
 
 
 // =====================================================
-// DOM READY
+// ADMIN EMAIL
 // =====================================================
+//
+// IMPORTANT:
+// Yahan woh email likho jo tumne Firebase Authentication
+// mein Admin ke liye create kiya hai.
+//
+// Example:
+// const ADMIN_EMAIL = "admin@gmail.com";
+//
+// Apna actual admin email yahan likhna.
+// Password yahan nahi likhna.
+//
 
-document.addEventListener(
-  "DOMContentLoaded",
-  () => {
-
-    initializeNavigation();
-
-    initializeScrollButtons();
-
-    initializeSignIn();
-
-    initializeModals();
-
-    initializeComments();
-
-    initializeYear();
-
-    loadBooks();
-
-    loadVideos();
-
-  }
-);
-
+const ADMIN_EMAIL = "YOUR_ADMIN_EMAIL_HERE";
 
 
 // =====================================================
-// NAVIGATION
+// DOM
 // =====================================================
 
-function initializeNavigation() {
+const booksGrid = document.getElementById("booksGrid");
+const videosGrid = document.getElementById("videosGrid");
+const shortsGrid = document.getElementById("shortsGrid");
+const audiosGrid = document.getElementById("audiosGrid");
 
-  const mobileButton =
-    document.getElementById(
-      "mobile-menu-btn"
-    );
+const year = document.getElementById("year");
 
+const menuBtn = document.getElementById("menuBtn");
+const mainNav = document.getElementById("mainNav");
 
-  const mobileNav =
-    document.getElementById(
-      "mobile-nav"
-    );
+const signInBtn = document.getElementById("signInBtn");
 
+const authModal = document.getElementById("authModal");
+const closeAuth = document.getElementById("closeAuth");
 
-  if (
-    mobileButton &&
-    mobileNav
-  ) {
+const loginForm = document.getElementById("loginForm");
+const loginEmail = document.getElementById("loginEmail");
+const loginPassword = document.getElementById("loginPassword");
+const authMessage = document.getElementById("authMessage");
 
-    mobileButton.addEventListener(
-      "click",
-      () => {
+const adminPanel = document.getElementById("adminPanel");
+const adminLoginMessage = document.getElementById("adminLoginMessage");
 
-        mobileNav.classList.toggle(
-          "active"
-        );
+const adminLoginBtn = document.getElementById("adminLoginBtn");
 
-      }
-    );
+const logoutBtn = document.getElementById("logoutBtn");
 
+const uploadForm = document.getElementById("uploadForm");
+const uploadType = document.getElementById("uploadType");
+const uploadTitle = document.getElementById("uploadTitle");
+const uploadAuthor = document.getElementById("uploadAuthor");
+const uploadFile = document.getElementById("uploadFile");
+const uploadImage = document.getElementById("uploadImage");
+const uploadProgress = document.getElementById("uploadProgress");
 
-    mobileNav
-      .querySelectorAll("a")
-      .forEach(link => {
-
-        link.addEventListener(
-          "click",
-          () => {
-
-            mobileNav.classList.remove(
-              "active"
-            );
-
-          }
-        );
-
-      });
-
-  }
+const commentModal = document.getElementById("commentModal");
+const closeComments = document.getElementById("closeComments");
+const commentsList = document.getElementById("commentsList");
+const commentForm = document.getElementById("commentForm");
+const commentInput = document.getElementById("commentInput");
 
 
-  document
-    .querySelectorAll(
-      'a[href^="#"]'
-    )
-    .forEach(link => {
+// =====================================================
+// YEAR
+// =====================================================
 
-      link.addEventListener(
-        "click",
-        event => {
-
-          const id =
-            link.getAttribute(
-              "href"
-            );
+if (year) {
+  year.textContent = new Date().getFullYear();
+}
 
 
-          if (
-            !id ||
-            id === "#"
-          ) {
-            return;
-          }
+// =====================================================
+// MOBILE MENU
+// =====================================================
 
+if (menuBtn) {
 
-          const target =
-            document.querySelector(
-              id
-            );
+  menuBtn.addEventListener("click", () => {
 
+    mainNav.classList.toggle("open");
 
-          if (!target) {
-            return;
-          }
-
-
-          event.preventDefault();
-
-
-          target.scrollIntoView({
-            behavior: "smooth"
-          });
-
-        }
-      );
-
-    });
+  });
 
 }
 
 
+// =====================================================
+// AUTH MODAL
+// =====================================================
+
+function openAuthModal() {
+
+  authModal.classList.remove("hidden");
+
+  loginEmail.focus();
+
+}
+
+
+function closeAuthModal() {
+
+  authModal.classList.add("hidden");
+
+}
+
+
+signInBtn?.addEventListener("click", openAuthModal);
+
+adminLoginBtn?.addEventListener("click", openAuthModal);
+
+closeAuth?.addEventListener("click", closeAuthModal);
+
+
+// Close modal by clicking background
+
+authModal?.addEventListener("click", (event) => {
+
+  if (event.target === authModal) {
+
+    closeAuthModal();
+
+  }
+
+});
+
 
 // =====================================================
-// BOOKS FROM books.json
+// LOGIN
+// =====================================================
+
+loginForm?.addEventListener("submit", async (event) => {
+
+  event.preventDefault();
+
+  const email = loginEmail.value.trim();
+
+  const password = loginPassword.value;
+
+  authMessage.textContent = "Signing in...";
+
+  try {
+
+    await signInWithEmailAndPassword(
+      auth,
+      email,
+      password
+    );
+
+    authMessage.textContent = "Login successful.";
+
+    loginForm.reset();
+
+    setTimeout(() => {
+
+      closeAuthModal();
+
+    }, 700);
+
+  } catch (error) {
+
+    console.error(error);
+
+    authMessage.textContent =
+      "Login failed: " + getFirebaseError(error);
+
+  }
+
+});
+
+
+// =====================================================
+// LOGOUT
+// =====================================================
+
+logoutBtn?.addEventListener("click", async () => {
+
+  try {
+
+    await signOut(auth);
+
+    alert("Logged out successfully.");
+
+  } catch (error) {
+
+    console.error(error);
+
+  }
+
+});
+
+
+// =====================================================
+// AUTH STATE
+// =====================================================
+
+onAuthStateChanged(auth, (user) => {
+
+  if (!user) {
+
+    signInBtn.innerHTML = `
+      Sign In
+      <small>سائن اِن</small>
+    `;
+
+    adminPanel.classList.add("hidden");
+
+    adminLoginMessage.classList.remove("hidden");
+
+    return;
+
+  }
+
+
+  signInBtn.innerHTML = `
+    Account
+    <small>${escapeHtml(user.email || "")}</small>
+  `;
+
+
+  const isAdmin =
+    ADMIN_EMAIL !== "YOUR_ADMIN_EMAIL_HERE" &&
+    user.email?.toLowerCase() === ADMIN_EMAIL.toLowerCase();
+
+
+  if (isAdmin) {
+
+    adminPanel.classList.remove("hidden");
+
+    adminLoginMessage.classList.add("hidden");
+
+  } else {
+
+    adminPanel.classList.add("hidden");
+
+    adminLoginMessage.classList.remove("hidden");
+
+  }
+
+});
+
+
+// =====================================================
+// BOOKS.JSON
 // =====================================================
 
 async function loadBooks() {
 
-  const container =
-    document.getElementById(
-      "books-container"
-    );
-
-
-  if (!container) {
-    return;
-  }
-
-
   try {
 
-    const response =
-      await fetch(
-        "./books.json",
-        {
-          cache: "no-store"
-        }
-      );
-
+    const response = await fetch("books.json", {
+      cache: "no-cache"
+    });
 
     if (!response.ok) {
 
-      throw new Error(
-        `books.json error: ${response.status}`
-      );
+      throw new Error("books.json not found");
 
     }
 
+    const books = await response.json();
 
-    const books =
-      await response.json();
-
-
-    container.innerHTML =
-      "";
-
-
-    if (
-      !Array.isArray(books) ||
-      books.length === 0
-    ) {
-
-      container.innerHTML = `
-
-        <div class="empty-content">
-
-          <h3>
-            No Books Available
-          </h3>
-
-          <p dir="rtl">
-            ابھی کوئی کتاب موجود نہیں۔
-          </p>
-
-        </div>
-
-      `;
-
-      return;
-
-    }
-
-
-    books
-      .slice(0, 5)
-      .forEach(
-        (book, index) => {
-
-          createBookCard(
-            book,
-            index,
-            container
-          );
-
-        }
-      );
-
+    renderBooks(books);
 
   } catch (error) {
 
-    console.error(
-      "Books error:",
-      error
-    );
+    console.error("Books error:", error);
 
-
-    container.innerHTML = `
-
-      <div class="error-card">
-
-        <h3>
-          Books could not be loaded
-        </h3>
-
-        <p dir="rtl">
-          کتابیں لوڈ نہیں ہو سکیں۔
-        </p>
-
+    booksGrid.innerHTML = `
+      <div class="loading">
+        Books could not be loaded.
+        <br>
+        کتب لوڈ نہیں ہو سکیں۔
       </div>
-
     `;
 
   }
@@ -311,814 +343,598 @@ async function loadBooks() {
 }
 
 
-
 // =====================================================
-// BOOK CARD
+// RENDER BOOKS
 // =====================================================
 
-function createBookCard(
-  book,
-  index,
-  container
-) {
+function renderBooks(books) {
 
-  const card =
-    document.createElement(
-      "article"
-    );
+  if (!Array.isArray(books) || books.length === 0) {
 
-
-  card.className =
-    "content-card book-card";
-
-
-  const title =
-    book.title ||
-    "Book";
-
-
-  const titleUrdu =
-    book.titleUrdu ||
-    "";
-
-
-  const author =
-    book.author ||
-    "Hazrat Allama Saim Chishti";
-
-
-  const authorUrdu =
-    book.authorUrdu ||
-    "حضرت علامہ صائم چشتی";
-
-
-  const description =
-    book.description ||
-    "";
-
-
-  const descriptionUrdu =
-    book.descriptionUrdu ||
-    "";
-
-
-  const cover =
-    book.cover ||
-    "./logo.png";
-
-
-  const url =
-    book.url ||
-    book.pdf ||
-    "#";
-
-
-  card.innerHTML = `
-
-    <div class="card-image">
-
-      <img
-        src="${escapeAttribute(cover)}"
-        alt="${escapeHTML(title)}"
-        loading="lazy"
-      >
-
-      <span class="card-badge">
-        BOOK
-      </span>
-
-    </div>
-
-
-    <div class="card-body">
-
-      <span class="book-number">
-        Book ${index + 1}
-      </span>
-
-
-      <h3 class="card-title">
-        ${escapeHTML(title)}
-      </h3>
-
-
-      <h4
-        class="urdu-title"
-        dir="rtl"
-      >
-        ${escapeHTML(titleUrdu)}
-      </h4>
-
-
-      <p class="card-author">
-        ${escapeHTML(author)}
-      </p>
-
-
-      <p
-        class="card-author"
-        dir="rtl"
-      >
-        ${escapeHTML(authorUrdu)}
-      </p>
-
-
-      <p class="card-description">
-        ${escapeHTML(description)}
-      </p>
-
-
-      <p
-        class="card-description"
-        dir="rtl"
-      >
-        ${escapeHTML(descriptionUrdu)}
-      </p>
-
-
-      <div class="book-actions">
-
-        <a
-          href="${escapeAttribute(url)}"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="card-action"
-        >
-
-          <span>
-            Read Book
-          </span>
-
-          <small dir="rtl">
-            کتاب پڑھیں
-          </small>
-
-        </a>
-
-
-        <button
-          type="button"
-          class="share-book-btn"
-        >
-          ↗
-        </button>
-
+    booksGrid.innerHTML = `
+      <div class="loading">
+        No books available.
+        <br>
+        ابھی کوئی کتاب موجود نہیں۔
       </div>
+    `;
 
-    </div>
-
-  `;
-
-
-  const shareButton =
-    card.querySelector(
-      ".share-book-btn"
-    );
-
-
-  if (shareButton) {
-
-    shareButton.addEventListener(
-      "click",
-      () => {
-
-        shareContent(
-          title,
-          url
-        );
-
-      }
-    );
+    return;
 
   }
 
 
-  container.appendChild(
-    card
-  );
+  booksGrid.innerHTML = books
+    .slice(0, 5)
+    .map((book) => {
+
+      const title =
+        book.title || "Book";
+
+      const titleUrdu =
+        book.titleUrdu || "";
+
+      const author =
+        book.author || "Hazrat Allama Saim Chishti";
+
+      const cover =
+        book.cover || "cover.png";
+
+
+      let readerUrl = book.reader || "";
+
+
+      if (!readerUrl && book.pdf) {
+
+        readerUrl =
+          "https://hassanbhai5559-lgtm.github.io/chishti-library/reader.html?book=" +
+          encodeURIComponent(book.pdf);
+
+      }
+
+
+      return `
+
+        <article class="book-card">
+
+          <img
+            src="${escapeHtml(cover)}"
+            alt="${escapeHtml(title)}"
+            class="book-cover"
+            onerror="this.src='cover.png'"
+          >
+
+          <div class="book-info">
+
+            <h3>
+              ${escapeHtml(title)}
+            </h3>
+
+            <div class="book-urdu">
+              ${escapeHtml(titleUrdu)}
+            </div>
+
+            <p class="book-author">
+              ${escapeHtml(author)}
+            </p>
+
+            <a
+              href="${escapeHtml(readerUrl)}"
+              target="_blank"
+              rel="noopener"
+              class="book-btn"
+            >
+              Read Book
+              <br>
+              کتاب پڑھیں
+            </a>
+
+          </div>
+
+        </article>
+
+      `;
+
+    })
+    .join("");
 
 }
 
 
+// =====================================================
+// FIRESTORE CONTENT
+// =====================================================
+
+async function loadCollection(collectionName) {
+
+  try {
+
+    const refCollection =
+      collection(db, collectionName);
+
+    const snapshot =
+      await getDocs(refCollection);
+
+    return snapshot.docs.map((doc) => ({
+
+      id: doc.id,
+      ...doc.data()
+
+    }));
+
+  } catch (error) {
+
+    console.error(
+      `Error loading ${collectionName}:`,
+      error
+    );
+
+    return [];
+
+  }
+
+}
+
 
 // =====================================================
-// VIDEOS FROM FIRESTORE
+// LOAD VIDEOS
 // =====================================================
 
 async function loadVideos() {
 
-  const container =
-    document.getElementById(
-      "videos-container"
-    );
+  videosGrid.innerHTML = `
+    <div class="loading">
+      Loading videos...
+    </div>
+  `;
 
 
-  if (!container) {
+  const videos =
+    await loadCollection("videos");
+
+
+  if (videos.length === 0) {
+
+    videosGrid.innerHTML = `
+      <div class="loading">
+        No videos uploaded yet.
+        <br>
+        ابھی کوئی ویڈیو اپ لوڈ نہیں ہوئی۔
+      </div>
+    `;
+
     return;
+
   }
 
 
-  try {
+  renderVideos(videos);
 
-    container.innerHTML = `
-
-      <div class="loading-card">
-
-        <div class="loader"></div>
-
-        <p>
-          Loading Videos...
-        </p>
-
-        <p dir="rtl">
-          ویڈیوز لوڈ ہو رہی ہیں...
-        </p>
-
-      </div>
-
-    `;
+}
 
 
-    let snapshot;
+// =====================================================
+// RENDER VIDEOS
+// =====================================================
 
+function renderVideos(videos) {
 
-    try {
+  videosGrid.innerHTML = videos
+    .map((video) => {
 
-      const videosQuery =
-        query(
-          collection(
-            db,
-            "videos"
-          ),
-          orderBy(
-            "createdAt",
-            "desc"
-          )
-        );
-
-
-      snapshot =
-        await getDocs(
-          videosQuery
-        );
-
-    } catch (orderError) {
-
-      console.warn(
-        "createdAt ordering failed. Loading videos without order.",
-        orderError
+      return createMediaCard(
+        video,
+        "videos"
       );
 
+    })
+    .join("");
 
-      snapshot =
-        await getDocs(
-          collection(
-            db,
-            "videos"
-          )
-        );
-
-    }
+}
 
 
-    container.innerHTML =
-      "";
+// =====================================================
+// LOAD SHORTS
+// =====================================================
+
+async function loadShorts() {
+
+  shortsGrid.innerHTML = `
+    <div class="loading">
+      Loading shorts...
+    </div>
+  `;
 
 
-    if (snapshot.empty) {
+  const shorts =
+    await loadCollection("shorts");
 
-      container.innerHTML = `
 
-        <div class="empty-content">
+  if (shorts.length === 0) {
 
-          <div class="empty-icon">
-            ▶
-          </div>
+    shortsGrid.innerHTML = `
+      <div class="loading">
+        No shorts uploaded yet.
+        <br>
+        ابھی کوئی شارٹ اپ لوڈ نہیں ہوئی۔
+      </div>
+    `;
 
-          <h3>
-            No Videos Yet
-          </h3>
+    return;
 
-          <p dir="rtl">
-            ابھی کوئی ویڈیو موجود نہیں۔
-          </p>
+  }
+
+
+  shortsGrid.innerHTML = shorts
+    .map((item) => {
+
+      return createShortCard(item);
+
+    })
+    .join("");
+
+}
+
+
+// =====================================================
+// LOAD AUDIO
+// =====================================================
+
+async function loadAudios() {
+
+  audiosGrid.innerHTML = `
+    <div class="loading">
+      Loading audio...
+    </div>
+  `;
+
+
+  const audios =
+    await loadCollection("audios");
+
+
+  if (audios.length === 0) {
+
+    audiosGrid.innerHTML = `
+      <div class="loading">
+        No audio uploaded yet.
+        <br>
+        ابھی کوئی آڈیو اپ لوڈ نہیں ہوئی۔
+      </div>
+    `;
+
+    return;
+
+  }
+
+
+  audiosGrid.innerHTML = audios
+    .map((item) => {
+
+      return createAudioCard(item);
+
+    })
+    .join("");
+
+}
+
+
+// =====================================================
+// MEDIA CARD
+// =====================================================
+
+function createMediaCard(item, type) {
+
+  const title =
+    item.title || "Untitled";
+
+  const author =
+    item.author || item.speaker || "";
+
+  const videoUrl =
+    item.url || item.videoUrl || item.fileUrl || "";
+
+  const thumbnail =
+    item.thumbnail || item.imageUrl || "";
+
+
+  return `
+
+    <article class="media-card">
+
+      <video
+        controls
+        preload="metadata"
+        ${thumbnail ? `poster="${escapeHtml(thumbnail)}"` : ""}
+      >
+
+        <source
+          src="${escapeHtml(videoUrl)}"
+          type="video/mp4"
+        >
+
+        Your browser does not support video.
+
+      </video>
+
+
+      <div class="media-content">
+
+        <h3>
+          ${escapeHtml(title)}
+        </h3>
+
+        <p>
+          ${escapeHtml(author)}
+        </p>
+
+
+        <div class="media-actions">
+
+          <button
+            class="action-btn"
+            onclick="likeContent('${escapeHtml(item.id)}', '${type}')"
+          >
+            ❤️ Like
+            <span id="like-${type}-${item.id}">
+              ${item.likes || 0}
+            </span>
+          </button>
+
+
+          <button
+            class="action-btn"
+            onclick="shareContent(
+              '${escapeHtml(title)}',
+              '${escapeHtml(videoUrl)}'
+            )"
+          >
+            ↗ Share
+          </button>
+
+
+          <button
+            class="action-btn"
+            onclick="openComments(
+              '${escapeHtml(item.id)}',
+              '${type}'
+            )"
+          >
+            💬 Comment
+          </button>
 
         </div>
 
-      `;
-
-      return;
-
-    }
-
-
-    snapshot.forEach(
-      documentSnapshot => {
-
-        createVideoCard(
-          documentSnapshot.id,
-          documentSnapshot.data(),
-          container
-        );
-
-      }
-    );
-
-
-  } catch (error) {
-
-    console.error(
-      "Videos loading error:",
-      error
-    );
-
-
-    container.innerHTML = `
-
-      <div class="error-card">
-
-        <h3>
-          Videos could not be loaded
-        </h3>
-
-        <p dir="rtl">
-          ویڈیوز لوڈ نہیں ہو سکیں۔
-        </p>
-
-        <small>
-          ${escapeHTML(
-            error.message ||
-            ""
-          )}
-        </small>
-
       </div>
 
-    `;
+    </article>
 
-  }
+  `;
 
 }
 
 
-
 // =====================================================
-// VIDEO CARD
+// SHORT CARD
 // =====================================================
 
-function createVideoCard(
-  videoId,
-  video,
-  container
-) {
+function createShortCard(item) {
 
   const title =
-    video.title ||
-    "Untitled Video";
+    item.title || "Short";
 
-
-  const author =
-    video.author ||
-    "Hazrat Allama Saim Chishti";
-
-
-  const videoUrl =
-    video.url ||
-    video.fileUrl ||
-    "";
-
+  const url =
+    item.url || item.videoUrl || item.fileUrl || "";
 
   const thumbnail =
-    video.img ||
-    video.thumbnailUrl ||
-    "./logo.png";
+    item.thumbnail || item.imageUrl || "";
 
 
-  const card =
-    document.createElement(
-      "article"
-    );
+  return `
 
+    <article class="short-card">
 
-  card.className =
-    "content-card video-card";
-
-
-  card.innerHTML = `
-
-    <div class="card-image video-thumbnail">
-
-      <img
-        src="${escapeAttribute(thumbnail)}"
-        alt="${escapeHTML(title)}"
-        loading="lazy"
+      <video
+        controls
+        playsinline
+        preload="metadata"
+        ${thumbnail ? `poster="${escapeHtml(thumbnail)}"` : ""}
       >
 
+        <source
+          src="${escapeHtml(url)}"
+          type="video/mp4"
+        >
 
-      <button
-        type="button"
-        class="video-play-btn"
-        aria-label="Play video"
-      >
-        ▶
-      </button>
+      </video>
 
 
-      <span class="card-badge">
-        VIDEO
-      </span>
+      <div class="short-info">
 
-    </div>
+        <h3>
+          ${escapeHtml(title)}
+        </h3>
+
+        <div class="media-actions">
+
+          <button
+            class="action-btn"
+            onclick="likeContent('${escapeHtml(item.id)}', 'shorts')"
+          >
+            ❤️ Like
+          </button>
 
 
-    <div class="card-body">
+          <button
+            class="action-btn"
+            onclick="shareContent(
+              '${escapeHtml(title)}',
+              '${escapeHtml(url)}'
+            )"
+          >
+            ↗ Share
+          </button>
 
-      <h3 class="card-title">
-        ${escapeHTML(title)}
+
+          <button
+            class="action-btn"
+            onclick="openComments(
+              '${escapeHtml(item.id)}',
+              'shorts'
+            )"
+          >
+            💬 Comment
+          </button>
+
+        </div>
+
+      </div>
+
+    </article>
+
+  `;
+
+}
+
+
+// =====================================================
+// AUDIO CARD
+// =====================================================
+
+function createAudioCard(item) {
+
+  const title =
+    item.title || "Audio";
+
+  const author =
+    item.author || item.speaker || "";
+
+  const url =
+    item.url || item.audioUrl || item.fileUrl || "";
+
+
+  return `
+
+    <article class="audio-card">
+
+      <h3>
+        ${escapeHtml(title)}
       </h3>
 
-
-      <p class="card-author">
-        ${escapeHTML(author)}
+      <p>
+        ${escapeHtml(author)}
       </p>
 
+      <audio
+        controls
+        preload="metadata"
+      >
 
-      <div class="video-actions">
-
-        <button
-          type="button"
-          class="video-action like-video-btn"
+        <source
+          src="${escapeHtml(url)}"
+          type="audio/mpeg"
         >
 
-          <span>
-            ♡
-          </span>
+      </audio>
 
-          <small>
-            Like
-          </small>
 
+      <div class="media-actions">
+
+        <button
+          class="action-btn"
+          onclick="likeContent('${escapeHtml(item.id)}', 'audios')"
+        >
+          ❤️ Like
         </button>
 
 
         <button
-          type="button"
-          class="video-action share-video-btn"
+          class="action-btn"
+          onclick="shareContent(
+            '${escapeHtml(title)}',
+            '${escapeHtml(url)}'
+          )"
         >
-
-          <span>
-            ↗
-          </span>
-
-          <small>
-            Share
-          </small>
-
+          ↗ Share
         </button>
 
 
         <button
-          type="button"
-          class="video-action comment-video-btn"
+          class="action-btn"
+          onclick="openComments(
+            '${escapeHtml(item.id)}',
+            'audios'
+          )"
         >
-
-          <span>
-            💬
-          </span>
-
-          <small>
-            Comment
-          </small>
-
+          💬 Comment
         </button>
 
       </div>
 
-
-      <button
-        type="button"
-        class="watch-video-btn"
-      >
-
-        <span>
-          Watch Video
-        </span>
-
-        <small dir="rtl">
-          ویڈیو دیکھیں
-        </small>
-
-      </button>
-
-    </div>
+    </article>
 
   `;
 
-
-  container.appendChild(
-    card
-  );
-
-
-  const playButton =
-    card.querySelector(
-      ".video-play-btn"
-    );
-
-
-  const watchButton =
-    card.querySelector(
-      ".watch-video-btn"
-    );
-
-
-  if (playButton) {
-
-    playButton.addEventListener(
-      "click",
-      () => {
-
-        openVideoPlayer(
-          videoUrl,
-          title
-        );
-
-      }
-    );
-
-  }
-
-
-  if (watchButton) {
-
-    watchButton.addEventListener(
-      "click",
-      () => {
-
-        openVideoPlayer(
-          videoUrl,
-          title
-        );
-
-      }
-    );
-
-  }
-
-
-  const likeButton =
-    card.querySelector(
-      ".like-video-btn"
-    );
-
-
-  if (likeButton) {
-
-    likeButton.addEventListener(
-      "click",
-      () => {
-
-        likeVideo(
-          videoId,
-          likeButton
-        );
-
-      }
-    );
-
-  }
-
-
-  const shareButton =
-    card.querySelector(
-      ".share-video-btn"
-    );
-
-
-  if (shareButton) {
-
-    shareButton.addEventListener(
-      "click",
-      () => {
-
-        shareContent(
-          title,
-          videoUrl
-        );
-
-      }
-    );
-
-  }
-
-
-  const commentButton =
-    card.querySelector(
-      ".comment-video-btn"
-    );
-
-
-  if (commentButton) {
-
-    commentButton.addEventListener(
-      "click",
-      () => {
-
-        openComments(
-          videoId
-        );
-
-      }
-    );
-
-  }
-
 }
-
-
-
-// =====================================================
-// VIDEO PLAYER
-// =====================================================
-
-function openVideoPlayer(
-  url,
-  title
-) {
-
-  if (!url) {
-
-    showToast(
-      "Video URL is not available."
-    );
-
-    return;
-
-  }
-
-
-  const modal =
-    document.getElementById(
-      "media-modal"
-    );
-
-
-  const body =
-    document.getElementById(
-      "media-modal-body"
-    );
-
-
-  if (!modal || !body) {
-
-    window.open(
-      url,
-      "_blank",
-      "noopener,noreferrer"
-    );
-
-    return;
-
-  }
-
-
-  body.innerHTML = `
-
-    <h2>
-      ${escapeHTML(title)}
-    </h2>
-
-
-    <video
-      class="main-video-player"
-      controls
-      autoplay
-      playsinline
-    >
-
-      <source
-        src="${escapeAttribute(url)}"
-      >
-
-      Your browser does not support video playback.
-
-    </video>
-
-  `;
-
-
-  modal.classList.add(
-    "active"
-  );
-
-
-  modal.setAttribute(
-    "aria-hidden",
-    "false"
-  );
-
-}
-
 
 
 // =====================================================
 // LIKE
 // =====================================================
 
-function likeVideo(
-  videoId,
-  button
-) {
+window.likeContent = async function(id, type) {
 
-  const key =
-    `bazam-like-${videoId}`;
+  try {
 
+    const likeCollection =
+      collection(
+        db,
+        type,
+        id,
+        "likes"
+      );
 
-  if (
-    localStorage.getItem(
-      key
-    )
-  ) {
-
-    showToast(
-      "You already liked this video."
-    );
-
-    return;
-
-  }
-
-
-  localStorage.setItem(
-    key,
-    "true"
-  );
-
-
-  button.classList.add(
-    "liked"
-  );
-
-
-  const icon =
-    button.querySelector(
-      "span"
+    await addDoc(
+      likeCollection,
+      {
+        createdAt: serverTimestamp()
+      }
     );
 
 
-  if (icon) {
+    alert("Liked ❤️");
 
-    icon.textContent =
-      "♥";
+  } catch (error) {
+
+    console.error(error);
+
+    alert(
+      "Like save nahi ho saka."
+    );
 
   }
 
-
-  showToast(
-    "Video liked ❤️"
-  );
-
-}
-
+};
 
 
 // =====================================================
 // SHARE
 // =====================================================
 
-async function shareContent(
-  title,
-  url
-) {
-
-  if (!url) {
-
-    showToast(
-      "Link is not available."
-    );
-
-    return;
-
-  }
-
+window.shareContent = async function(title, url) {
 
   try {
 
-    if (
-      navigator.share
-    ) {
+    if (navigator.share) {
 
       await navigator.share({
 
-        title:
-          title ||
-          "Bazam-E-Saim",
+        title: title,
 
         text:
-          `${title || "Content"} - Bazam-E-Saim`,
+          "Bazam-E-Saim - " + title,
 
-        url:
-          url
+        url: url || window.location.href
 
       });
 
@@ -1128,126 +944,66 @@ async function shareContent(
 
 
     await navigator.clipboard.writeText(
-      url
+      url || window.location.href
     );
 
-
-    showToast(
-      "Link copied!"
-    );
-
+    alert("Link copied.");
 
   } catch (error) {
 
-    console.log(
-      "Share cancelled."
-    );
+    console.error(error);
 
   }
 
-}
-
+};
 
 
 // =====================================================
 // COMMENTS
 // =====================================================
 
-let currentCommentVideoId =
-  null;
+let currentCommentId = null;
+let currentCommentType = null;
 
 
-function openComments(
-  videoId
-) {
+window.openComments = async function(id, type) {
 
-  currentCommentVideoId =
-    videoId;
+  currentCommentId = id;
 
+  currentCommentType = type;
 
-  const modal =
-    document.getElementById(
-      "comment-modal"
-    );
+  commentModal.classList.remove("hidden");
 
-
-  if (!modal) {
-    return;
-  }
-
-
-  loadComments(
-    videoId
-  );
-
-
-  modal.classList.add(
-    "active"
-  );
-
-
-  modal.setAttribute(
-    "aria-hidden",
-    "false"
-  );
-
-}
-
-
-
-// =====================================================
-// LOAD COMMENTS
-// =====================================================
-
-async function loadComments(
-  videoId
-) {
-
-  const list =
-    document.getElementById(
-      "comments-list"
-    );
-
-
-  if (!list) {
-    return;
-  }
-
-
-  list.innerHTML = `
-
-    <p>
+  commentsList.innerHTML = `
+    <div class="loading">
       Loading comments...
-    </p>
-
+    </div>
   `;
 
 
   try {
 
-    const snapshot =
-      await getDocs(
-        collection(
-          db,
-          "videos",
-          videoId,
-          "comments"
-        )
+    const commentsRef =
+      collection(
+        db,
+        type,
+        id,
+        "comments"
       );
 
 
-    list.innerHTML =
-      "";
+    const snapshot =
+      await getDocs(commentsRef);
 
 
     if (snapshot.empty) {
 
-      list.innerHTML = `
-
-        <p dir="rtl">
+      commentsList.innerHTML = `
+        <div class="loading">
+          No comments yet.
+          <br>
           ابھی کوئی تبصرہ نہیں۔
-        </p>
-
+        </div>
       `;
 
       return;
@@ -1255,610 +1011,525 @@ async function loadComments(
     }
 
 
-    snapshot.forEach(
-      commentDoc => {
+    commentsList.innerHTML =
+      snapshot.docs
+        .map((doc) => {
 
-        const comment =
-          commentDoc.data();
+          const data =
+            doc.data();
 
+          return `
 
-        const item =
-          document.createElement(
-            "div"
-          );
+            <div class="comment-item">
 
+              <strong>
+                ${escapeHtml(
+                  data.email || "User"
+                )}
+              </strong>
 
-        item.className =
-          "comment-item";
+              <p>
+                ${escapeHtml(
+                  data.text || ""
+                )}
+              </p>
 
+            </div>
 
-        item.innerHTML = `
+          `;
 
-          <strong>
-            ${escapeHTML(
-              comment.name ||
-              "Guest"
-            )}
-          </strong>
-
-          <p>
-            ${escapeHTML(
-              comment.text ||
-              ""
-            )}
-          </p>
-
-        `;
-
-
-        list.appendChild(
-          item
-        );
-
-      }
-    );
+        })
+        .join("");
 
 
   } catch (error) {
 
-    console.error(
-      "Comments error:",
-      error
-    );
+    console.error(error);
 
-
-    list.innerHTML = `
-
-      <p>
-        Comments could not be loaded.
-      </p>
-
+    commentsList.innerHTML = `
+      <div class="loading">
+        Comments load نہیں ہو سکے۔
+      </div>
     `;
 
   }
 
-}
+};
 
 
+closeComments?.addEventListener(
+  "click",
+  () => {
 
-// =====================================================
-// POST COMMENT
-// =====================================================
-
-function initializeComments() {
-
-  const form =
-    document.getElementById(
-      "comment-form"
-    );
-
-
-  if (!form) {
-    return;
-  }
-
-
-  form.addEventListener(
-    "submit",
-    async event => {
-
-      event.preventDefault();
-
-
-      if (!currentCommentVideoId) {
-
-        showToast(
-          "Please select a video first."
-        );
-
-        return;
-
-      }
-
-
-      const nameInput =
-        document.getElementById(
-          "comment-name"
-        );
-
-
-      const textInput =
-        document.getElementById(
-          "comment-text"
-        );
-
-
-      const name =
-        nameInput.value.trim();
-
-
-      const text =
-        textInput.value.trim();
-
-
-      if (
-        !name ||
-        !text
-      ) {
-
-        return;
-
-      }
-
-
-      try {
-
-        await addDoc(
-
-          collection(
-            db,
-            "videos",
-            currentCommentVideoId,
-            "comments"
-          ),
-
-          {
-            name:
-              name,
-
-            text:
-              text,
-
-            createdAt:
-              serverTimestamp()
-          }
-
-        );
-
-
-        nameInput.value =
-          "";
-
-        textInput.value =
-          "";
-
-
-        showToast(
-          "Comment posted."
-        );
-
-
-        loadComments(
-          currentCommentVideoId
-        );
-
-
-      } catch (error) {
-
-        console.error(
-          "Comment error:",
-          error
-        );
-
-
-        showToast(
-          "Comment could not be posted."
-        );
-
-      }
-
-    }
-  );
-
-}
-
-
-
-// =====================================================
-// MODALS
-// =====================================================
-
-function initializeModals() {
-
-  document
-    .querySelectorAll(
-      "[data-close-modal]"
-    )
-    .forEach(button => {
-
-      button.addEventListener(
-        "click",
-        () => {
-
-          const id =
-            button.dataset.closeModal;
-
-
-          closeModal(id);
-
-        }
-      );
-
-    });
-
-
-  document
-    .querySelectorAll(
-      ".modal-overlay"
-    )
-    .forEach(overlay => {
-
-      overlay.addEventListener(
-        "click",
-        () => {
-
-          const modal =
-            overlay.closest(
-              ".modal"
-            );
-
-
-          if (modal) {
-
-            closeModal(
-              modal.id
-            );
-
-          }
-
-        }
-      );
-
-    });
-
-}
-
-
-
-// =====================================================
-// CLOSE MODAL
-// =====================================================
-
-function closeModal(
-  id
-) {
-
-  const modal =
-    document.getElementById(
-      id
-    );
-
-
-  if (!modal) {
-    return;
-  }
-
-
-  modal.classList.remove(
-    "active"
-  );
-
-
-  modal.setAttribute(
-    "aria-hidden",
-    "true"
-  );
-
-
-  const video =
-    modal.querySelector(
-      "video"
-    );
-
-
-  if (video) {
-
-    video.pause();
-
-    video.removeAttribute(
-      "src"
+    commentModal.classList.add(
+      "hidden"
     );
 
   }
-
-}
-
+);
 
 
-// =====================================================
-// SIGN IN
-// =====================================================
+commentModal?.addEventListener(
+  "click",
+  (event) => {
 
-function initializeSignIn() {
+    if (
+      event.target === commentModal
+    ) {
 
-  const buttons = [
-
-    document.getElementById(
-      "signin-btn"
-    ),
-
-    document.getElementById(
-      "mobile-signin-btn"
-    )
-
-  ];
-
-
-  const modal =
-    document.getElementById(
-      "signin-modal"
-    );
-
-
-  buttons.forEach(
-    button => {
-
-      if (!button) {
-        return;
-      }
-
-
-      button.addEventListener(
-        "click",
-        () => {
-
-          if (!modal) {
-            return;
-          }
-
-
-          modal.classList.add(
-            "active"
-          );
-
-
-          modal.setAttribute(
-            "aria-hidden",
-            "false"
-          );
-
-        }
+      commentModal.classList.add(
+        "hidden"
       );
 
     }
-  );
+
+  }
+);
 
 
-  const form =
-    document.getElementById(
-      "signin-form"
-    );
+// =====================================================
+// ADD COMMENT
+// =====================================================
+
+commentForm?.addEventListener(
+  "submit",
+  async (event) => {
+
+    event.preventDefault();
 
 
-  if (form) {
-
-    form.addEventListener(
-      "submit",
-      event => {
-
-        event.preventDefault();
+    const user = auth.currentUser;
 
 
-        const message =
-          document.getElementById(
-            "signin-message"
+    if (!user) {
+
+      alert(
+        "Comment karne ke liye Sign In karein."
+      );
+
+      openAuthModal();
+
+      return;
+
+    }
+
+
+    const text =
+      commentInput.value.trim();
+
+
+    if (!text) return;
+
+
+    try {
+
+      await addDoc(
+        collection(
+          db,
+          currentCommentType,
+          currentCommentId,
+          "comments"
+        ),
+        {
+
+          text: text,
+
+          email:
+            user.email || "User",
+
+          uid:
+            user.uid,
+
+          createdAt:
+            serverTimestamp()
+
+        }
+      );
+
+
+      commentInput.value = "";
+
+
+      await window.openComments(
+        currentCommentId,
+        currentCommentType
+      );
+
+
+    } catch (error) {
+
+      console.error(error);
+
+      alert(
+        "Comment save nahi ho saka."
+      );
+
+    }
+
+  }
+);
+
+
+// =====================================================
+// ADMIN UPLOAD
+// =====================================================
+
+uploadForm?.addEventListener(
+  "submit",
+  async (event) => {
+
+    event.preventDefault();
+
+
+    const user =
+      auth.currentUser;
+
+
+    if (!user) {
+
+      alert(
+        "Admin login required."
+      );
+
+      return;
+
+    }
+
+
+    if (
+      ADMIN_EMAIL ===
+      "YOUR_ADMIN_EMAIL_HERE"
+    ) {
+
+      alert(
+        "script.js mein ADMIN_EMAIL set karo."
+      );
+
+      return;
+
+    }
+
+
+    if (
+      user.email?.toLowerCase() !==
+      ADMIN_EMAIL.toLowerCase()
+    ) {
+
+      alert(
+        "You are not authorized as admin."
+      );
+
+      return;
+
+    }
+
+
+    const type =
+      uploadType.value;
+
+    const title =
+      uploadTitle.value.trim();
+
+    const author =
+      uploadAuthor.value.trim();
+
+    const file =
+      uploadFile.files[0];
+
+    const image =
+      uploadImage.files[0];
+
+
+    if (!file) {
+
+      alert(
+        "Media file select karein."
+      );
+
+      return;
+
+    }
+
+
+    try {
+
+      uploadProgress.textContent =
+        "Uploading file...";
+
+
+      // File size
+      const maxSize =
+        100 * 1024 * 1024;
+
+
+      if (file.size > maxSize) {
+
+        alert(
+          "File 100MB se choti honi chahiye."
+        );
+
+        uploadProgress.textContent = "";
+
+        return;
+
+      }
+
+
+      // Upload media
+      const safeName =
+        sanitizeFileName(
+          file.name
+        );
+
+
+      const mediaPath =
+        `${type}/${Date.now()}-${safeName}`;
+
+
+      const mediaRef =
+        ref(
+          storage,
+          mediaPath
+        );
+
+
+      await uploadBytes(
+        mediaRef,
+        file
+      );
+
+
+      const mediaUrl =
+        await getDownloadURL(
+          mediaRef
+        );
+
+
+      uploadProgress.textContent =
+        "Uploading thumbnail...";
+
+
+      let thumbnailUrl = "";
+
+
+      if (image) {
+
+        const imageName =
+          sanitizeFileName(
+            image.name
           );
 
 
-        if (message) {
+        const imagePath =
+          `thumbnails/${Date.now()}-${imageName}`;
 
-          message.textContent =
-            "Sign in will be connected with Firebase Auth.";
 
-        }
+        const imageRef =
+          ref(
+            storage,
+            imagePath
+          );
+
+
+        await uploadBytes(
+          imageRef,
+          image
+        );
+
+
+        thumbnailUrl =
+          await getDownloadURL(
+            imageRef
+          );
 
       }
-    );
-
-  }
-
-}
 
 
-
-// =====================================================
-// SCROLL BUTTONS
-// =====================================================
-
-function initializeScrollButtons() {
-
-  document
-    .querySelectorAll(
-      ".scroll-btn"
-    )
-    .forEach(button => {
-
-      button.addEventListener(
-        "click",
-        () => {
-
-          const targetId =
-            button.dataset.target;
+      uploadProgress.textContent =
+        "Saving information...";
 
 
-          const target =
-            document.getElementById(
-              targetId
-            );
+      await addDoc(
+        collection(
+          db,
+          type
+        ),
+        {
 
+          title: title,
 
-          if (!target) {
-            return;
-          }
+          author: author,
 
+          url: mediaUrl,
 
-          const amount =
-            Math.max(
-              300,
-              target.clientWidth * 0.8
-            );
+          fileUrl: mediaUrl,
 
+          thumbnail:
+            thumbnailUrl,
 
-          const isLeft =
-            button.classList.contains(
-              "scroll-left"
-            );
+          fileName:
+            file.name,
 
+          type: type,
 
-          target.scrollBy({
+          createdAt:
+            serverTimestamp(),
 
-            left:
-              isLeft
-                ? -amount
-                : amount,
+          uploadedBy:
+            user.uid,
 
-            behavior:
-              "smooth"
-
-          });
+          uploadedEmail:
+            user.email
 
         }
       );
 
-    });
 
-}
-
-
-
-// =====================================================
-// YEAR
-// =====================================================
-
-function initializeYear() {
-
-  const year =
-    document.getElementById(
-      "current-year"
-    );
+      uploadProgress.textContent =
+        "Upload successful ✅";
 
 
-  if (year) {
-
-    year.textContent =
-      new Date().getFullYear();
-
-  }
-
-}
+      uploadForm.reset();
 
 
-
-// =====================================================
-// TOAST
-// =====================================================
-
-function showToast(
-  message
-) {
-
-  const toast =
-    document.getElementById(
-      "toast"
-    );
-
-
-  const text =
-    document.getElementById(
-      "toast-message"
-    );
-
-
-  if (!toast || !text) {
-
-    alert(message);
-
-    return;
-
-  }
-
-
-  text.textContent =
-    message;
-
-
-  toast.classList.add(
-    "show"
-  );
-
-
-  setTimeout(
-    () => {
-
-      toast.classList.remove(
-        "show"
+      alert(
+        "Content successfully uploaded!"
       );
 
-    },
-    2500
+
+      if (type === "videos") {
+
+        await loadVideos();
+
+      }
+
+      if (type === "shorts") {
+
+        await loadShorts();
+
+      }
+
+      if (type === "audios") {
+
+        await loadAudios();
+
+      }
+
+
+    } catch (error) {
+
+      console.error(
+        "Upload error:",
+        error
+      );
+
+
+      uploadProgress.textContent =
+        "Upload failed.";
+
+
+      alert(
+        getFirebaseError(error)
+      );
+
+    }
+
+  }
+);
+
+
+// =====================================================
+// FIREBASE ERROR
+// =====================================================
+
+function getFirebaseError(error) {
+
+  const code =
+    error?.code || "";
+
+
+  const messages = {
+
+    "auth/invalid-credential":
+      "Email ya password incorrect hai.",
+
+    "auth/invalid-login-credentials":
+      "Email ya password incorrect hai.",
+
+    "auth/user-not-found":
+      "User nahi mila.",
+
+    "auth/wrong-password":
+      "Password incorrect hai.",
+
+    "auth/invalid-email":
+      "Email address valid nahi hai.",
+
+    "auth/too-many-requests":
+      "Too many attempts. Thori der baad try karein.",
+
+    "permission-denied":
+      "Firebase permission denied. Firestore/Storage Rules check karein.",
+
+    "storage/unauthorized":
+      "Storage permission denied. Storage Rules check karein.",
+
+    "storage/quota-exceeded":
+      "Storage quota exceed ho gaya."
+
+  };
+
+
+  return (
+    messages[code] ||
+    error?.message ||
+    "Unknown Firebase error."
   );
 
 }
 
 
-
 // =====================================================
-// SECURITY HELPERS
+// ESCAPE HTML
 // =====================================================
 
-function escapeHTML(
-  value
-) {
+function escapeHtml(value) {
 
-  return String(value)
-
-    .replaceAll(
-      "&",
-      "&amp;"
-    )
-
-    .replaceAll(
-      "<",
-      "&lt;"
-    )
-
-    .replaceAll(
-      ">",
-      "&gt;"
-    )
-
-    .replaceAll(
-      '"',
-      "&quot;"
-    )
-
-    .replaceAll(
-      "'",
-      "&#039;"
-    );
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
 
 }
 
 
-function escapeAttribute(
-  value
-) {
+// =====================================================
+// SAFE FILE NAME
+// =====================================================
 
-  return String(value)
+function sanitizeFileName(name) {
 
-    .replaceAll(
-      "&",
-      "&amp;"
-    )
-
-    .replaceAll(
-      '"',
-      "&quot;"
-    )
-
-    .replaceAll(
-      "<",
-      "&lt;"
-    )
-
-    .replaceAll(
-      ">",
-      "&gt;"
-    );
+  return name
+    .replace(/[^a-zA-Z0-9._-]/g, "_");
 
 }
+
+
+// =====================================================
+// START
+// =====================================================
+
+loadBooks();
+
+loadVideos();
+
+loadShorts();
+
+loadAudios();
+
+console.log(
+  "Bazam-E-Saim Firebase connected to:",
+  firebaseConfig.projectId
+);
