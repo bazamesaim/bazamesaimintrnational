@@ -1,13 +1,14 @@
 [
   {
     "id": "book-001",
-    "title": "Kuliyat e Saim",
-    "titleUrdu": "کلیاتِ صائم",
+    "title": "Kulliyat e Saim Chishti",
+    "titleUrdu": "کلیاتِ صائم چشتی",
     "author": "Hazrat Allama Saim Chishti",
-    "authorUrdu": "حضرت علامہ سائم چشتی",
+    "authorUrdu": "حضرت علامہ صائم چشتی",
     "description": "Islamic book by Hazrat Allama Saim Chishti.",
-    "descriptionUrdu": "حضرت علامہ سائم چشتی کی اسلامی کتاب۔",
+    "descriptionUrdu": "حضرت علامہ صائم چشتی کی اسلامی کتاب۔",
     "cover": "cover.png",
-    "url": "https://hassanbhai5559-lgtm.github.io/chishti-library/reader.html?book=Kulliyat%20e%20Saim%20Chishti%20By%20Allama%20Saim%20Chishti.pdf"
+    "pdf": "Kulliyat e Saim Chishti By Allama Saim Chishti.pdf",
+    "reader": "https://hassanbhai5559-lgtm.github.io/chishti-library/reader.html?book=Kulliyat%20e%20Saim%20Chishti%20By%20Allama%20Saim%20Chishti.pdf"
   }
 ]
