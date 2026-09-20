@@ -1,9 +1,12 @@
 [
   {
     "id": "video-001",
-    "title": "Heart Touching Punjabi Poetry by Allama Saim Chishti",
-    "titleUrdu": "علامہ صائم چشتی کی دل کو چھو لینے والی پنجابی شاعری",
+    "title": "Heart Touching Punjabi Poetry",
+    "titleUrdu": "دل کو چھو لینے والی پنجابی شاعری",
+    "author": "Allama Saim Chishti",
+    "authorUrdu": "علامہ صائم چشتی",
     "description": "Heart touching Punjabi poetry by Allama Saim Chishti.",
-    "videoUrl": "videos/Heart%20Touching%20Punjabi%20Poetry%20by%20Allama%20Saim%20Chishti.mp4"
+    "descriptionUrdu": "علامہ صائم چشتی کی دل کو چھو لینے والی پنجابی شاعری۔",
+    "video": "Heart Touching Punjabi Poetry by Allama Saim Chishti.mp4"
   }
 ]
