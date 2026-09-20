@@ -1,17 +1,20 @@
 /* =========================================================
    BAZAM-E-SAIM
-   Complete Website Script
-   Firebase + Books + Videos + Like + Share + Comments
+   MAIN WEBSITE SCRIPT
+   Books JSON + Videos JSON + Firebase + Google Sign In
+   Likes + Comments + Share
    ========================================================= */
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import {
+  initializeApp
+} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 
 import {
   getAuth,
   GoogleAuthProvider,
   signInWithPopup,
-  onAuthStateChanged,
-  signOut
+  signOut,
+  onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
 import {
@@ -46,32 +49,233 @@ const firebaseConfig = {
 
 
 /* =========================================================
-   INITIALIZE FIREBASE
+   FIREBASE INITIALIZE
    ========================================================= */
 
 const app = initializeApp(firebaseConfig);
 
 const auth = getAuth(app);
+
 const db = getFirestore(app);
 
 const googleProvider = new GoogleAuthProvider();
 
-console.log("Bazam-E-Saim Firebase connected to:", firebaseConfig.projectId);
+console.log(
+  "Bazam-E-Saim Firebase connected to:",
+  firebaseConfig.projectId
+);
 
 
 /* =========================================================
-   GLOBAL USER
+   GLOBAL DATA
    ========================================================= */
+
+let books = [];
+
+let videos = [];
 
 let currentUser = null;
 
-onAuthStateChanged(auth, (user) => {
+let currentVideo = null;
 
-  currentUser = user || null;
 
-  updateLoginUI();
+/* =========================================================
+   DOM READY
+   ========================================================= */
+
+document.addEventListener("DOMContentLoaded", () => {
+
+  initNavigation();
+
+  initGoogleLogin();
+
+  initAuthState();
+
+  loadBooks();
+
+  loadVideos();
+
+  setupShareButtons();
 
 });
+
+
+/* =========================================================
+   AUTH STATE
+   ========================================================= */
+
+function initAuthState() {
+
+  onAuthStateChanged(auth, (user) => {
+
+    currentUser = user || null;
+
+    updateLoginUI();
+
+    updateProtectedButtons();
+
+  });
+
+}
+
+
+/* =========================================================
+   GOOGLE SIGN IN
+   ========================================================= */
+
+function initGoogleLogin() {
+
+  const buttons = [
+
+    document.getElementById("google-login"),
+
+    document.getElementById("google-signin"),
+
+    document.getElementById("continue-google"),
+
+    document.querySelector(".google-login"),
+
+    document.querySelector(".google-signin")
+
+  ].filter(Boolean);
+
+
+  buttons.forEach(button => {
+
+    button.addEventListener("click", async (event) => {
+
+      event.preventDefault();
+
+      await googleLogin();
+
+    });
+
+  });
+
+
+  const signInButtons = document.querySelectorAll(
+    "#sign-in-btn, .sign-in-btn, [data-action='signin']"
+  );
+
+
+  signInButtons.forEach(button => {
+
+    button.addEventListener("click", (event) => {
+
+      event.preventDefault();
+
+      if (currentUser) {
+
+        showUserMenu();
+
+      } else {
+
+        showLoginModal();
+
+      }
+
+    });
+
+  });
+
+}
+
+
+/* =========================================================
+   GOOGLE LOGIN FUNCTION
+   ========================================================= */
+
+async function googleLogin() {
+
+  try {
+
+    const result = await signInWithPopup(
+      auth,
+      googleProvider
+    );
+
+
+    currentUser = result.user;
+
+
+    updateLoginUI();
+
+
+    closeLoginModal();
+
+
+    showToast(
+      "Google سے کامیابی کے ساتھ Sign In ہوگیا۔"
+    );
+
+
+  } catch (error) {
+
+    console.error(
+      "Google Login Error:",
+      error
+    );
+
+
+    if (
+      error.code ===
+      "auth/popup-closed-by-user"
+    ) {
+
+      return;
+
+    }
+
+
+    if (
+      error.code ===
+      "auth/popup-blocked"
+    ) {
+
+      showToast(
+        "Browser نے Google popup block کردیا۔"
+      );
+
+      return;
+
+    }
+
+
+    if (
+      error.code ===
+      "auth/network-request-failed"
+    ) {
+
+      showToast(
+        "Internet connection check کریں۔"
+      );
+
+      return;
+
+    }
+
+
+    if (
+      error.code ===
+      "auth/unauthorized-domain"
+    ) {
+
+      showToast(
+        "Firebase میں اپنی GitHub domain Authorized Domains میں add کریں۔"
+      );
+
+      return;
+
+    }
+
+
+    showToast(
+      "Google Sign In میں مسئلہ آیا۔"
+    );
+
+  }
+
+}
 
 
 /* =========================================================
@@ -80,64 +284,48 @@ onAuthStateChanged(auth, (user) => {
 
 function updateLoginUI() {
 
-  const loginButtons = document.querySelectorAll(".google-login-btn");
-  const logoutButtons = document.querySelectorAll(".logout-btn");
+  const buttons = document.querySelectorAll(
+    "#sign-in-btn, .sign-in-btn, [data-action='signin']"
+  );
 
-  if (currentUser) {
 
-    loginButtons.forEach(btn => {
-      btn.innerHTML = `
-        <img 
-          src="${currentUser.photoURL || ""}"
-          style="
-            width:28px;
-            height:28px;
-            border-radius:50%;
-            vertical-align:middle;
-            margin-right:8px;
-          "
-        >
-        ${escapeHTML(currentUser.displayName || "Account")}
+  buttons.forEach(button => {
+
+    if (currentUser) {
+
+      button.innerHTML = `
+        <span>👤</span>
+        <span>Sign Out</span>
+        <small>سائن آؤٹ</small>
       `;
-    });
 
-    logoutButtons.forEach(btn => {
-      btn.style.display = "inline-flex";
-    });
+      button.onclick = async (event) => {
 
-  } else {
+        event.preventDefault();
 
-    loginButtons.forEach(btn => {
-      btn.innerHTML = "🔐 Google سے Login";
-    });
+        await logoutUser();
 
-    logoutButtons.forEach(btn => {
-      btn.style.display = "none";
-    });
-  }
-}
+      };
 
+    } else {
 
-/* =========================================================
-   GOOGLE LOGIN
-   ========================================================= */
+      button.innerHTML = `
+        <span>Sign In</span>
+        <small>سائن اِن</small>
+      `;
 
-async function loginWithGoogle() {
+      button.onclick = (event) => {
 
-  try {
+        event.preventDefault();
 
-    await signInWithPopup(auth, googleProvider);
+        showLoginModal();
 
-  } catch (error) {
+      };
 
-    console.error("Google Login Error:", error);
+    }
 
-    alert(
-      "Google Login نہیں ہو سکا۔\n\n" +
-      "براہ کرم دوبارہ کوشش کریں۔"
-    );
+  });
 
-  }
 }
 
 
@@ -151,6 +339,14 @@ async function logoutUser() {
 
     await signOut(auth);
 
+    currentUser = null;
+
+    updateLoginUI();
+
+    showToast(
+      "آپ Sign Out ہوگئے ہیں۔"
+    );
+
   } catch (error) {
 
     console.error(error);
@@ -161,274 +357,140 @@ async function logoutUser() {
 
 
 /* =========================================================
-   GLOBAL LOGIN BUTTON
+   LOGIN MODAL
    ========================================================= */
 
-document.addEventListener("click", (event) => {
+function showLoginModal() {
 
-  const loginBtn = event.target.closest(".google-login-btn");
+  let modal =
+    document.getElementById("google-login-modal");
 
-  if (loginBtn) {
-    loginWithGoogle();
+
+  if (modal) {
+
+    modal.classList.add("active");
+
+    return;
+
   }
 
-  const logoutBtn = event.target.closest(".logout-btn");
 
-  if (logoutBtn) {
-    logoutUser();
-  }
+  modal = document.createElement("div");
 
-});
+  modal.id = "google-login-modal";
+
+  modal.innerHTML = `
+
+    <div class="login-overlay">
+
+      <div class="login-box">
+
+        <button
+          class="login-close"
+          id="close-google-login"
+        >
+          ×
+        </button>
+
+
+        <img
+          src="logo.png"
+          class="login-logo"
+          alt="Bazam-E-Saim"
+        >
+
+
+        <h2>
+          Sign In
+        </h2>
+
+
+        <p>
+          سائن اِن کریں
+        </p>
+
+
+        <button
+          id="continue-google"
+          class="google-login"
+        >
+
+          <span class="google-g">
+            G
+          </span>
+
+          Continue with Google
+
+        </button>
+
+
+        <small>
+          Like, Comment اور دوسری سہولیات استعمال کرنے کے لیے Sign In کریں۔
+        </small>
+
+      </div>
+
+    </div>
+
+  `;
+
+
+  document.body.appendChild(modal);
+
+
+  document
+    .getElementById("close-google-login")
+    .addEventListener(
+      "click",
+      closeLoginModal
+    );
+
+
+  document
+    .getElementById("continue-google")
+    .addEventListener(
+      "click",
+      googleLogin
+    );
+
+
+  modal
+    .querySelector(".login-overlay")
+    .addEventListener(
+      "click",
+      (event) => {
+
+        if (
+          event.target.classList.contains(
+            "login-overlay"
+          )
+        ) {
+
+          closeLoginModal();
+
+        }
+
+      }
+    );
+
+}
 
 
 /* =========================================================
-   LOAD BOOKS
+   CLOSE LOGIN MODAL
    ========================================================= */
 
-async function loadBooks() {
+function closeLoginModal() {
 
-  const container =
-    document.querySelector("#books-container") ||
-    document.querySelector(".books-container") ||
-    document.querySelector("#books-list");
+  const modal =
+    document.getElementById(
+      "google-login-modal"
+    );
 
-  if (!container) return;
 
-  try {
+  if (modal) {
 
-    const response = await fetch("books.json", {
-      cache: "no-store"
-    });
-
-    if (!response.ok) {
-      throw new Error("books.json not found");
-    }
-
-    const books = await response.json();
-
-    container.innerHTML = "";
-
-    if (!Array.isArray(books) || books.length === 0) {
-
-      container.innerHTML = `
-        <div class="empty-message">
-          ابھی کوئی کتاب موجود نہیں۔
-          <br>
-          ابھی کوئی کتاب موجود نہیں ہے۔
-        </div>
-      `;
-
-      return;
-    }
-
-
-    books.forEach(book => {
-
-      const card = document.createElement("article");
-
-      card.className = "book-card";
-
-      const bookId =
-        book.id ||
-        encodeURIComponent(book.title || "book");
-
-
-      const readerURL =
-        book.reader ||
-        book.url ||
-        (
-          "https://hassanbhai5559-lgtm.github.io/chishti-library/" +
-          "reader.html?book=" +
-          encodeURIComponent(book.pdf || "")
-        );
-
-
-      card.innerHTML = `
-
-        <div class="book-cover-wrapper">
-
-          <img
-            class="book-cover"
-            src="${escapeAttribute(book.cover || "cover.png")}"
-            alt="${escapeAttribute(book.title || "کتاب")}"
-            loading="lazy"
-          >
-
-        </div>
-
-
-        <div class="book-content">
-
-          <h3 class="book-title">
-            ${escapeHTML(book.title || "کتاب")}
-          </h3>
-
-          ${
-            book.titleUrdu
-              ? `
-                <div class="book-title-urdu">
-                  ${escapeHTML(book.titleUrdu)}
-                </div>
-              `
-              : ""
-          }
-
-
-          ${
-            book.author
-              ? `
-                <div class="book-author">
-                  ${escapeHTML(book.author)}
-                </div>
-              `
-              : ""
-          }
-
-
-          ${
-            book.authorUrdu
-              ? `
-                <div class="book-author-urdu">
-                  ${escapeHTML(book.authorUrdu)}
-                </div>
-              `
-              : ""
-          }
-
-
-          ${
-            book.description
-              ? `
-                <p class="book-description">
-                  ${escapeHTML(book.description)}
-                </p>
-              `
-              : ""
-          }
-
-
-          <a
-            href="${escapeAttribute(readerURL)}"
-            class="read-book-btn"
-            target="_blank"
-            rel="noopener"
-          >
-            📖 Read Book
-            <span>کتاب پڑھیں</span>
-          </a>
-
-
-          <!-- BOOK SOCIAL BUTTONS -->
-
-          <div
-            class="social-actions"
-            data-type="book"
-            data-id="${escapeAttribute(bookId)}"
-          >
-
-            <button
-              class="action-btn like-btn"
-              data-id="${escapeAttribute(bookId)}"
-              data-type="book"
-            >
-              ❤️ <span class="like-count">0</span>
-            </button>
-
-
-            <button
-              class="action-btn share-btn"
-              data-id="${escapeAttribute(bookId)}"
-              data-title="${escapeAttribute(book.title || "")}"
-              data-type="book"
-            >
-              📤 Share
-            </button>
-
-
-            <button
-              class="action-btn comment-open-btn"
-              data-id="${escapeAttribute(bookId)}"
-              data-type="book"
-            >
-              💬 Comment
-            </button>
-
-          </div>
-
-
-          <!-- COMMENTS -->
-
-          <div
-            class="comments-box"
-            id="comments-book-${safeId(bookId)}"
-            style="display:none;"
-          >
-
-            <div class="comments-header">
-              <strong>Comments</strong>
-              <strong>تبصرے</strong>
-            </div>
-
-            <div class="comment-login-area">
-
-              <button class="google-login-btn">
-                🔐 Google سے Login
-              </button>
-
-            </div>
-
-
-            <form
-              class="comment-form"
-              data-id="${escapeAttribute(bookId)}"
-              data-type="book"
-            >
-
-              <input
-                type="text"
-                name="comment"
-                placeholder="Write a comment... / تبصرہ لکھیں..."
-                maxlength="500"
-                required
-              >
-
-              <button type="submit">
-                Send
-              </button>
-
-            </form>
-
-
-            <div
-              class="comments-list"
-              id="comments-list-book-${safeId(bookId)}"
-            >
-            </div>
-
-          </div>
-
-        </div>
-      `;
-
-
-      container.appendChild(card);
-
-      loadLikeCount("book", bookId);
-
-    });
-
-
-  } catch (error) {
-
-    console.error("Books Error:", error);
-
-    container.innerHTML = `
-      <div class="error-message">
-        Books load نہیں ہو سکیں۔
-        <br>
-        کتابیں لوڈ نہیں ہو سکیں۔
-      </div>
-    `;
+    modal.classList.remove("active");
 
   }
 
@@ -436,353 +498,937 @@ async function loadBooks() {
 
 
 /* =========================================================
-   LOAD VIDEOS
+   USER MENU
    ========================================================= */
 
-async function loadVideos() {
+function showUserMenu() {
 
-  const container =
-    document.querySelector("#videos-container") ||
-    document.querySelector(".videos-container") ||
-    document.querySelector("#videos-list");
+  if (!currentUser) {
 
-  if (!container) return;
+    showLoginModal();
+
+    return;
+
+  }
+
+
+  const name =
+    currentUser.displayName ||
+    currentUser.email ||
+    "User";
+
+
+  const answer =
+    confirm(
+      `${name}\n\nکیا آپ Sign Out کرنا چاہتے ہیں؟`
+    );
+
+
+  if (answer) {
+
+    logoutUser();
+
+  }
+
+}
+
+
+/* =========================================================
+   LOAD BOOKS JSON
+   ========================================================= */
+
+async function loadBooks() {
+
+  const containers = [
+
+    document.getElementById("books-container"),
+
+    document.getElementById("book-container"),
+
+    document.getElementById("books-list"),
+
+    document.querySelector(".books-grid"),
+
+    document.querySelector("[data-books]")
+
+  ].filter(Boolean);
+
 
   try {
 
-    const response = await fetch("videos.json", {
-      cache: "no-store"
-    });
+    const response =
+      await fetch(
+        "books.json",
+        {
+          cache: "no-cache"
+        }
+      );
+
 
     if (!response.ok) {
-      throw new Error("videos.json not found");
-    }
 
-    const videos = await response.json();
+      throw new Error(
+        `books.json HTTP ${response.status}`
+      );
 
-    container.innerHTML = "";
-
-    if (!Array.isArray(videos) || videos.length === 0) {
-
-      container.innerHTML = `
-        <div class="empty-message">
-          ابھی کوئی ویڈیو موجود نہیں۔
-        </div>
-      `;
-
-      return;
     }
 
 
-    videos.forEach((video, index) => {
+    books = await response.json();
 
-      const videoId =
-        video.id ||
-        `video-${index + 1}`;
 
+    console.log(
+      "Books loaded:",
+      books
+    );
 
-      const videoURL =
-        video.video ||
-        video.url ||
-        video.src ||
-        "";
 
+    if (!Array.isArray(books)) {
 
-      const thumbnail =
-        video.thumbnail ||
-        video.poster ||
-        video.cover ||
-        "logo.png";
+      throw new Error(
+        "books.json must contain an array."
+      );
 
+    }
 
-      const title =
-        video.title ||
-        "Bazam-E-Saim Video";
 
+    containers.forEach(
+      container => {
 
-      const titleUrdu =
-        video.titleUrdu ||
-        "";
+        renderBooks(container);
 
+      }
+    );
 
-      const card = document.createElement("article");
 
-      card.className = "video-card";
+    const loading =
+      document.querySelectorAll(
+        ".books-loading, #books-loading"
+      );
 
 
-      card.innerHTML = `
+    loading.forEach(
+      element => {
 
-        <div class="video-player-wrapper">
+        element.remove();
 
-          <video
-            class="custom-video"
-            id="video-${safeId(videoId)}"
-            preload="metadata"
-            poster="${escapeAttribute(thumbnail)}"
-            playsinline
-          >
-
-            <source
-              src="${escapeAttribute(videoURL)}"
-              type="video/mp4"
-            >
-
-            Your browser does not support video.
-          </video>
-
-
-          <!-- VIDEO CONTROLS -->
-
-          <div class="video-controls">
-
-            <button
-              class="video-control play-pause"
-              data-video="${safeId(videoId)}"
-              title="Play / Pause"
-            >
-              ▶
-            </button>
-
-
-            <button
-              class="video-control rewind"
-              data-video="${safeId(videoId)}"
-              title="10 seconds back"
-            >
-              ⏪
-            </button>
-
-
-            <button
-              class="video-control forward"
-              data-video="${safeId(videoId)}"
-              title="10 seconds forward"
-            >
-              ⏩
-            </button>
-
-
-            <input
-              type="range"
-              class="video-progress"
-              min="0"
-              max="100"
-              value="0"
-              data-video="${safeId(videoId)}"
-            >
-
-
-            <button
-              class="video-control mute-btn"
-              data-video="${safeId(videoId)}"
-              title="Volume"
-            >
-              🔊
-            </button>
-
-
-            <input
-              type="range"
-              class="volume-control"
-              min="0"
-              max="1"
-              step="0.05"
-              value="1"
-              data-video="${safeId(videoId)}"
-            >
-
-
-            <select
-              class="speed-control"
-              data-video="${safeId(videoId)}"
-            >
-
-              <option value="0.5">0.5x</option>
-              <option value="0.75">0.75x</option>
-              <option value="1" selected>Normal</option>
-              <option value="1.25">1.25x</option>
-              <option value="1.5">1.5x</option>
-              <option value="2">2x</option>
-
-            </select>
-
-
-            <button
-              class="video-control fullscreen-btn"
-              data-video="${safeId(videoId)}"
-              title="Fullscreen"
-            >
-              ⛶
-            </button>
-
-          </div>
-
-
-          <!-- VIDEO TIME -->
-
-          <div class="video-time">
-
-            <span class="current-time">0:00</span>
-
-            <span>/</span>
-
-            <span class="duration">0:00</span>
-
-          </div>
-
-        </div>
-
-
-        <div class="video-info">
-
-          <h3 class="video-title">
-            ${escapeHTML(title)}
-          </h3>
-
-
-          ${
-            titleUrdu
-              ? `
-                <div class="video-title-urdu">
-                  ${escapeHTML(titleUrdu)}
-                </div>
-              `
-              : ""
-          }
-
-
-          ${
-            video.description
-              ? `
-                <p class="video-description">
-                  ${escapeHTML(video.description)}
-                </p>
-              `
-              : ""
-          }
-
-
-          <!-- VIDEO SOCIAL BUTTONS -->
-
-          <div
-            class="social-actions video-social"
-            data-type="video"
-            data-id="${escapeAttribute(videoId)}"
-          >
-
-            <button
-              class="action-btn like-btn"
-              data-id="${escapeAttribute(videoId)}"
-              data-type="video"
-            >
-              ❤️ <span class="like-count">0</span>
-            </button>
-
-
-            <button
-              class="action-btn share-btn"
-              data-id="${escapeAttribute(videoId)}"
-              data-title="${escapeAttribute(title)}"
-              data-type="video"
-            >
-              📤 Share
-            </button>
-
-
-            <button
-              class="action-btn comment-open-btn"
-              data-id="${escapeAttribute(videoId)}"
-              data-type="video"
-            >
-              💬 Comment
-            </button>
-
-          </div>
-
-
-          <!-- VIDEO COMMENTS -->
-
-          <div
-            class="comments-box"
-            id="comments-video-${safeId(videoId)}"
-            style="display:none;"
-          >
-
-            <div class="comments-header">
-
-              <strong>Comments</strong>
-
-              <strong>تبصرے</strong>
-
-            </div>
-
-
-            <div class="comment-login-area">
-
-              <button class="google-login-btn">
-                🔐 Google سے Login
-              </button>
-
-            </div>
-
-
-            <form
-              class="comment-form"
-              data-id="${escapeAttribute(videoId)}"
-              data-type="video"
-            >
-
-              <input
-                type="text"
-                name="comment"
-                placeholder="Write a comment... / تبصرہ لکھیں..."
-                maxlength="500"
-                required
-              >
-
-              <button type="submit">
-                Send
-              </button>
-
-            </form>
-
-
-            <div
-              class="comments-list"
-              id="comments-list-video-${safeId(videoId)}"
-            >
-            </div>
-
-          </div>
-
-        </div>
-
-      `;
-
-
-      container.appendChild(card);
-
-
-      setupVideoPlayer(card);
-
-      loadLikeCount("video", videoId);
-
-    });
+      }
+    );
 
 
   } catch (error) {
 
-    console.error("Videos Error:", error);
+    console.error(
+      "Books loading error:",
+      error
+    );
 
-    container.innerHTML = `
-      <div class="error-message">
-        Videos load نہیں ہو سکیں۔
-        <br>
-        ویڈیوز لوڈ نہیں ہو سکیں۔
-      </div>
-    `;
+
+    containers.forEach(
+      container => {
+
+        container.innerHTML = `
+
+          <div class="loading-error">
+
+            <strong>
+              Books load نہیں ہو سکیں۔
+            </strong>
+
+            <br>
+
+            <small>
+              books.json check کریں۔
+            </small>
+
+          </div>
+
+        `;
+
+      }
+    );
 
   }
+
+}
+
+
+/* =========================================================
+   RENDER BOOKS
+   ========================================================= */
+
+function renderBooks(container) {
+
+  if (!books.length) {
+
+    container.innerHTML = `
+
+      <div class="empty-message">
+
+        <p>
+          ابھی کوئی کتاب موجود نہیں۔
+        </p>
+
+      </div>
+
+    `;
+
+    return;
+
+  }
+
+
+  container.innerHTML = "";
+
+
+  books.forEach(book => {
+
+    const card =
+      document.createElement("article");
+
+
+    card.className =
+      "book-card";
+
+
+    const title =
+      book.title ||
+      "Untitled Book";
+
+
+    const titleUrdu =
+      book.titleUrdu ||
+      "";
+
+
+    const author =
+      book.author ||
+      "";
+
+
+    const authorUrdu =
+      book.authorUrdu ||
+      "";
+
+
+    const cover =
+      book.cover ||
+      "cover.png";
+
+
+    card.innerHTML = `
+
+      <div class="book-cover-wrap">
+
+        <img
+          src="${escapeHTML(cover)}"
+          alt="${escapeHTML(title)}"
+          class="book-cover"
+          loading="lazy"
+        >
+
+      </div>
+
+
+      <div class="book-info">
+
+        <h3>
+          ${escapeHTML(title)}
+        </h3>
+
+
+        ${
+          titleUrdu
+            ? `
+              <p class="book-urdu">
+                ${escapeHTML(titleUrdu)}
+              </p>
+            `
+            : ""
+        }
+
+
+        ${
+          author
+            ? `
+              <p class="book-author">
+                ${escapeHTML(author)}
+              </p>
+            `
+            : ""
+        }
+
+
+        ${
+          authorUrdu
+            ? `
+              <p class="book-author-urdu">
+                ${escapeHTML(authorUrdu)}
+              </p>
+            `
+            : ""
+        }
+
+
+        <button
+          class="read-book-btn"
+          data-book-id="${escapeHTML(
+            book.id || ""
+          )}"
+        >
+
+          Read Book
+
+          <span>
+            کتاب پڑھیں
+          </span>
+
+        </button>
+
+      </div>
+
+    `;
+
+
+    const readButton =
+      card.querySelector(
+        ".read-book-btn"
+      );
+
+
+    readButton.addEventListener(
+      "click",
+      () => {
+
+        openBook(book);
+
+      }
+    );
+
+
+    container.appendChild(card);
+
+  });
+
+}
+
+
+/* =========================================================
+   OPEN BOOK
+   ========================================================= */
+
+function openBook(book) {
+
+  if (!book) return;
+
+
+  const pdf =
+    book.pdf ||
+    book.file ||
+    book.url;
+
+
+  if (!pdf) {
+
+    showToast(
+      "اس کتاب کی PDF موجود نہیں ہے۔"
+    );
+
+    return;
+
+  }
+
+
+  const readerURL =
+    `reader.html?book=${encodeURIComponent(pdf)}`;
+
+
+  window.location.href =
+    readerURL;
+
+}
+
+
+/* =========================================================
+   LOAD VIDEOS JSON
+   ========================================================= */
+
+async function loadVideos() {
+
+  const containers = [
+
+    document.getElementById("videos-container"),
+
+    document.getElementById("video-container"),
+
+    document.getElementById("videos-list"),
+
+    document.querySelector(".videos-grid"),
+
+    document.querySelector("[data-videos]")
+
+  ].filter(Boolean);
+
+
+  try {
+
+    const response =
+      await fetch(
+        "video.json",
+        {
+          cache: "no-cache"
+        }
+      );
+
+
+    if (!response.ok) {
+
+      throw new Error(
+        `video.json HTTP ${response.status}`
+      );
+
+    }
+
+
+    videos = await response.json();
+
+
+    console.log(
+      "Videos loaded:",
+      videos
+    );
+
+
+    if (!Array.isArray(videos)) {
+
+      throw new Error(
+        "video.json must contain an array."
+      );
+
+    }
+
+
+    containers.forEach(
+      container => {
+
+        renderVideos(container);
+
+      }
+    );
+
+
+    document
+      .querySelectorAll(
+        ".videos-loading, #videos-loading"
+      )
+      .forEach(
+        element => {
+
+          element.remove();
+
+        }
+      );
+
+
+  } catch (error) {
+
+    console.error(
+      "Videos loading error:",
+      error
+    );
+
+
+    containers.forEach(
+      container => {
+
+        container.innerHTML = `
+
+          <div class="loading-error">
+
+            <strong>
+              Videos load نہیں ہو سکیں۔
+            </strong>
+
+            <br>
+
+            <small>
+              video.json check کریں۔
+            </small>
+
+          </div>
+
+        `;
+
+      }
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   RENDER VIDEOS
+   ========================================================= */
+
+function renderVideos(container) {
+
+  if (!videos.length) {
+
+    container.innerHTML = `
+
+      <div class="empty-message">
+
+        <p>
+          ابھی کوئی ویڈیو موجود نہیں۔
+        </p>
+
+      </div>
+
+    `;
+
+    return;
+
+  }
+
+
+  container.innerHTML = "";
+
+
+  videos.forEach(video => {
+
+    const card =
+      createVideoCard(video);
+
+
+    container.appendChild(card);
+
+  });
+
+}
+
+
+/* =========================================================
+   CREATE VIDEO CARD
+   ========================================================= */
+
+function createVideoCard(video) {
+
+  const card =
+    document.createElement("article");
+
+
+  card.className =
+    "video-card";
+
+
+  const id =
+    String(
+      video.id ||
+      video.videoId ||
+      video.title ||
+      Date.now()
+    );
+
+
+  const title =
+    video.title ||
+    video.name ||
+    "Bazam-E-Saim Video";
+
+
+  const titleUrdu =
+    video.titleUrdu ||
+    "";
+
+
+  const description =
+    video.description ||
+    "";
+
+
+  const thumbnail =
+    video.thumbnail ||
+    video.cover ||
+    video.poster ||
+    "";
+
+
+  const videoURL =
+    video.video ||
+    video.src ||
+    video.url ||
+    video.file;
+
+
+  card.dataset.videoId =
+    id;
+
+
+  card.innerHTML = `
+
+    <div class="video-wrapper">
+
+      ${
+        thumbnail
+          ? `
+            <img
+              class="video-thumbnail"
+              src="${escapeHTML(thumbnail)}"
+              alt="${escapeHTML(title)}"
+              loading="lazy"
+            >
+          `
+          : ""
+      }
+
+
+      <video
+        class="custom-video"
+        preload="metadata"
+        ${
+          thumbnail
+            ? `poster="${escapeHTML(thumbnail)}"`
+            : ""
+        }
+      >
+
+        <source
+          src="${escapeHTML(videoURL || "")}"
+          type="video/mp4"
+        >
+
+        آپ کا browser video support نہیں کرتا۔
+
+      </video>
+
+
+      <div class="video-controls">
+
+        <button
+          class="video-play"
+          type="button"
+        >
+          ▶
+        </button>
+
+
+        <button
+          class="video-backward"
+          type="button"
+          title="10 seconds back"
+        >
+          ↶10
+        </button>
+
+
+        <button
+          class="video-forward"
+          type="button"
+          title="10 seconds forward"
+        >
+          10↷
+        </button>
+
+
+        <input
+          class="video-progress"
+          type="range"
+          min="0"
+          max="100"
+          value="0"
+        >
+
+
+        <button
+          class="video-mute"
+          type="button"
+        >
+          🔊
+        </button>
+
+
+        <input
+          class="video-volume"
+          type="range"
+          min="0"
+          max="1"
+          step="0.05"
+          value="1"
+        >
+
+
+        <select
+          class="video-speed"
+          title="Playback speed"
+        >
+
+          <option value="0.5">
+            0.5x
+          </option>
+
+          <option value="0.75">
+            0.75x
+          </option>
+
+          <option value="1" selected>
+            1x
+          </option>
+
+          <option value="1.25">
+            1.25x
+          </option>
+
+          <option value="1.5">
+            1.5x
+          </option>
+
+          <option value="2">
+            2x
+          </option>
+
+        </select>
+
+
+        <button
+          class="video-fullscreen"
+          type="button"
+        >
+          ⛶
+        </button>
+
+      </div>
+
+    </div>
+
+
+    <div class="video-info">
+
+      <h3>
+        ${escapeHTML(title)}
+      </h3>
+
+
+      ${
+        titleUrdu
+          ? `
+            <p class="video-urdu">
+              ${escapeHTML(titleUrdu)}
+            </p>
+          `
+          : ""
+      }
+
+
+      ${
+        description
+          ? `
+            <p class="video-description">
+              ${escapeHTML(description)}
+            </p>
+          `
+          : ""
+      }
+
+
+      <div class="video-actions">
+
+        <button
+          class="video-action like-button"
+          data-video-id="${escapeHTML(id)}"
+        >
+
+          <span class="like-icon">
+            ♡
+          </span>
+
+          <span>
+            Like
+          </span>
+
+          <b class="like-count">
+            0
+          </b>
+
+        </button>
+
+
+        <button
+          class="video-action comment-button"
+          data-video-id="${escapeHTML(id)}"
+        >
+
+          💬
+
+          <span>
+            Comment
+          </span>
+
+          <b class="comment-count">
+            0
+          </b>
+
+        </button>
+
+
+        <button
+          class="video-action share-button"
+          data-video-id="${escapeHTML(id)}"
+        >
+
+          🔗
+
+          <span>
+            Share
+          </span>
+
+        </button>
+
+      </div>
+
+
+      <div
+        class="comments-area"
+        hidden
+      >
+
+        <div class="comment-login-message">
+
+          Sign In کریں تاکہ Comment کر سکیں۔
+
+        </div>
+
+
+        <form class="comment-form">
+
+          <textarea
+            class="comment-input"
+            placeholder="اپنا Comment لکھیں..."
+            rows="2"
+          ></textarea>
+
+
+          <button
+            type="submit"
+            class="comment-submit"
+          >
+            Comment
+          </button>
+
+        </form>
+
+
+        <div class="comments-list">
+
+        </div>
+
+      </div>
+
+    </div>
+
+  `;
+
+
+  setupVideoPlayer(card);
+
+
+  const likeButton =
+    card.querySelector(
+      ".like-button"
+    );
+
+
+  likeButton.addEventListener(
+    "click",
+    () => {
+
+      handleLike(
+        id,
+        card
+      );
+
+    }
+  );
+
+
+  const commentButton =
+    card.querySelector(
+      ".comment-button"
+    );
+
+
+  commentButton.addEventListener(
+    "click",
+    () => {
+
+      handleCommentButton(
+        id,
+        card
+      );
+
+    }
+  );
+
+
+  const shareButton =
+    card.querySelector(
+      ".share-button"
+    );
+
+
+  shareButton.addEventListener(
+    "click",
+    () => {
+
+      shareVideo(
+        video,
+        id
+      );
+
+    }
+  );
+
+
+  const commentForm =
+    card.querySelector(
+      ".comment-form"
+    );
+
+
+  commentForm.addEventListener(
+    "submit",
+    async (event) => {
+
+      event.preventDefault();
+
+      await submitComment(
+        id,
+        card
+      );
+
+    }
+  );
+
+
+  loadLikeState(
+    id,
+    card
+  );
+
+
+  loadLikeCount(
+    id,
+    card
+  );
+
+
+  loadCommentCount(
+    id,
+    card
+  );
+
+
+  return card;
 
 }
 
@@ -794,271 +1440,399 @@ async function loadVideos() {
 function setupVideoPlayer(card) {
 
   const video =
-    card.querySelector(".custom-video");
+    card.querySelector(
+      ".custom-video"
+    );
+
+
+  const play =
+    card.querySelector(
+      ".video-play"
+    );
+
+
+  const backward =
+    card.querySelector(
+      ".video-backward"
+    );
+
+
+  const forward =
+    card.querySelector(
+      ".video-forward"
+    );
+
+
+  const progress =
+    card.querySelector(
+      ".video-progress"
+    );
+
+
+  const mute =
+    card.querySelector(
+      ".video-mute"
+    );
+
+
+  const volume =
+    card.querySelector(
+      ".video-volume"
+    );
+
+
+  const speed =
+    card.querySelector(
+      ".video-speed"
+    );
+
+
+  const fullscreen =
+    card.querySelector(
+      ".video-fullscreen"
+    );
+
+
+  const thumbnail =
+    card.querySelector(
+      ".video-thumbnail"
+    );
+
 
   if (!video) return;
 
 
-  const playBtn =
-    card.querySelector(".play-pause");
+  if (thumbnail) {
 
-  const rewindBtn =
-    card.querySelector(".rewind");
+    thumbnail.addEventListener(
+      "click",
+      () => {
 
-  const forwardBtn =
-    card.querySelector(".forward");
+        video.play();
 
-  const progress =
-    card.querySelector(".video-progress");
+      }
+    );
 
-  const muteBtn =
-    card.querySelector(".mute-btn");
+  }
 
-  const volume =
-    card.querySelector(".volume-control");
 
-  const speed =
-    card.querySelector(".speed-control");
+  play.addEventListener(
+    "click",
+    () => {
 
-  const fullscreen =
-    card.querySelector(".fullscreen-btn");
+      if (video.paused) {
 
-  const currentTime =
-    card.querySelector(".current-time");
+        video.play();
 
-  const duration =
-    card.querySelector(".duration");
+      } else {
 
-
-  /* PLAY / PAUSE */
-
-  playBtn.addEventListener("click", () => {
-
-    if (video.paused) {
-
-      video.play();
-
-    } else {
-
-      video.pause();
-
-    }
-
-  });
-
-
-  video.addEventListener("play", () => {
-
-    playBtn.textContent = "⏸";
-
-  });
-
-
-  video.addEventListener("pause", () => {
-
-    playBtn.textContent = "▶";
-
-  });
-
-
-  /* REWIND */
-
-  rewindBtn.addEventListener("click", () => {
-
-    video.currentTime =
-      Math.max(0, video.currentTime - 10);
-
-  });
-
-
-  /* FORWARD */
-
-  forwardBtn.addEventListener("click", () => {
-
-    video.currentTime =
-      Math.min(
-        video.duration || 0,
-        video.currentTime + 10
-      );
-
-  });
-
-
-  /* PROGRESS */
-
-  video.addEventListener("timeupdate", () => {
-
-    if (!video.duration) return;
-
-    progress.value =
-      (video.currentTime / video.duration) * 100;
-
-
-    currentTime.textContent =
-      formatTime(video.currentTime);
-
-  });
-
-
-  video.addEventListener("loadedmetadata", () => {
-
-    duration.textContent =
-      formatTime(video.duration);
-
-  });
-
-
-  progress.addEventListener("input", () => {
-
-    if (!video.duration) return;
-
-    video.currentTime =
-      (progress.value / 100) * video.duration;
-
-  });
-
-
-  /* VOLUME */
-
-  volume.addEventListener("input", () => {
-
-    video.volume =
-      Number(volume.value);
-
-    video.muted =
-      video.volume === 0;
-
-  });
-
-
-  /* MUTE */
-
-  muteBtn.addEventListener("click", () => {
-
-    video.muted = !video.muted;
-
-    muteBtn.textContent =
-      video.muted ? "🔇" : "🔊";
-
-  });
-
-
-  /* SPEED */
-
-  speed.addEventListener("change", () => {
-
-    video.playbackRate =
-      Number(speed.value);
-
-  });
-
-
-  /* FULLSCREEN */
-
-  fullscreen.addEventListener("click", async () => {
-
-    try {
-
-      if (video.requestFullscreen) {
-
-        await video.requestFullscreen();
-
-      } else if (video.webkitEnterFullscreen) {
-
-        video.webkitEnterFullscreen();
+        video.pause();
 
       }
 
-    } catch (error) {
+    }
+  );
 
-      console.error("Fullscreen error:", error);
+
+  video.addEventListener(
+    "play",
+    () => {
+
+      play.textContent = "⏸";
+
+      if (thumbnail) {
+
+        thumbnail.style.display =
+          "none";
+
+      }
 
     }
+  );
 
-  });
 
+  video.addEventListener(
+    "pause",
+    () => {
 
-  /* CLICK VIDEO = PLAY / PAUSE */
-
-  video.addEventListener("click", () => {
-
-    if (video.paused) {
-
-      video.play();
-
-    } else {
-
-      video.pause();
+      play.textContent = "▶";
 
     }
-
-  });
-
-}
+  );
 
 
-/* =========================================================
-   FORMAT VIDEO TIME
-   ========================================================= */
+  backward.addEventListener(
+    "click",
+    () => {
 
-function formatTime(seconds) {
+      video.currentTime =
+        Math.max(
+          0,
+          video.currentTime - 10
+        );
 
-  if (!seconds || isNaN(seconds)) {
-    return "0:00";
-  }
+    }
+  );
 
-  const minutes =
-    Math.floor(seconds / 60);
 
-  const secs =
-    Math.floor(seconds % 60);
+  forward.addEventListener(
+    "click",
+    () => {
 
-  return (
-    minutes +
-    ":" +
-    String(secs).padStart(2, "0")
+      video.currentTime =
+        Math.min(
+          video.duration || 0,
+          video.currentTime + 10
+        );
+
+    }
+  );
+
+
+  video.addEventListener(
+    "timeupdate",
+    () => {
+
+      if (
+        video.duration &&
+        isFinite(video.duration)
+      ) {
+
+        progress.value =
+          (
+            video.currentTime /
+            video.duration
+          ) * 100;
+
+      }
+
+    }
+  );
+
+
+  progress.addEventListener(
+    "input",
+    () => {
+
+      if (
+        video.duration &&
+        isFinite(video.duration)
+      ) {
+
+        video.currentTime =
+          (
+            Number(progress.value) /
+            100
+          ) * video.duration;
+
+      }
+
+    }
+  );
+
+
+  mute.addEventListener(
+    "click",
+    () => {
+
+      video.muted =
+        !video.muted;
+
+
+      mute.textContent =
+        video.muted
+          ? "🔇"
+          : "🔊";
+
+    }
+  );
+
+
+  volume.addEventListener(
+    "input",
+    () => {
+
+      video.volume =
+        Number(volume.value);
+
+
+      if (
+        video.volume === 0
+      ) {
+
+        video.muted = true;
+
+        mute.textContent = "🔇";
+
+      } else {
+
+        video.muted = false;
+
+        mute.textContent = "🔊";
+
+      }
+
+    }
+  );
+
+
+  speed.addEventListener(
+    "change",
+    () => {
+
+      video.playbackRate =
+        Number(speed.value);
+
+    }
+  );
+
+
+  fullscreen.addEventListener(
+    "click",
+    async () => {
+
+      try {
+
+        if (
+          video.requestFullscreen
+        ) {
+
+          await video.requestFullscreen();
+
+        }
+
+      } catch (error) {
+
+        console.error(error);
+
+      }
+
+    }
+  );
+
+
+  video.addEventListener(
+    "dblclick",
+    () => {
+
+      if (
+        document.fullscreenElement
+      ) {
+
+        document.exitFullscreen();
+
+      } else if (
+        video.requestFullscreen
+      ) {
+
+        video.requestFullscreen();
+
+      }
+
+    }
+  );
+
+
+  video.addEventListener(
+    "error",
+    () => {
+
+      console.error(
+        "Video could not load:",
+        video.currentSrc
+      );
+
+    }
   );
 
 }
 
 
 /* =========================================================
-   LIKE SYSTEM
+   LIKE
    ========================================================= */
 
-async function loadLikeCount(type, itemId) {
+async function handleLike(
+  videoId,
+  card
+) {
+
+  if (!currentUser) {
+
+    showLoginModal();
+
+    return;
+
+  }
+
+
+  const likeId =
+    `${videoId}_${currentUser.uid}`;
+
+
+  const likeRef =
+    doc(
+      db,
+      "likes",
+      likeId
+    );
+
 
   try {
 
-    const q = query(
-      collection(db, "likes"),
-      where("type", "==", type),
-      where("itemId", "==", itemId)
+    const existing =
+      await getDoc(likeRef);
+
+
+    if (existing.exists()) {
+
+      await deleteDoc(
+        likeRef
+      );
+
+    } else {
+
+      await setDoc(
+        likeRef,
+        {
+          videoId,
+          userId: currentUser.uid,
+          userName:
+            currentUser.displayName ||
+            "",
+          email:
+            currentUser.email ||
+            "",
+          createdAt:
+            serverTimestamp()
+        }
+      );
+
+    }
+
+
+    await loadLikeState(
+      videoId,
+      card
     );
 
-    const snapshot =
-      await getDocs(q);
 
-    document
-      .querySelectorAll(
-        `.like-btn[data-type="${CSS.escape(type)}"][data-id="${CSS.escape(itemId)}"]`
-      )
-      .forEach(btn => {
-
-        const count =
-          btn.querySelector(".like-count");
-
-        if (count) {
-          count.textContent =
-            snapshot.size;
-        }
-
-      });
-
+    await loadLikeCount(
+      videoId,
+      card
+    );
 
   } catch (error) {
 
-    console.error("Like count error:", error);
+    console.error(
+      "Like Error:",
+      error
+    );
+
+
+    showToast(
+      "Like save نہیں ہو سکا۔"
+    );
 
   }
 
@@ -1066,19 +1840,40 @@ async function loadLikeCount(type, itemId) {
 
 
 /* =========================================================
-   LIKE CLICK
+   LIKE STATE
    ========================================================= */
 
-async function toggleLike(type, itemId, button) {
+async function loadLikeState(
+  videoId,
+  card
+) {
+
+  const button =
+    card.querySelector(
+      ".like-button"
+    );
+
+
+  const icon =
+    card.querySelector(
+      ".like-icon"
+    );
+
+
+  if (
+    !button ||
+    !icon
+  ) return;
+
 
   if (!currentUser) {
 
-    alert(
-      "Like کرنے کے لیے Google سے Login کریں۔\n\n" +
-      "لائک کرنے کے لیے پہلے Google Login کریں۔"
-    );
+    icon.textContent =
+      "♡";
 
-    await loginWithGoogle();
+    button.classList.remove(
+      "liked"
+    );
 
     return;
 
@@ -1088,272 +1883,49 @@ async function toggleLike(type, itemId, button) {
   try {
 
     const likeId =
-      `${currentUser.uid}_${type}_${itemId}`;
+      `${videoId}_${currentUser.uid}`;
 
 
     const likeRef =
-      doc(db, "likes", likeId);
-
-
-    const existing =
-      await getDoc(likeRef);
-
-
-    if (existing.exists()) {
-
-      await deleteDoc(likeRef);
-
-      button.classList.remove("liked");
-
-    } else {
-
-      await setDoc(likeRef, {
-
-        uid: currentUser.uid,
-
-        type: type,
-
-        itemId: itemId,
-
-        userName:
-          currentUser.displayName || "",
-
-        userPhoto:
-          currentUser.photoURL || "",
-
-        createdAt:
-          serverTimestamp()
-
-      });
-
-      button.classList.add("liked");
-
-    }
-
-
-    await loadLikeCount(type, itemId);
-
-
-  } catch (error) {
-
-    console.error("Like Error:", error);
-
-    alert(
-      "Like میں مسئلہ آیا ہے۔ دوبارہ کوشش کریں۔"
-    );
-
-  }
-
-}
-
-
-/* =========================================================
-   SHARE
-   ========================================================= */
-
-async function shareItem(type, id, title) {
-
-  const url =
-    window.location.origin +
-    window.location.pathname +
-    "#" +
-    type +
-    "-" +
-    encodeURIComponent(id);
-
-
-  try {
-
-    if (navigator.share) {
-
-      await navigator.share({
-
-        title:
-          title || "Bazam-E-Saim",
-
-        text:
-          `${title || "Bazam-E-Saim"} - صائم`,
-
-        url: url
-
-      });
-
-    } else {
-
-      await navigator.clipboard.writeText(url);
-
-      alert(
-        "Link copied!\n\nلنک کاپی ہو گیا ہے۔"
-      );
-
-    }
-
-  } catch (error) {
-
-    if (error.name !== "AbortError") {
-
-      console.error("Share error:", error);
-
-    }
-
-  }
-
-}
-
-
-/* =========================================================
-   COMMENT OPEN / CLOSE
-   ========================================================= */
-
-function toggleComments(type, id) {
-
-  const box =
-    document.getElementById(
-      `comments-${type}-${safeId(id)}`
-    );
-
-  if (!box) return;
-
-
-  if (box.style.display === "none") {
-
-    box.style.display = "block";
-
-    loadComments(type, id);
-
-  } else {
-
-    box.style.display = "none";
-
-  }
-
-}
-
-
-/* =========================================================
-   LOAD COMMENTS
-   ========================================================= */
-
-async function loadComments(type, itemId) {
-
-  const container =
-    document.getElementById(
-      `comments-list-${type}-${safeId(itemId)}`
-    );
-
-  if (!container) return;
-
-
-  container.innerHTML = `
-    <div class="comments-loading">
-      Loading comments...
-    </div>
-  `;
-
-
-  try {
-
-    const q =
-      query(
-        collection(db, "comments"),
-        where("type", "==", type),
-        where("itemId", "==", itemId)
+      doc(
+        db,
+        "likes",
+        likeId
       );
 
 
     const snapshot =
-      await getDocs(q);
+      await getDoc(
+        likeRef
+      );
 
 
-    const comments =
-      snapshot.docs
-        .map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        }))
-        .sort((a, b) => {
+    if (snapshot.exists()) {
 
-          const aTime =
-            a.createdAt?.seconds || 0;
+      icon.textContent =
+        "♥";
 
-          const bTime =
-            b.createdAt?.seconds || 0;
+      button.classList.add(
+        "liked"
+      );
 
-          return bTime - aTime;
+    } else {
 
-        });
+      icon.textContent =
+        "♡";
 
-
-    if (comments.length === 0) {
-
-      container.innerHTML = `
-        <div class="no-comments">
-          No comments yet.
-          <br>
-          ابھی کوئی تبصرہ نہیں۔
-        </div>
-      `;
-
-      return;
+      button.classList.remove(
+        "liked"
+      );
 
     }
 
-
-    container.innerHTML =
-      comments
-        .map(comment => {
-
-          const name =
-            comment.userName ||
-            "User";
-
-
-          const photo =
-            comment.userPhoto ||
-            "logo.png";
-
-
-          return `
-
-            <div class="comment-item">
-
-              <img
-                src="${escapeAttribute(photo)}"
-                class="comment-avatar"
-                alt=""
-              >
-
-
-              <div class="comment-body">
-
-                <strong>
-                  ${escapeHTML(name)}
-                </strong>
-
-
-                <p>
-                  ${escapeHTML(comment.text || "")}
-                </p>
-
-              </div>
-
-            </div>
-
-          `;
-
-        })
-        .join("");
-
-
   } catch (error) {
 
-    console.error("Comments Error:", error);
-
-    container.innerHTML = `
-      <div class="comments-error">
-        Comments load نہیں ہو سکے۔
-      </div>
-    `;
+    console.error(
+      "Like state error:",
+      error
+    );
 
   }
 
@@ -1361,33 +1933,128 @@ async function loadComments(type, itemId) {
 
 
 /* =========================================================
-   ADD COMMENT
+   LIKE COUNT
    ========================================================= */
 
-async function addComment(form) {
+async function loadLikeCount(
+  videoId,
+  card
+) {
+
+  const countElement =
+    card.querySelector(
+      ".like-count"
+    );
+
+
+  if (!countElement) return;
+
+
+  try {
+
+    const likesQuery =
+      query(
+        collection(
+          db,
+          "likes"
+        ),
+        where(
+          "videoId",
+          "==",
+          videoId
+        )
+      );
+
+
+    const snapshot =
+      await getDocs(
+        likesQuery
+      );
+
+
+    countElement.textContent =
+      snapshot.size;
+
+  } catch (error) {
+
+    console.error(
+      "Like count error:",
+      error
+    );
+
+    countElement.textContent =
+      "0";
+
+  }
+
+}
+
+
+/* =========================================================
+   COMMENT BUTTON
+   ========================================================= */
+
+function handleCommentButton(
+  videoId,
+  card
+) {
 
   if (!currentUser) {
 
-    alert(
-      "Comment کرنے کے لیے Google سے Login کریں۔\n\n" +
-      "تبصرہ کرنے کے لیے پہلے Google Login کریں۔"
-    );
-
-    await loginWithGoogle();
+    showLoginModal();
 
     return;
 
   }
 
 
-  const type =
-    form.dataset.type;
+  const area =
+    card.querySelector(
+      ".comments-area"
+    );
 
-  const itemId =
-    form.dataset.id;
+
+  if (!area) return;
+
+
+  area.hidden =
+    !area.hidden;
+
+
+  if (!area.hidden) {
+
+    loadComments(
+      videoId,
+      card
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   SUBMIT COMMENT
+   ========================================================= */
+
+async function submitComment(
+  videoId,
+  card
+) {
+
+  if (!currentUser) {
+
+    showLoginModal();
+
+    return;
+
+  }
+
 
   const input =
-    form.querySelector("input[name='comment']");
+    card.querySelector(
+      ".comment-input"
+    );
 
 
   if (!input) return;
@@ -1397,19 +2064,13 @@ async function addComment(form) {
     input.value.trim();
 
 
-  if (!text) return;
+  if (!text) {
 
+    showToast(
+      "پہلے Comment لکھیں۔"
+    );
 
-  const submit =
-    form.querySelector("button[type='submit']");
-
-
-  if (submit) {
-
-    submit.disabled = true;
-
-    submit.textContent =
-      "Sending...";
+    return;
 
   }
 
@@ -1417,23 +2078,28 @@ async function addComment(form) {
   try {
 
     await addDoc(
-      collection(db, "comments"),
+      collection(
+        db,
+        "comments"
+      ),
       {
 
-        type: type,
+        videoId,
 
-        itemId: itemId,
+        text,
 
-        text: text,
-
-        uid:
+        userId:
           currentUser.uid,
 
         userName:
           currentUser.displayName ||
           "User",
 
-        userPhoto:
+        email:
+          currentUser.email ||
+          "",
+
+        photoURL:
           currentUser.photoURL ||
           "",
 
@@ -1446,26 +2112,212 @@ async function addComment(form) {
 
     input.value = "";
 
-    await loadComments(type, itemId);
+
+    showToast(
+      "Comment add ہوگیا۔"
+    );
+
+
+    await loadComments(
+      videoId,
+      card
+    );
+
+
+    await loadCommentCount(
+      videoId,
+      card
+    );
+
+  } catch (error) {
+
+    console.error(
+      "Comment Error:",
+      error
+    );
+
+
+    showToast(
+      "Comment save نہیں ہو سکا۔"
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   LOAD COMMENTS
+   ========================================================= */
+
+async function loadComments(
+  videoId,
+  card
+) {
+
+  const list =
+    card.querySelector(
+      ".comments-list"
+    );
+
+
+  if (!list) return;
+
+
+  list.innerHTML = `
+    <div class="comments-loading">
+      Comments loading...
+    </div>
+  `;
+
+
+  try {
+
+    const commentsQuery =
+      query(
+        collection(
+          db,
+          "comments"
+        ),
+        where(
+          "videoId",
+          "==",
+          videoId
+        )
+      );
+
+
+    const snapshot =
+      await getDocs(
+        commentsQuery
+      );
+
+
+    if (snapshot.empty) {
+
+      list.innerHTML = `
+
+        <div class="no-comments">
+
+          ابھی کوئی Comment نہیں۔
+
+        </div>
+
+      `;
+
+      return;
+
+    }
+
+
+    const comments =
+      snapshot.docs.map(
+        item => ({
+          id: item.id,
+          ...item.data()
+        })
+      );
+
+
+    comments.sort(
+      (a, b) => {
+
+        const aTime =
+          a.createdAt?.seconds ||
+          0;
+
+        const bTime =
+          b.createdAt?.seconds ||
+          0;
+
+        return bTime - aTime;
+
+      }
+    );
+
+
+    list.innerHTML = "";
+
+
+    comments.forEach(
+      comment => {
+
+        const item =
+          document.createElement(
+            "div"
+          );
+
+
+        item.className =
+          "comment-item";
+
+
+        item.innerHTML = `
+
+          <div class="comment-user">
+
+            ${
+              comment.photoURL
+                ? `
+                  <img
+                    src="${escapeHTML(
+                      comment.photoURL
+                    )}"
+                    alt=""
+                  >
+                `
+                : `
+                  <span class="comment-avatar">
+                    👤
+                  </span>
+                `
+            }
+
+
+            <strong>
+              ${escapeHTML(
+                comment.userName ||
+                "User"
+              )}
+            </strong>
+
+          </div>
+
+
+          <p>
+            ${escapeHTML(
+              comment.text || ""
+            )}
+          </p>
+
+        `;
+
+
+        list.appendChild(
+          item
+        );
+
+      }
+    );
 
 
   } catch (error) {
 
-    console.error("Comment Error:", error);
-
-    alert(
-      "Comment send نہیں ہو سکا۔"
+    console.error(
+      "Comments Error:",
+      error
     );
 
-  }
 
+    list.innerHTML = `
 
-  if (submit) {
+      <div class="no-comments">
 
-    submit.disabled = false;
+        Comments load نہیں ہو سکے۔
 
-    submit.textContent =
-      "Send";
+      </div>
+
+    `;
 
   }
 
@@ -1473,157 +2325,376 @@ async function addComment(form) {
 
 
 /* =========================================================
-   EVENT HANDLER
+   COMMENT COUNT
    ========================================================= */
 
-document.addEventListener("click", async (event) => {
+async function loadCommentCount(
+  videoId,
+  card
+) {
 
-
-  /* LIKE */
-
-  const likeBtn =
-    event.target.closest(".like-btn");
-
-  if (likeBtn) {
-
-    await toggleLike(
-
-      likeBtn.dataset.type,
-
-      likeBtn.dataset.id,
-
-      likeBtn
-
+  const count =
+    card.querySelector(
+      ".comment-count"
     );
 
-    return;
 
-  }
+  if (!count) return;
 
 
-  /* SHARE */
+  try {
 
-  const shareBtn =
-    event.target.closest(".share-btn");
+    const commentsQuery =
+      query(
+        collection(
+          db,
+          "comments"
+        ),
+        where(
+          "videoId",
+          "==",
+          videoId
+        )
+      );
 
-  if (shareBtn) {
 
-    await shareItem(
+    const snapshot =
+      await getDocs(
+        commentsQuery
+      );
 
-      shareBtn.dataset.type,
 
-      shareBtn.dataset.id,
+    count.textContent =
+      snapshot.size;
 
-      shareBtn.dataset.title
+  } catch (error) {
 
+    console.error(
+      "Comment count error:",
+      error
     );
 
-    return;
+    count.textContent =
+      "0";
 
   }
-
-
-  /* COMMENTS */
-
-  const commentBtn =
-    event.target.closest(".comment-open-btn");
-
-  if (commentBtn) {
-
-    toggleComments(
-
-      commentBtn.dataset.type,
-
-      commentBtn.dataset.id
-
-    );
-
-    return;
-
-  }
-
-});
-
-
-/* =========================================================
-   COMMENT FORM
-   ========================================================= */
-
-document.addEventListener("submit", async (event) => {
-
-  const form =
-    event.target.closest(".comment-form");
-
-  if (!form) return;
-
-  event.preventDefault();
-
-  await addComment(form);
-
-});
-
-
-/* =========================================================
-   HELPERS
-   ========================================================= */
-
-function safeId(value) {
-
-  return String(value)
-    .replace(/[^a-zA-Z0-9_-]/g, "_");
-
-}
-
-
-function escapeHTML(value) {
-
-  return String(value ?? "")
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
-
-}
-
-
-function escapeAttribute(value) {
-
-  return escapeHTML(value);
 
 }
 
 
 /* =========================================================
-   INITIAL LOAD
+   SHARE
    ========================================================= */
 
-document.addEventListener("DOMContentLoaded", () => {
+async function shareVideo(
+  video,
+  videoId
+) {
 
-  loadBooks();
+  const title =
+    video.title ||
+    "Bazam-E-Saim";
 
-  loadVideos();
 
-});
+  const url =
+    new URL(
+      window.location.href
+    );
+
+
+  url.hash =
+    `video-${encodeURIComponent(videoId)}`;
+
+
+  const shareData = {
+
+    title,
+
+    text:
+      `${title} — Bazam-E-Saim`,
+
+    url:
+      url.href
+
+  };
+
+
+  try {
+
+    if (
+      navigator.share
+    ) {
+
+      await navigator.share(
+        shareData
+      );
+
+      return;
+
+    }
+
+
+    await navigator.clipboard.writeText(
+      url.href
+    );
+
+
+    showToast(
+      "Video link copy ہوگیا۔"
+    );
+
+  } catch (error) {
+
+    if (
+      error.name !==
+      "AbortError"
+    ) {
+
+      console.error(
+        "Share error:",
+        error
+      );
+
+    }
+
+  }
+
+}
 
 
 /* =========================================================
-   RELOAD FUNCTIONS
+   GENERAL SHARE BUTTONS
    ========================================================= */
 
-window.loadBooks =
-  loadBooks;
+function setupShareButtons() {
 
-window.loadVideos =
-  loadVideos;
+  document
+    .querySelectorAll(
+      ".share-button:not(.video-action)"
+    )
+    .forEach(
+      button => {
 
-window.loginWithGoogle =
-  loginWithGoogle;
+        button.addEventListener(
+          "click",
+          async () => {
 
-window.logoutUser =
-  logoutUser;
+            try {
+
+              await navigator.clipboard.writeText(
+                window.location.href
+              );
+
+              showToast(
+                "Link copy ہوگیا۔"
+              );
+
+            } catch (error) {
+
+              console.error(error);
+
+            }
+
+          }
+        );
+
+      }
+    );
+
+}
 
 
 /* =========================================================
-   END
+   PROTECTED BUTTONS
    ========================================================= */
+
+function updateProtectedButtons() {
+
+  document
+    .querySelectorAll(
+      ".login-required"
+    )
+    .forEach(
+      button => {
+
+        button.dataset.loggedIn =
+          currentUser
+            ? "true"
+            : "false";
+
+      }
+    );
+
+}
+
+
+/* =========================================================
+   NAVIGATION
+   ========================================================= */
+
+function initNavigation() {
+
+  document
+    .querySelectorAll(
+      "[data-nav]"
+    )
+    .forEach(
+      link => {
+
+        link.addEventListener(
+          "click",
+          event => {
+
+            const target =
+              link.dataset.nav;
+
+
+            if (!target) return;
+
+
+            event.preventDefault();
+
+
+            const section =
+              document.getElementById(
+                target
+              );
+
+
+            if (section) {
+
+              section.scrollIntoView({
+                behavior: "smooth"
+              });
+
+            }
+
+          }
+        );
+
+      }
+    );
+
+}
+
+
+/* =========================================================
+   TOAST
+   ========================================================= */
+
+function showToast(
+  message
+) {
+
+  let toast =
+    document.getElementById(
+      "bazam-toast"
+    );
+
+
+  if (!toast) {
+
+    toast =
+      document.createElement(
+        "div"
+      );
+
+
+    toast.id =
+      "bazam-toast";
+
+
+    document.body.appendChild(
+      toast
+    );
+
+  }
+
+
+  toast.textContent =
+    message;
+
+
+  toast.classList.add(
+    "show"
+  );
+
+
+  clearTimeout(
+    window.bazamToastTimer
+  );
+
+
+  window.bazamToastTimer =
+    setTimeout(
+      () => {
+
+        toast.classList.remove(
+          "show"
+        );
+
+      },
+      3000
+    );
+
+}
+
+
+/* =========================================================
+   ESCAPE HTML
+   ========================================================= */
+
+function escapeHTML(
+  value
+) {
+
+  return String(
+    value ?? ""
+  )
+    .replace(
+      /&/g,
+      "&amp;"
+    )
+    .replace(
+      /</g,
+      "&lt;"
+    )
+    .replace(
+      />/g,
+      "&gt;"
+    )
+    .replace(
+      /"/g,
+      "&quot;"
+    )
+    .replace(
+      /'/g,
+      "&#039;"
+    );
+
+}
+
+
+/* =========================================================
+   GLOBAL ACCESS
+   ========================================================= */
+
+window.bazamSaim = {
+
+  auth,
+
+  db,
+
+  googleLogin,
+
+  logoutUser,
+
+  loadBooks,
+
+  loadVideos,
+
+  books,
+
+  videos
+
+};
