@@ -1,0 +1,1011 @@
+/* =====================================================
+   BAZAM-E-SAIM VIDEO PLAYER
+   ===================================================== */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+
+body {
+  font-family:
+    Arial,
+    Helvetica,
+    sans-serif;
+
+  background:
+    #080808;
+
+  color:
+    #ffffff;
+
+  min-height:
+    100vh;
+}
+
+
+/* ================= HEADER ================= */
+
+.top-header {
+  width: 100%;
+
+  min-height: 70px;
+
+  padding:
+    10px 5%;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  background:
+    #0b0b0b;
+
+  border-bottom:
+    1px solid #252525;
+
+  position: sticky;
+
+  top: 0;
+
+  z-index: 100;
+}
+
+
+.brand {
+  display: flex;
+
+  align-items: center;
+
+  gap: 12px;
+
+  text-decoration: none;
+
+  color: #ffffff;
+}
+
+
+.brand img {
+  width: 48px;
+
+  height: 48px;
+
+  object-fit: contain;
+
+  border-radius: 50%;
+}
+
+
+.brand strong {
+  display: block;
+
+  font-size: 19px;
+
+  color: #d4af37;
+}
+
+
+.brand span {
+  display: block;
+
+  font-size: 13px;
+
+  margin-top: 2px;
+
+  color: #eeeeee;
+}
+
+
+.back-home {
+  color:
+    #d4af37;
+
+  text-decoration:
+    none;
+
+  border:
+    1px solid #d4af37;
+
+  padding:
+    9px 15px;
+
+  border-radius:
+    8px;
+
+  transition:
+    0.2s;
+}
+
+
+.back-home:hover {
+  background:
+    #d4af37;
+
+  color:
+    #000000;
+}
+
+
+/* ================= PAGE ================= */
+
+.video-page {
+  width: 100%;
+
+  max-width: 1100px;
+
+  margin:
+    30px auto;
+
+  padding:
+    0 18px;
+}
+
+
+/* ================= PLAYER ================= */
+
+.player-card {
+  background:
+    #111111;
+
+  border:
+    1px solid #242424;
+
+  border-radius:
+    14px;
+
+  overflow:
+    hidden;
+
+  box-shadow:
+    0 15px 50px rgba(0, 0, 0, 0.45);
+}
+
+
+.video-container {
+  position:
+    relative;
+
+  width:
+    100%;
+
+  background:
+    #000000;
+
+  overflow:
+    hidden;
+
+  aspect-ratio:
+    16 / 9;
+}
+
+
+.video-container video {
+  width:
+    100%;
+
+  height:
+    100%;
+
+  display:
+    block;
+
+  object-fit:
+    contain;
+
+  background:
+    #000000;
+}
+
+
+/* ================= CENTER PLAY ================= */
+
+.center-play {
+  position:
+    absolute;
+
+  top:
+    50%;
+
+  left:
+    50%;
+
+  transform:
+    translate(-50%, -50%);
+
+  width:
+    75px;
+
+  height:
+    75px;
+
+  border:
+    2px solid #d4af37;
+
+  border-radius:
+    50%;
+
+  background:
+    rgba(0, 0, 0, 0.75);
+
+  color:
+    #d4af37;
+
+  font-size:
+    30px;
+
+  cursor:
+    pointer;
+
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    center;
+
+  z-index:
+    5;
+
+  transition:
+    0.2s;
+}
+
+
+.center-play:hover {
+  transform:
+    translate(-50%, -50%)
+    scale(1.08);
+
+  background:
+    #d4af37;
+
+  color:
+    #000000;
+}
+
+
+.center-play.hidden {
+  opacity:
+    0;
+
+  pointer-events:
+    none;
+}
+
+
+/* ================= CONTROLS ================= */
+
+.video-controls {
+  position:
+    absolute;
+
+  left:
+    0;
+
+  right:
+    0;
+
+  bottom:
+    0;
+
+  padding:
+    8px 12px 12px;
+
+  background:
+    linear-gradient(
+      transparent,
+      rgba(0, 0, 0, 0.95)
+    );
+
+  z-index:
+    10;
+
+  transition:
+    opacity 0.25s;
+}
+
+
+.video-container.hide-controls
+.video-controls {
+  opacity:
+    0;
+
+  pointer-events:
+    none;
+}
+
+
+.progress-area {
+  width:
+    100%;
+
+  margin-bottom:
+    6px;
+}
+
+
+#progressBar {
+  width:
+    100%;
+
+  height:
+    5px;
+
+  cursor:
+    pointer;
+}
+
+
+/* ================= CONTROL ROW ================= */
+
+.controls-row {
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  gap:
+    7px;
+}
+
+
+.control-btn {
+  border:
+    none;
+
+  background:
+    transparent;
+
+  color:
+    #ffffff;
+
+  min-width:
+    34px;
+
+  height:
+    34px;
+
+  padding:
+    3px;
+
+  border-radius:
+    6px;
+
+  cursor:
+    pointer;
+
+  font-size:
+    15px;
+
+  transition:
+    0.2s;
+}
+
+
+.control-btn:hover {
+  background:
+    rgba(212, 175, 55, 0.2);
+
+  color:
+    #d4af37;
+}
+
+
+.volume-bar {
+  width:
+    85px;
+
+  cursor:
+    pointer;
+}
+
+
+.time-display {
+  color:
+    #ffffff;
+
+  font-size:
+    13px;
+
+  white-space:
+    nowrap;
+}
+
+
+.control-spacer {
+  flex:
+    1;
+}
+
+
+.speed-select {
+  background:
+    #111111;
+
+  color:
+    #ffffff;
+
+  border:
+    1px solid #444444;
+
+  border-radius:
+    5px;
+
+  padding:
+    6px 7px;
+
+  cursor:
+    pointer;
+}
+
+
+.speed-select:focus {
+  outline:
+    1px solid #d4af37;
+}
+
+
+/* ================= VIDEO INFO ================= */
+
+.video-info {
+  padding:
+    22px;
+}
+
+
+.video-info h1 {
+  color:
+    #ffffff;
+
+  font-size:
+    25px;
+
+  line-height:
+    1.35;
+
+  margin-bottom:
+    8px;
+}
+
+
+.video-info h2 {
+  color:
+    #d4af37;
+
+  font-size:
+    19px;
+
+  font-weight:
+    normal;
+
+  margin-bottom:
+    12px;
+
+  direction:
+    rtl;
+
+  text-align:
+    left;
+}
+
+
+.video-info p {
+  color:
+    #bbbbbb;
+
+  line-height:
+    1.7;
+
+  font-size:
+    15px;
+}
+
+
+/* ================= ACTIONS ================= */
+
+.video-actions {
+  display:
+    flex;
+
+  flex-wrap:
+    wrap;
+
+  gap:
+    10px;
+
+  margin-top:
+    20px;
+
+  padding-top:
+    18px;
+
+  border-top:
+    1px solid #292929;
+}
+
+
+.action-btn {
+  border:
+    1px solid #363636;
+
+  background:
+    #1a1a1a;
+
+  color:
+    #ffffff;
+
+  border-radius:
+    22px;
+
+  padding:
+    9px 15px;
+
+  cursor:
+    pointer;
+
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  gap:
+    7px;
+
+  font-size:
+    14px;
+
+  transition:
+    0.2s;
+}
+
+
+.action-btn:hover {
+  border-color:
+    #d4af37;
+
+  color:
+    #d4af37;
+}
+
+
+.action-btn.liked {
+  color:
+    #d4af37;
+
+  border-color:
+    #d4af37;
+}
+
+
+.action-icon {
+  font-size:
+    20px;
+}
+
+
+.action-btn.liked
+.action-icon {
+  color:
+    #d4af37;
+}
+
+
+/* ================= COMMENTS ================= */
+
+.comments-section {
+  margin-top:
+    25px;
+
+  background:
+    #111111;
+
+  border:
+    1px solid #242424;
+
+  border-radius:
+    14px;
+
+  padding:
+    22px;
+}
+
+
+.comments-header {
+  display:
+    flex;
+
+  align-items:
+    baseline;
+
+  gap:
+    10px;
+
+  margin-bottom:
+    18px;
+}
+
+
+.comments-header h2 {
+  font-size:
+    21px;
+}
+
+
+.comments-header span {
+  color:
+    #d4af37;
+
+  font-size:
+    15px;
+}
+
+
+.comment-form {
+  display:
+    flex;
+
+  flex-direction:
+    column;
+
+  gap:
+    10px;
+}
+
+
+.comment-form textarea {
+  width:
+    100%;
+
+  resize:
+    vertical;
+
+  min-height:
+    90px;
+
+  padding:
+    12px;
+
+  border:
+    1px solid #333333;
+
+  border-radius:
+    8px;
+
+  background:
+    #080808;
+
+  color:
+    #ffffff;
+
+  font-size:
+    15px;
+}
+
+
+.comment-form textarea:focus {
+  outline:
+    none;
+
+  border-color:
+    #d4af37;
+}
+
+
+.comment-submit {
+  align-self:
+    flex-start;
+
+  padding:
+    10px 17px;
+
+  border:
+    none;
+
+  border-radius:
+    7px;
+
+  background:
+    #d4af37;
+
+  color:
+    #000000;
+
+  font-weight:
+    bold;
+
+  cursor:
+    pointer;
+}
+
+
+.comment-submit:hover {
+  opacity:
+    0.85;
+}
+
+
+.comments-list {
+  margin-top:
+    20px;
+}
+
+
+.comment-item {
+  padding:
+    14px 0;
+
+  border-bottom:
+    1px solid #292929;
+}
+
+
+.comment-name {
+  color:
+    #d4af37;
+
+  font-weight:
+    bold;
+
+  margin-bottom:
+    5px;
+}
+
+
+.comment-text {
+  color:
+    #dddddd;
+
+  line-height:
+    1.5;
+}
+
+
+.no-comments {
+  color:
+    #888888;
+}
+
+
+/* ================= TOAST ================= */
+
+.video-toast {
+  position:
+    fixed;
+
+  bottom:
+    25px;
+
+  left:
+    50%;
+
+  transform:
+    translateX(-50%)
+    translateY(20px);
+
+  background:
+    #d4af37;
+
+  color:
+    #000000;
+
+  padding:
+    11px 18px;
+
+  border-radius:
+    8px;
+
+  font-weight:
+    bold;
+
+  opacity:
+    0;
+
+  pointer-events:
+    none;
+
+  transition:
+    0.25s;
+
+  z-index:
+    9999;
+}
+
+
+.video-toast.show {
+  opacity:
+    1;
+
+  transform:
+    translateX(-50%)
+    translateY(0);
+}
+
+
+/* ================= ERROR ================= */
+
+.video-error {
+  min-height:
+    350px;
+
+  display:
+    flex;
+
+  flex-direction:
+    column;
+
+  align-items:
+    center;
+
+  justify-content:
+    center;
+
+  text-align:
+    center;
+
+  padding:
+    30px;
+}
+
+
+.video-error h2 {
+  color:
+    #d4af37;
+
+  margin-bottom:
+    12px;
+}
+
+
+.video-error p {
+  color:
+    #aaaaaa;
+
+  margin-bottom:
+    20px;
+}
+
+
+.video-error a {
+  color:
+    #d4af37;
+
+  text-decoration:
+    none;
+}
+
+
+/* ================= MOBILE ================= */
+
+@media (max-width: 700px) {
+
+  .top-header {
+    padding:
+      9px 14px;
+  }
+
+
+  .brand strong {
+    font-size:
+      16px;
+  }
+
+
+  .brand span {
+    font-size:
+      11px;
+  }
+
+
+  .brand img {
+    width:
+      42px;
+
+    height:
+      42px;
+  }
+
+
+  .back-home {
+    padding:
+      7px 10px;
+
+    font-size:
+      13px;
+  }
+
+
+  .video-page {
+    margin:
+      12px auto;
+
+    padding:
+      0 8px;
+  }
+
+
+  .player-card {
+    border-radius:
+      8px;
+  }
+
+
+  .video-info {
+    padding:
+      16px;
+  }
+
+
+  .video-info h1 {
+    font-size:
+      20px;
+  }
+
+
+  .video-info h2 {
+    font-size:
+      16px;
+  }
+
+
+  .controls-row {
+    gap:
+      2px;
+  }
+
+
+  .control-btn {
+    min-width:
+      29px;
+
+    font-size:
+      12px;
+  }
+
+
+  .volume-bar {
+    display:
+      none;
+  }
+
+
+  .time-display {
+    font-size:
+      11px;
+  }
+
+
+  .speed-select {
+    font-size:
+      11px;
+
+    padding:
+      5px 3px;
+  }
+
+
+  .center-play {
+    width:
+      58px;
+
+    height:
+      58px;
+
+    font-size:
+      23px;
+  }
+
+
+  .comments-section {
+    padding:
+      16px;
+  }
+
+}
