@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+  <meta name="theme-color"
+        content="#000000">
+
+  <title>Video | Bazam-E-Saim</title>
+
+  <link rel="icon"
+        type="image/png"
+        href="logo.png">
+
+  <link rel="stylesheet"
+        href="video.css">
+</head>
+
+<body>
+
+  <!-- ================= HEADER ================= -->
+
+  <header class="top-header">
+
+    <a href="index.html"
+       class="brand">
+
+      <img src="logo.png"
+           alt="Bazam-E-Saim Logo">
+
+      <div>
+        <strong>Bazam-E-Saim</strong>
+        <span>بزمِ صائم</span>
+      </div>
+
+    </a>
+
+    <a href="index.html"
+       class="back-home">
+      ← Home
+    </a>
+
+  </header>
+
+
+  <!-- ================= MAIN ================= -->
+
+  <main class="video-page">
+
+    <!-- VIDEO PLAYER -->
+
+    <section class="player-card">
+
+      <div class="video-container"
+           id="videoContainer">
+
+        <video
+          id="videoPlayer"
+          preload="metadata"
+          playsinline
+          crossorigin="anonymous">
+        </video>
+
+
+        <!-- CENTER PLAY -->
+
+        <button
+          id="centerPlay"
+          class="center-play"
+          aria-label="Play">
+          ▶
+        </button>
+
+
+        <!-- CONTROLS -->
+
+        <div class="video-controls"
+             id="videoControls">
+
+          <!-- PROGRESS -->
+
+          <div class="progress-area">
+
+            <input
+              type="range"
+              id="progressBar"
+              min="0"
+              max="100"
+              value="0"
+              step="0.1">
+
+          </div>
+
+
+          <div class="controls-row">
+
+            <!-- PLAY / PAUSE -->
+
+            <button
+              id="playPauseBtn"
+              class="control-btn"
+              title="Play / Pause">
+              ▶
+            </button>
+
+
+            <!-- STOP -->
+
+            <button
+              id="stopBtn"
+              class="control-btn"
+              title="Stop">
+              ■
+            </button>
+
+
+            <!-- BACK 10 -->
+
+            <button
+              id="backBtn"
+              class="control-btn"
+              title="Back 10 seconds">
+              ↶10
+            </button>
+
+
+            <!-- FORWARD 10 -->
+
+            <button
+              id="forwardBtn"
+              class="control-btn"
+              title="Forward 10 seconds">
+              10↷
+            </button>
+
+
+            <!-- VOLUME -->
+
+            <button
+              id="muteBtn"
+              class="control-btn"
+              title="Mute">
+              🔊
+            </button>
+
+            <input
+              type="range"
+              id="volumeBar"
+              class="volume-bar"
+              min="0"
+              max="1"
+              step="0.01"
+              value="1">
+
+
+            <!-- TIME -->
+
+            <span
+              id="timeDisplay"
+              class="time-display">
+              0:00 / 0:00
+            </span>
+
+
+            <div class="control-spacer"></div>
+
+
+            <!-- SPEED -->
+
+            <select
+              id="speedSelect"
+              class="speed-select"
+              title="Playback speed">
+
+              <option value="0.5">0.5x</option>
+              <option value="0.75">0.75x</option>
+              <option value="1" selected>Normal</option>
+              <option value="1.25">1.25x</option>
+              <option value="1.5">1.5x</option>
+              <option value="1.75">1.75x</option>
+              <option value="2">2x</option>
+
+            </select>
+
+
+            <!-- PICTURE IN PICTURE -->
+
+            <button
+              id="pipBtn"
+              class="control-btn"
+              title="Picture in Picture">
+              ▣
+            </button>
+
+
+            <!-- FULLSCREEN -->
+
+            <button
+              id="fullscreenBtn"
+              class="control-btn"
+              title="Fullscreen">
+              ⛶
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- VIDEO INFO -->
+
+      <div class="video-info">
+
+        <h1 id="videoTitle">
+          Loading...
+        </h1>
+
+        <h2 id="videoTitleUrdu">
+        </h2>
+
+        <p id="videoDescription">
+        </p>
+
+
+        <!-- ACTIONS -->
+
+        <div class="video-actions">
+
+          <button
+            id="likeBtn"
+            class="action-btn">
+
+            <span class="action-icon">
+              ♡
+            </span>
+
+            <span>
+              Like
+            </span>
+
+            <span
+              id="likeCount">
+              0
+            </span>
+
+          </button>
+
+
+          <button
+            id="commentBtn"
+            class="action-btn">
+
+            💬
+            <span>
+              Comment
+            </span>
+
+          </button>
+
+
+          <button
+            id="shareBtn"
+            class="action-btn">
+
+            🔗
+            <span>
+              Share
+            </span>
+
+          </button>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- ================= COMMENTS ================= -->
+
+    <section
+      id="commentsSection"
+      class="comments-section">
+
+      <div class="comments-header">
+
+        <h2>
+          Comments
+        </h2>
+
+        <span>
+          تبصرے
+        </span>
+
+      </div>
+
+
+      <form
+        id="commentForm"
+        class="comment-form">
+
+        <textarea
+          id="commentInput"
+          placeholder="Write your comment... / اپنا تبصرہ لکھیں..."
+          rows="3"
+          maxlength="500"
+          required>
+        </textarea>
+
+        <button
+          type="submit"
+          class="comment-submit">
+
+          Post Comment
+
+        </button>
+
+      </form>
+
+
+      <div
+        id="commentsList"
+        class="comments-list">
+
+        <p class="no-comments">
+          No comments yet.
+        </p>
+
+      </div>
+
+    </section>
+
+  </main>
+
+
+  <!-- TOAST -->
+
+  <div
+    id="videoToast"
+    class="video-toast">
+  </div>
+
+
+  <script
+    src="video.js">
+  </script>
+
+</body>
+</html>
