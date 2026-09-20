@@ -1,590 +1,712 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+/* =========================================================
+   BAZAM-E-SAIM ADMIN
+   Google Login + Firebase Admin Dashboard
+   ========================================================= */
+
+import {
+  initializeApp
+} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+
 
 import {
   getAuth,
   GoogleAuthProvider,
   signInWithPopup,
-  signOut,
-  onAuthStateChanged
+  onAuthStateChanged,
+  signOut
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
 
 import {
   getFirestore,
   collection,
-  addDoc,
-  getDocs,
-  deleteDoc,
-  doc,
-  serverTimestamp
+  getDocs
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-import {
-  getStorage,
-  ref,
-  uploadBytes,
-  getDownloadURL,
-  deleteObject
-} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
 
-
-/* =========================================
-   FIREBASE CONFIG
-========================================= */
+/* =========================================================
+   FIREBASE
+   ========================================================= */
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBFzwp8jL3J1oUxAeDDq23T2CmydtgTa1k",
-  authDomain: "bazamesaiminternational.firebaseapp.com",
-  projectId: "bazamesaiminternational",
-  storageBucket: "bazamesaiminternational.firebasestorage.app",
-  messagingSenderId: "879282438130",
-  appId: "1:879282438130:web:a285d48f427e6659e3f56b",
-  measurementId: "G-S79YY7WPWX"
+
+  apiKey:
+    "AIzaSyBFzwp8jL3J1oUxAeDDq23T2CmydtgTa1k",
+
+  authDomain:
+    "bazamesaiminternational.firebaseapp.com",
+
+  projectId:
+    "bazamesaiminternational",
+
+  storageBucket:
+    "bazamesaiminternational.firebasestorage.app",
+
+  messagingSenderId:
+    "879282438130",
+
+  appId:
+    "1:879282438130:web:a285d48f427e6659e3f56b",
+
+  measurementId:
+    "G-S79YY7WPWX"
+
 };
 
 
-/* =========================================
-   INITIALIZE
-========================================= */
-
-const app = initializeApp(firebaseConfig);
-
-const auth = getAuth(app);
-const db = getFirestore(app);
-const storage = getStorage(app);
-
-const provider = new GoogleAuthProvider();
+const app =
+  initializeApp(firebaseConfig);
 
 
-/* =========================================
-   ELEMENTS
-========================================= */
-
-const loginScreen = document.getElementById("loginScreen");
-const adminPanel = document.getElementById("adminPanel");
-
-const adminGoogleLogin =
-  document.getElementById("adminGoogleLogin");
-
-const loginStatus =
-  document.getElementById("loginStatus");
-
-const logoutBtn =
-  document.getElementById("logoutBtn");
-
-const adminUser =
-  document.getElementById("adminUser");
-
-const videoTitle =
-  document.getElementById("videoTitle");
-
-const videoDescription =
-  document.getElementById("videoDescription");
-
-const videoFile =
-  document.getElementById("videoFile");
-
-const uploadVideoBtn =
-  document.getElementById("uploadVideoBtn");
-
-const status =
-  document.getElementById("status");
-
-const videoList =
-  document.getElementById("videoList");
+const auth =
+  getAuth(app);
 
 
-/* =========================================
+const db =
+  getFirestore(app);
+
+
+const googleProvider =
+  new GoogleAuthProvider();
+
+
+console.log(
+  "Admin Firebase connected:",
+  firebaseConfig.projectId
+);
+
+
+/* =========================================================
    ADMIN EMAIL
-========================================= */
+   =========================================================
 
-/*
-  Yahan apna Google account email likho.
+   IMPORTANT:
 
-  Example:
+   YAHAN APNA GMAIL LIKHNA HAI.
 
-  const ADMIN_EMAILS = [
-    "yourgmail@gmail.com"
-  ];
+   Example:
+
+   const ADMIN_EMAILS = [
+     "yourgmail@gmail.com"
+   ];
 
 */
 
 const ADMIN_EMAILS = [
-  "YOUR-GOOGLE-EMAIL@gmail.com"
+
+  "bazamesaiminternational@gmail.com"
+
 ];
 
 
-/* =========================================
+/* =========================================================
+   ELEMENTS
+   ========================================================= */
+
+const loginPage =
+  document.getElementById("admin-login");
+
+const dashboard =
+  document.getElementById("admin-dashboard");
+
+const googleLogin =
+  document.getElementById("google-login");
+
+const logoutButton =
+  document.getElementById("logout-btn");
+
+const loginMessage =
+  document.getElementById("login-message");
+
+const adminName =
+  document.getElementById("admin-name");
+
+const adminEmail =
+  document.getElementById("admin-email");
+
+const adminPhoto =
+  document.getElementById("admin-photo");
+
+const bookCount =
+  document.getElementById("book-count");
+
+const videoCount =
+  document.getElementById("video-count");
+
+const commentCount =
+  document.getElementById("comment-count");
+
+const likeCount =
+  document.getElementById("like-count");
+
+const adminData =
+  document.getElementById("admin-data");
+
+const panelTitle =
+  document.getElementById("panel-title");
+
+
+/* =========================================================
    GOOGLE LOGIN
-========================================= */
+   ========================================================= */
 
-adminGoogleLogin.addEventListener("click", async () => {
+googleLogin.addEventListener(
+  "click",
+  async () => {
 
-  try {
+    loginMessage.textContent =
+      "Google Login ہو رہا ہے...";
 
-    loginStatus.textContent = "Signing in...";
+    googleLogin.disabled = true;
 
-    const result =
-      await signInWithPopup(auth, provider);
 
-    const user = result.user;
+    try {
 
-    if (
-      ADMIN_EMAILS.length > 0 &&
-      !ADMIN_EMAILS.includes(user.email)
-    ) {
+      await signInWithPopup(
+        auth,
+        googleProvider
+      );
+
+
+    } catch (error) {
+
+      console.error(
+        "Google Login Error:",
+        error
+      );
+
+
+      loginMessage.textContent =
+        getAuthError(error.code);
+
+
+      googleLogin.disabled = false;
+
+    }
+
+  }
+);
+
+
+/* =========================================================
+   AUTH STATE
+   ========================================================= */
+
+onAuthStateChanged(
+  auth,
+  async (user) => {
+
+    if (!user) {
+
+      showLogin();
+
+      return;
+
+    }
+
+
+    console.log(
+      "Logged in:",
+      user.email
+    );
+
+
+    /* CHECK ADMIN EMAIL */
+
+    const email =
+      (user.email || "").toLowerCase();
+
+
+    const allowed =
+      ADMIN_EMAILS
+        .map(e => e.toLowerCase())
+        .includes(email);
+
+
+    if (!allowed) {
+
+      alert(
+        "یہ Google account Admin نہیں ہے۔\n\n" +
+        "This Google account is not authorized as Admin."
+      );
+
 
       await signOut(auth);
 
-      loginStatus.textContent =
-        "This Google account is not authorized as admin.";
+      showLogin();
 
       return;
+
     }
 
-    loginStatus.textContent =
-      "Admin login successful.";
 
-  } catch (error) {
+    /* ADMIN ALLOWED */
 
-    console.error(error);
+    showDashboard(user);
 
-    loginStatus.textContent =
-      error.message;
+    await loadStats();
+
+  }
+);
+
+
+/* =========================================================
+   SHOW LOGIN
+   ========================================================= */
+
+function showLogin() {
+
+  loginPage.hidden = false;
+
+  dashboard.hidden = true;
+
+}
+
+
+/* =========================================================
+   SHOW DASHBOARD
+   ========================================================= */
+
+function showDashboard(user) {
+
+  loginPage.hidden = true;
+
+  dashboard.hidden = false;
+
+
+  adminName.textContent =
+    user.displayName || "Admin";
+
+
+  adminEmail.textContent =
+    user.email || "";
+
+
+  if (user.photoURL) {
+
+    adminPhoto.src =
+      user.photoURL;
+
   }
 
-});
+}
 
 
-/* =========================================
-   AUTH STATE
-========================================= */
-
-onAuthStateChanged(auth, async (user) => {
-
-  if (!user) {
-
-    loginScreen.classList.remove("hidden");
-    adminPanel.classList.add("hidden");
-
-    return;
-  }
-
-
-  if (
-    ADMIN_EMAILS.length > 0 &&
-    !ADMIN_EMAILS.includes(user.email)
-  ) {
-
-    await signOut(auth);
-
-    return;
-  }
-
-
-  loginScreen.classList.add("hidden");
-  adminPanel.classList.remove("hidden");
-
-
-  adminUser.innerHTML = `
-
-    <img
-      src="${user.photoURL || "logo.png"}"
-      alt="User"
-    >
-
-    <strong>
-      ${escapeHTML(user.displayName || "Admin")}
-    </strong>
-
-    <br>
-
-    <small>
-      ${escapeHTML(user.email || "")}
-    </small>
-
-  `;
-
-
-  loadVideos();
-
-});
-
-
-/* =========================================
+/* =========================================================
    LOGOUT
-========================================= */
+   ========================================================= */
 
-logoutBtn.addEventListener("click", async () => {
+logoutButton.addEventListener(
+  "click",
+  async () => {
+
+    try {
+
+      await signOut(auth);
+
+      showLogin();
+
+    } catch (error) {
+
+      console.error(error);
+
+    }
+
+  }
+);
+
+
+/* =========================================================
+   LOAD STATS
+   ========================================================= */
+
+async function loadStats() {
 
   try {
 
-    await signOut(auth);
+    const books =
+      await getDocs(
+        collection(db, "books")
+      );
 
-  } catch (error) {
 
-    console.error(error);
-
-  }
-
-});
-
-
-/* =========================================
-   UPLOAD VIDEO
-========================================= */
-
-uploadVideoBtn.addEventListener("click", async () => {
-
-  const title =
-    videoTitle.value.trim();
-
-  const description =
-    videoDescription.value.trim();
-
-  const file =
-    videoFile.files[0];
-
-
-  if (!title) {
-
-    alert("Please enter video title.");
-    return;
-
-  }
-
-
-  if (!file) {
-
-    alert("Please select a video.");
-    return;
-
-  }
-
-
-  if (!file.type.startsWith("video/")) {
-
-    alert("Please select a valid video file.");
-    return;
-
-  }
-
-
-  /*
-    Optional 100 MB limit.
-    Change this if needed.
-  */
-
-  const maxSize =
-    100 * 1024 * 1024;
-
-
-  if (file.size > maxSize) {
-
-    alert("Video must be smaller than 100 MB.");
-    return;
-
-  }
-
-
-  try {
-
-    uploadVideoBtn.disabled = true;
-
-    status.textContent =
-      "Uploading video...";
-
-
-    const safeFileName =
-      file.name
-        .replace(/[^a-zA-Z0-9._-]/g, "_");
-
-
-    const filePath =
-      `videos/${Date.now()}_${safeFileName}`;
-
-
-    const storageRef =
-      ref(storage, filePath);
-
-
-    /*
-      Upload file to Firebase Storage
-    */
-
-    await uploadBytes(
-      storageRef,
-      file
-    );
-
-
-    status.textContent =
-      "Getting video URL...";
-
-
-    /*
-      Get public download URL
-    */
-
-    const videoUrl =
-      await getDownloadURL(storageRef);
-
-
-    status.textContent =
-      "Saving video information...";
-
-
-    /*
-      Save information to Firestore
-    */
-
-    await addDoc(
-      collection(db, "videos"),
-      {
-
-        title: title,
-
-        description: description,
-
-        videoUrl: videoUrl,
-
-        storagePath: filePath,
-
-        fileName: file.name,
-
-        createdAt: serverTimestamp(),
-
-        likes: 0,
-
-        commentsCount: 0,
-
-        uploadedBy: auth.currentUser.uid,
-
-        uploadedByEmail:
-          auth.currentUser.email
-
-      }
-    );
-
-
-    status.innerHTML =
-      "✅ Video uploaded successfully!";
-
-
-    videoTitle.value = "";
-    videoDescription.value = "";
-    videoFile.value = "";
-
-
-    await loadVideos();
-
-
-  } catch (error) {
-
-    console.error(error);
-
-    status.innerHTML =
-      `❌ Upload failed:<br>${escapeHTML(error.message)}`;
-
-  } finally {
-
-    uploadVideoBtn.disabled = false;
-
-  }
-
-});
-
-
-/* =========================================
-   LOAD VIDEOS
-========================================= */
-
-async function loadVideos() {
-
-  try {
-
-    videoList.innerHTML =
-      "Loading videos...";
-
-
-    const snapshot =
+    const videos =
       await getDocs(
         collection(db, "videos")
       );
 
 
+    const comments =
+      await getDocs(
+        collection(db, "comments")
+      );
+
+
+    const likes =
+      await getDocs(
+        collection(db, "likes")
+      );
+
+
+    bookCount.textContent =
+      books.size;
+
+
+    videoCount.textContent =
+      videos.size;
+
+
+    commentCount.textContent =
+      comments.size;
+
+
+    likeCount.textContent =
+      likes.size;
+
+
+  } catch (error) {
+
+    console.error(
+      "Stats Error:",
+      error
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   BOOKS
+   ========================================================= */
+
+document
+  .getElementById("refresh-books")
+  .addEventListener(
+    "click",
+    async () => {
+
+      await showCollection(
+        "books",
+        "📚 Books"
+      );
+
+    }
+  );
+
+
+/* =========================================================
+   VIDEOS
+   ========================================================= */
+
+document
+  .getElementById("refresh-videos")
+  .addEventListener(
+    "click",
+    async () => {
+
+      await showCollection(
+        "videos",
+        "🎥 Videos"
+      );
+
+    }
+  );
+
+
+/* =========================================================
+   COMMENTS
+   ========================================================= */
+
+document
+  .getElementById("load-comments")
+  .addEventListener(
+    "click",
+    async () => {
+
+      await showCollection(
+        "comments",
+        "💬 Comments"
+      );
+
+    }
+  );
+
+
+/* =========================================================
+   LIKES
+   ========================================================= */
+
+document
+  .getElementById("load-likes")
+  .addEventListener(
+    "click",
+    async () => {
+
+      await showCollection(
+        "likes",
+        "❤️ Likes"
+      );
+
+    }
+  );
+
+
+/* =========================================================
+   LOAD FIRESTORE COLLECTION
+   ========================================================= */
+
+async function showCollection(
+  collectionName,
+  title
+) {
+
+  panelTitle.textContent =
+    title;
+
+
+  adminData.innerHTML = `
+    <div class="loading">
+      Loading...
+    </div>
+  `;
+
+
+  try {
+
+    const snapshot =
+      await getDocs(
+        collection(
+          db,
+          collectionName
+        )
+      );
+
+
     if (snapshot.empty) {
 
-      videoList.innerHTML =
-        "<p>No videos uploaded yet.</p>";
+      adminData.innerHTML = `
+        <div class="empty-data">
+
+          <div>📭</div>
+
+          <h3>No Data</h3>
+
+          <p>
+            اس collection میں ابھی data نہیں ہے۔
+          </p>
+
+        </div>
+      `;
 
       return;
 
     }
 
 
-    videoList.innerHTML = "";
+    const items =
+      snapshot.docs.map(
+        doc => ({
+          id: doc.id,
+          ...doc.data()
+        })
+      );
 
 
-    snapshot.forEach((item) => {
-
-      const data =
-        item.data();
+    adminData.innerHTML = "";
 
 
-      const div =
-        document.createElement("div");
+    items.forEach(
+      (item, index) => {
+
+        const row =
+          document.createElement("div");
 
 
-      div.style.cssText = `
-        background:#181818;
-        padding:15px;
-        border-radius:10px;
-        margin-bottom:15px;
-      `;
+        row.className =
+          "data-row";
 
 
-      div.innerHTML = `
+        row.innerHTML = `
 
-        <strong style="color:#d4af37;">
-          ${escapeHTML(data.title || "Untitled")}
-        </strong>
+          <div class="data-number">
+            ${index + 1}
+          </div>
 
-        <br><br>
+          <div class="data-content">
 
-        <small>
-          ${escapeHTML(data.description || "")}
-        </small>
-
-        <br><br>
-
-        <button
-          style="
-            background:#b00020;
-            color:white;
-            border:0;
-            padding:8px 12px;
-            border-radius:6px;
-            cursor:pointer;
-          "
-          data-id="${item.id}"
-          data-path="${escapeHTML(data.storagePath || "")}"
-          class="delete-video"
-        >
-          Delete
-        </button>
-
-      `;
+            ${
+              item.title
+                ? `
+                  <h3>
+                    ${escapeHTML(item.title)}
+                  </h3>
+                `
+                : ""
+            }
 
 
-      videoList.appendChild(div);
-
-    });
-
-
-    document
-      .querySelectorAll(".delete-video")
-      .forEach((button) => {
-
-        button.addEventListener(
-          "click",
-          () => deleteVideo(
-            button.dataset.id,
-            button.dataset.path
-          )
-        );
-
-      });
+            ${
+              item.text
+                ? `
+                  <p>
+                    ${escapeHTML(item.text)}
+                  </p>
+                `
+                : ""
+            }
 
 
-  } catch (error) {
-
-    console.error(error);
-
-    videoList.innerHTML =
-      `<p style="color:#ff7777;">
-        Error loading videos:
-        ${escapeHTML(error.message)}
-      </p>`;
-
-  }
-
-}
+            ${
+              item.userName
+                ? `
+                  <p>
+                    👤
+                    ${escapeHTML(item.userName)}
+                  </p>
+                `
+                : ""
+            }
 
 
-/* =========================================
-   DELETE VIDEO
-========================================= */
-
-async function deleteVideo(
-  videoId,
-  storagePath
-) {
-
-  const confirmed =
-    confirm(
-      "Are you sure you want to delete this video?"
-    );
+            ${
+              item.email
+                ? `
+                  <p>
+                    ✉️
+                    ${escapeHTML(item.email)}
+                  </p>
+                `
+                : ""
+            }
 
 
-  if (!confirmed) {
-    return;
-  }
+            ${
+              item.itemId
+                ? `
+                  <small>
+                    Item:
+                    ${escapeHTML(item.itemId)}
+                  </small>
+                `
+                : ""
+            }
 
 
-  try {
+            <small>
+              ID:
+              ${escapeHTML(item.id)}
+            </small>
 
-    await deleteDoc(
-      doc(db, "videos", videoId)
-    );
+          </div>
+
+        `;
 
 
-    if (storagePath) {
-
-      try {
-
-        const storageRef =
-          ref(storage, storagePath);
-
-        await deleteObject(storageRef);
-
-      } catch (storageError) {
-
-        console.warn(
-          "Storage file could not be deleted:",
-          storageError
-        );
+        adminData.appendChild(row);
 
       }
-
-    }
-
-
-    alert("Video deleted.");
-
-    loadVideos();
+    );
 
 
   } catch (error) {
 
-    console.error(error);
-
-    alert(
-      "Delete failed: " +
-      error.message
+    console.error(
+      "Collection Error:",
+      error
     );
+
+
+    adminData.innerHTML = `
+
+      <div class="error-data">
+
+        ❌ Data load نہیں ہو سکا۔
+
+        <br><br>
+
+        ${escapeHTML(error.message)}
+
+      </div>
+
+    `;
 
   }
 
 }
 
 
-/* =========================================
-   HTML ESCAPE
-========================================= */
+/* =========================================================
+   CLEAR DATA VIEW
+   ========================================================= */
+
+document
+  .getElementById("clear-data")
+  .addEventListener(
+    "click",
+    () => {
+
+      panelTitle.textContent =
+        "Dashboard";
+
+
+      adminData.innerHTML = `
+
+        <div class="empty-data">
+
+          <div>🔐</div>
+
+          <h3>
+            Admin Dashboard
+          </h3>
+
+          <p>
+            اوپر سے کوئی option select کریں۔
+          </p>
+
+        </div>
+
+      `;
+
+    }
+  );
+
+
+/* =========================================================
+   AUTH ERROR
+   ========================================================= */
+
+function getAuthError(code) {
+
+  switch (code) {
+
+    case "auth/popup-closed-by-user":
+      return "آپ نے Google Login window بند کر دی۔";
+
+    case "auth/popup-blocked":
+      return "Browser نے popup block کر دیا۔";
+
+    case "auth/network-request-failed":
+      return "Internet connection check کریں۔";
+
+    case "auth/unauthorized-domain":
+      return "یہ website Firebase میں Authorized Domain نہیں ہے۔";
+
+    default:
+      return "Google Login میں مسئلہ آیا ہے۔ دوبارہ کوشش کریں۔";
+
+  }
+
+}
+
+
+/* =========================================================
+   ESCAPE HTML
+   ========================================================= */
 
 function escapeHTML(value) {
 
-  return String(value || "")
+  return String(value ?? "")
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
