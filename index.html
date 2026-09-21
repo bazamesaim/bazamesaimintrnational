@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
 
@@ -8,274 +9,363 @@
     content="width=device-width, initial-scale=1.0"
   >
 
-  <title>Bazam-E-Saim | بزم صائم</title>
+  <meta
+    name="description"
+    content="Bazam-E-Saim - Books, Videos, Shorts and Poetry"
+  >
 
-  <link rel="icon" type="image/png" href="logo.png">
+  <title>Bazam-E-Saim</title>
 
-  <link rel="stylesheet" href="style.css">
+  <link
+    rel="stylesheet"
+    href="./style.css"
+  >
+
+  <link
+    rel="icon"
+    href="./favicon.png"
+    type="image/png"
+  >
 </head>
+
 
 <body>
 
-<header class="navbar">
 
-  <div class="brand">
-    <img src="logo.png" alt="Bazam-E-Saim">
-    <div>
-      <h1>Bazam-E-Saim</h1>
-      <span>بزم صائم</span>
-    </div>
-  </div>
+  <!-- =================================================
+       NAVBAR
+  ================================================== -->
 
-  <nav>
-    <a href="#home">Home</a>
-    <a href="#books">Books</a>
-    <a href="#videos">Videos</a>
-    <a href="#shorts">Shorts</a>
-  </nav>
-
-  <a class="login-btn" href="login.html">
-    Sign In
-  </a>
-
-</header>
-
-
-<main>
-
-<section id="home" class="hero">
-
-  <div class="hero-content">
-
-    <h2>Welcome to Bazam-E-Saim</h2>
-
-    <p>
-      Books, Videos, Shorts and beautiful Islamic content
-      by Hazrat Allama Saim Chishti.
-    </p>
-
-    <div class="hero-buttons">
-      <a href="#books">Explore Books</a>
-      <a href="#videos">Watch Videos</a>
-    </div>
-
-  </div>
-
-</section>
-
-
-<!-- BOOKS -->
-
-<section id="books" class="section">
-
-  <div class="section-title">
-    <h2>📚 Books</h2>
-    <p>کتب</p>
-  </div>
-
-  <div id="books-container" class="cards">
-    <div class="loading">Loading books...</div>
-  </div>
-
-</section>
-
-
-<!-- VIDEOS -->
-
-<section id="videos" class="section">
-
-  <div class="section-title">
-    <h2>🎬 Videos</h2>
-    <p>ویڈیوز</p>
-  </div>
-
-  <div id="videos-container" class="video-grid">
-    <div class="loading">Loading videos...</div>
-  </div>
-
-</section>
-
-
-<!-- SHORTS -->
-
-<section id="shorts" class="section shorts-section">
-
-  <div class="section-title">
-    <h2>📱 Shorts</h2>
-    <p>شارٹس</p>
-  </div>
-
-  <div id="shorts-container" class="shorts-grid">
-    <div class="loading">Loading shorts...</div>
-  </div>
-
-</section>
-
-</main>
-
-
-<footer>
-
-  <div class="footer-logo">
-    <img src="logo.png" alt="Bazam-E-Saim">
-  </div>
-
-  <h3>Bazam-E-Saim</h3>
-
-  <p>
-    بزم صائم
-  </p>
-
-  <div class="social-links">
+  <header class="topbar">
 
     <a
-      href="https://www.youtube.com/@Saimtv5"
-      target="_blank"
+      href="#home"
+      class="brand"
     >
-      YouTube
+
+      <img
+        src="./logo.png"
+        alt="Bazam-E-Saim"
+        onerror="this.style.display='none'"
+      >
+
+      <span>
+        Bazam-E-Saim
+      </span>
+
     </a>
 
-    <a
-      href="https://www.facebook.com/saimchishtiofficial"
-      target="_blank"
-    >
-      Facebook
-    </a>
 
-    <a
-      href="https://www.tiktok.com/@saimtv5"
-      target="_blank"
-    >
-      TikTok
-    </a>
+    <nav>
 
-  </div>
+      <a href="#home">
+        Home
+      </a>
 
-  <p class="copyright">
-    © 2026 Bazam-E-Saim. All Rights Reserved.
-  </p>
+      <a href="#books">
+        Books
+      </a>
 
-</footer>
+      <a href="#videos">
+        Videos
+      </a>
 
+      <a href="#shorts">
+        Shorts
+      </a>
 
-<!-- VIDEO MODAL -->
+      <a href="#about">
+        About
+      </a>
 
-<div id="video-modal" class="video-modal">
+      <button
+        id="signinBtn"
+        class="gold-btn"
+        type="button"
+      >
+        Continue with Google
+      </button>
 
-  <div class="video-modal-box">
+    </nav>
+
 
     <button
-      id="close-video"
-      class="close-video"
+      id="menuBtn"
+      class="menu"
+      type="button"
+      aria-label="Open menu"
     >
-      ×
+      ☰
     </button>
 
-    <div class="player">
-
-      <video
-        id="main-video"
-        playsinline
-        preload="metadata"
-      ></video>
-
-      <div class="video-controls">
-
-        <button id="play-btn">▶</button>
-
-        <button id="back-btn">⏪</button>
-
-        <button id="forward-btn">⏩</button>
-
-        <button id="mute-btn">🔊</button>
-
-        <input
-          id="volume-control"
-          type="range"
-          min="0"
-          max="1"
-          step="0.05"
-          value="1"
-        >
-
-        <span id="current-time">0:00</span>
-
-        <input
-          id="progress-control"
-          type="range"
-          min="0"
-          max="100"
-          value="0"
-        >
-
-        <span id="duration">0:00</span>
-
-        <select id="speed-control">
-
-          <option value="0.5">0.5x</option>
-          <option value="0.75">0.75x</option>
-          <option value="1" selected>Normal</option>
-          <option value="1.25">1.25x</option>
-          <option value="1.5">1.5x</option>
-          <option value="2">2x</option>
-
-        </select>
-
-        <button id="fullscreen-btn">
-          ⛶
-        </button>
-
-      </div>
-
-    </div>
+  </header>
 
 
-    <div class="video-info">
+  <!-- =================================================
+       MOBILE NAV
+  ================================================== -->
 
-      <h2 id="modal-video-title">
-        Video
-      </h2>
+  <div
+    id="mobileNav"
+    class="mobile-nav"
+  >
 
-      <p id="modal-video-description"></p>
+    <a href="#home">
+      Home
+    </a>
 
-      <div class="action-buttons">
+    <a href="#books">
+      Books
+    </a>
 
-        <button id="like-btn">
-          ❤️ <span id="like-count">0</span>
-        </button>
+    <a href="#videos">
+      Videos
+    </a>
 
-        <button id="share-btn">
-          ↗️ Share
-        </button>
+    <a href="#shorts">
+      Shorts
+    </a>
 
-        <button id="comment-login-btn">
-          💬 Comment
-        </button>
+    <a href="#about">
+      About
+    </a>
 
-      </div>
+    <button
+      id="mobileSignin"
+      class="gold-btn"
+      type="button"
+    >
+      Continue with Google
+    </button>
+
+  </div>
 
 
-      <div class="comments-area">
+  <!-- =================================================
+       HERO
+  ================================================== -->
 
-        <h3>Comments</h3>
+  <main id="home">
 
-        <div id="comments-list">
-          No comments yet.
+    <section class="hero">
+
+      <div>
+
+        <div class="arabic">
+          بسم اللہ الرحمن الرحیم
         </div>
 
-        <div class="comment-form">
+        <h1>
+          Bazam-E-Saim
+        </h1>
 
-          <input
-            id="comment-input"
-            type="text"
-            placeholder="Write a comment..."
+        <p>
+          Allama Saim Chishti
+          <br>
+          Books • Poetry • Videos • Shorts
+        </p>
+
+
+        <div class="heroBtns">
+
+          <a
+            href="#books"
+            class="gold-btn"
           >
+            📚 Explore Books
+          </a>
 
-          <button id="send-comment">
-            Send
-          </button>
+          <a
+            href="#videos"
+            class="outline-btn"
+          >
+            ▶ Watch Videos
+          </a>
 
         </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =================================================
+         BOOKS
+    ================================================== -->
+
+    <section
+      id="books"
+      class="section"
+    >
+
+      <div class="heading">
+
+        <small>
+          LIBRARY
+        </small>
+
+        <h2>
+          Books &amp; Publications
+        </h2>
+
+        <p>
+          Read the books of Allama Saim Chishti
+          online.
+        </p>
+
+      </div>
+
+
+      <div
+        id="booksGrid"
+        class="grid"
+      >
+
+        <div class="empty">
+          Books loading...
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =================================================
+         VIDEOS
+    ================================================== -->
+
+    <section
+      id="videos"
+      class="section dark"
+    >
+
+      <div class="heading">
+
+        <small>
+          VIDEO LIBRARY
+        </small>
+
+        <h2>
+          Videos
+        </h2>
+
+        <p>
+          Watch lectures, poetry and other videos.
+        </p>
+
+      </div>
+
+
+      <div
+        id="videosGrid"
+        class="grid"
+      >
+
+        <div class="empty">
+          Videos loading...
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =================================================
+         SHORTS
+    ================================================== -->
+
+    <section
+      id="shorts"
+      class="section"
+    >
+
+      <div class="heading">
+
+        <small>
+          SHORTS
+        </small>
+
+        <h2>
+          Short Videos
+        </h2>
+
+        <p>
+          Short clips and beautiful poetry.
+        </p>
+
+      </div>
+
+
+      <div
+        id="shortsGrid"
+        class="grid shorts-grid"
+      >
+
+        <div class="empty">
+          Shorts loading...
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =================================================
+         ABOUT
+    ================================================== -->
+
+    <section
+      id="about"
+      class="section dark"
+    >
+
+      <div class="heading">
+
+        <small>
+          ABOUT
+        </small>
+
+        <h2>
+          Bazam-E-Saim
+        </h2>
+
+        <p>
+          A digital platform for the books,
+          poetry, audio and video collection
+          associated with Allama Saim Chishti.
+        </p>
+
+      </div>
+
+    </section>
+
+  </main>
+
+
+  <!-- =================================================
+       VIDEO PLAYER MODAL
+  ================================================== -->
+
+  <div
+    id="playerModal"
+    class="modal"
+  >
+
+    <div class="modalBox playerBox">
+
+      <button
+        class="close"
+        type="button"
+        data-close="playerModal"
+        aria-label="Close"
+      >
+        ×
+      </button>
+
+
+      <div id="playerBody">
+
+        <!-- JavaScript will put video player here -->
 
       </div>
 
@@ -283,10 +373,173 @@
 
   </div>
 
-</div>
+
+  <!-- =================================================
+       COMMENTS MODAL
+  ================================================== -->
+
+  <div
+    id="commentsModal"
+    class="modal"
+  >
+
+    <div class="modalBox">
+
+      <button
+        class="close"
+        type="button"
+        data-close="commentsModal"
+        aria-label="Close"
+      >
+        ×
+      </button>
 
 
-<script type="module" src="script.js"></script>
+      <h2>
+        Comments
+      </h2>
+
+
+      <div
+        id="commentsList"
+        class="comments"
+      >
+
+        <p>
+          Loading comments...
+        </p>
+
+      </div>
+
+
+      <form
+        id="commentForm"
+      >
+
+        <input
+          id="commentContentId"
+          type="hidden"
+        >
+
+        <input
+          id="commentContentType"
+          type="hidden"
+        >
+
+
+        <textarea
+          id="commentText"
+          placeholder="Write your comment..."
+          maxlength="1000"
+          required
+        ></textarea>
+
+
+        <button
+          type="submit"
+          class="gold-btn"
+        >
+          💬 Post Comment
+        </button>
+
+      </form>
+
+    </div>
+
+  </div>
+
+
+  <!-- =================================================
+       GOOGLE SIGN-IN MODAL
+  ================================================== -->
+
+  <div
+    id="signinModal"
+    class="modal"
+  >
+
+    <div class="modalBox small">
+
+      <button
+        class="close"
+        type="button"
+        data-close="signinModal"
+        aria-label="Close"
+      >
+        ×
+      </button>
+
+
+      <h2>
+        Sign In
+      </h2>
+
+
+      <p>
+        Like, comment aur interact karne
+        ke liye Google account se sign in karein.
+      </p>
+
+
+      <button
+        id="googleBtn"
+        class="google-btn"
+        type="button"
+      >
+        Continue with Google
+      </button>
+
+
+      <p
+        id="authMessage"
+        style="margin-top:12px;"
+      ></p>
+
+    </div>
+
+  </div>
+
+
+  <!-- =================================================
+       TOAST
+  ================================================== -->
+
+  <div id="toast"></div>
+
+
+  <!-- =================================================
+       FOOTER
+  ================================================== -->
+
+  <footer>
+
+    <strong>
+      Bazam-E-Saim
+    </strong>
+
+    <p>
+      Allama Saim Chishti
+    </p>
+
+    <p>
+      ©
+      <span id="year"></span>
+      Bazam-E-Saim. All Rights Reserved.
+    </p>
+
+  </footer>
+
+
+  <!-- =================================================
+       FIREBASE / MAIN JS
+  ================================================== -->
+
+  <script
+    type="module"
+    src="./script.js"
+  ></script>
+
 
 </body>
+
 </html>
