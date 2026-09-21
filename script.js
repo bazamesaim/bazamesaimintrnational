@@ -1,46 +1,50 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+/* =========================================================
+   BAZAM-E-SAIM
+   FULL WEBSITE SCRIPT
+   BOOKS + VIDEOS + SHORTS
+   FIREBASE + LIKE + COMMENT + SHARE
+   GOOGLE LOGIN
+========================================================= */
 
 import {
-  getAuth,
-  GoogleAuthProvider,
-  signInWithPopup,
-  onAuthStateChanged,
-  signOut
+    initializeApp
+} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+
+import {
+    getAuth,
+    GoogleAuthProvider,
+    signInWithPopup,
+    onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
 import {
-  getFirestore,
-  collection,
-  getDocs,
-  query,
-  where,
-  getDoc,
-  doc,
-  setDoc,
-  addDoc,
-  deleteDoc,
-  serverTimestamp
+    getFirestore,
+    collection,
+    addDoc,
+    getDocs,
+    query,
+    where,
+    orderBy,
+    serverTimestamp,
+    updateDoc,
+    doc,
+    increment
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 
-// ===============================
-// FIREBASE CONFIG
-// ===============================
+/* =========================================================
+   FIREBASE
+========================================================= */
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBFzwp8J3L1oUxAeDDq23T2CmydtgTa1k",
-  authDomain: "bazamesaiminternational.firebaseapp.com",
-  projectId: "bazamesaiminternational",
-  storageBucket: "bazamesaiminternational.firebasestorage.app",
-  messagingSenderId: "879282438130",
-  appId: "1:879282438130:web:a285d48f427e6659e3f56b",
-  measurementId: "G-S79YY7WPWX"
+    apiKey: "AIzaSyBFzwp8J3L1oUxAeDDq23T2CmydtgTa1k",
+    authDomain: "bazamesaiminternational.firebaseapp.com",
+    projectId: "bazamesaiminternational",
+    storageBucket: "bazamesaiminternational.firebasestorage.app",
+    messagingSenderId: "879282438130",
+    appId: "1:879282438130:web:a285d48f427e6659e3f56b",
+    measurementId: "G-S79YY7WPWX"
 };
-
-
-// ===============================
-// INITIALIZE FIREBASE
-// ===============================
 
 const app = initializeApp(firebaseConfig);
 
@@ -51,1314 +55,1967 @@ const db = getFirestore(app);
 const googleProvider = new GoogleAuthProvider();
 
 
-// ===============================
-// GLOBAL VARIABLES
-// ===============================
+console.log(
+    "Bazam-E-Saim Firebase connected to:",
+    firebaseConfig.projectId
+);
+
+
+/* =========================================================
+   GLOBAL STATE
+========================================================= */
 
 let currentUser = null;
 
-let currentContent = {
-  id: null,
-  type: null,
-  title: null
-};
+let booksData = [];
+let videosData = [];
+let shortsData = [];
 
 
-// ===============================
-// HELPERS
-// ===============================
+/* =========================================================
+   AUTH STATE
+========================================================= */
 
-function $(id) {
-  return document.getElementById(id);
-}
+onAuthStateChanged(auth, (user) => {
 
+    currentUser = user || null;
 
-function escapeHTML(value) {
-
-  return String(value ?? "").replace(
-    /[&<>"']/g,
-    function (char) {
-
-      return {
-        "&": "&amp;",
-        "<": "&lt;",
-        ">": "&gt;",
-        '"': "&quot;",
-        "'": "&#039;"
-      }[char];
-
-    }
-  );
-
-}
-
-
-function showToast(message) {
-
-  const toast = $("toast");
-
-  if (!toast) return;
-
-  toast.textContent = message;
-
-  toast.classList.add("show");
-
-  setTimeout(() => {
-
-    toast.classList.remove("show");
-
-  }, 2500);
-
-}
-
-
-function openModal(id) {
-
-  const modal = $(id);
-
-  if (modal) {
-
-    modal.classList.add("show");
-
-  }
-
-}
-
-
-function closeModal(id) {
-
-  const modal = $(id);
-
-  if (modal) {
-
-    modal.classList.remove("show");
-
-  }
-
-}
-
-
-// ===============================
-// LOGIN REQUIRED
-// ===============================
-
-async function requireLogin() {
-
-  if (currentUser) {
-
-    return true;
-
-  }
-
-  openModal("signinModal");
-
-  const message = $("authMessage");
-
-  if (message) {
-
-    message.textContent =
-      "Like aur comment karne ke liye Google se sign in karein.";
-
-  }
-
-  return false;
-
-}
-
-
-// ===============================
-// GOOGLE LOGIN
-// ===============================
-
-async function googleLogin() {
-
-  try {
-
-    if (currentUser) {
-
-      await signOut(auth);
-
-      showToast("Logout successful");
-
-      return;
-
-    }
-
-    await signInWithPopup(auth, googleProvider);
-
-    closeModal("signinModal");
-
-    showToast("Google login successful");
-
-  } catch (error) {
-
-    console.error(error);
-
-    const message = $("authMessage");
-
-    if (message) {
-
-      message.textContent = error.message;
-
-    }
-
-  }
-
-}
-
-
-// ===============================
-// AUTH STATE
-// ===============================
-
-onAuthStateChanged(auth, function (user) {
-
-  currentUser = user;
-
-  const signInButton = $("signinBtn");
-
-  const mobileButton = $("mobileSignin");
-
-  if (user) {
-
-    if (signInButton) {
-
-      signInButton.textContent = "Logout";
-
-    }
-
-    if (mobileButton) {
-
-      mobileButton.textContent = "Logout";
-
-    }
-
-    document
-      .querySelectorAll(".likeBtn")
-      .forEach(loadLikeState);
-
-  } else {
-
-    if (signInButton) {
-
-      signInButton.textContent = "Continue with Google";
-
-    }
-
-    if (mobileButton) {
-
-      mobileButton.textContent = "Continue with Google";
-
-    }
-
-  }
+    console.log(
+        "Current user:",
+        currentUser
+            ? currentUser.displayName || currentUser.email
+            : "Not logged in"
+    );
 
 });
 
 
-// ===============================
-// LOAD BOOKS
-// ===============================
+/* =========================================================
+   GOOGLE LOGIN
+========================================================= */
 
-async function loadBooks() {
+async function googleLogin() {
 
-  const container = $("booksGrid");
+    try {
 
-  if (!container) return;
+        const result = await signInWithPopup(
+            auth,
+            googleProvider
+        );
 
-  container.innerHTML = "";
+        currentUser = result.user;
 
-  try {
+        return currentUser;
 
-    const response = await fetch(
-      "./books.json?v=" + Date.now()
-    );
+    } catch (error) {
 
-    if (!response.ok) {
+        console.error("Google login error:", error);
 
-      throw new Error("books.json not found");
+        alert(
+            "Google login failed.\n\n" +
+            error.message
+        );
 
+        return null;
     }
-
-    const books = await response.json();
-
-    books.forEach(function (book, index) {
-
-      const id = book.id || "book-" + (index + 1);
-
-      const title =
-        book.title ||
-        book.name ||
-        "Untitled Book";
-
-      const author =
-        book.author ||
-        "Hazrat Allama Saim Chishti";
-
-      const cover =
-        book.cover ||
-        "./cover.png";
-
-      const url =
-        book.reader ||
-        book.pdf ||
-        book.url ||
-        "#";
-
-
-      const card = document.createElement("article");
-
-      card.className = "card";
-
-      card.innerHTML = `
-
-        <img
-          class="cover"
-          src="${escapeHTML(cover)}"
-          alt="${escapeHTML(title)}"
-          onerror="this.src='./cover.png'"
-        >
-
-        <div class="cardBody">
-
-          <h3>
-            ${escapeHTML(title)}
-          </h3>
-
-          <div class="author">
-            ${escapeHTML(author)}
-          </div>
-
-          <div class="actions">
-
-            <a
-              class="action"
-              href="${escapeHTML(url)}"
-              target="_blank"
-              rel="noopener"
-            >
-              📖 Read
-            </a>
-
-            <button
-              class="action likeBtn"
-              data-id="${escapeHTML(id)}"
-              data-type="book"
-            >
-              ♡ Like
-            </button>
-
-            <button
-              class="action commentBtn"
-              data-id="${escapeHTML(id)}"
-              data-type="book"
-            >
-              💬 Comment
-            </button>
-
-            <button
-              class="action shareBtn"
-              data-title="${escapeHTML(title)}"
-            >
-              ↗ Share
-            </button>
-
-          </div>
-
-        </div>
-      `;
-
-      container.appendChild(card);
-
-    });
-
-  } catch (error) {
-
-    console.error(error);
-
-    container.innerHTML = `
-      <div class="empty">
-        Books load nahi ho sake.
-        <br>
-        ${escapeHTML(error.message)}
-      </div>
-    `;
-
-  }
-
 }
 
 
-// ===============================
-// GET VIDEO URL
-// ===============================
+/* =========================================================
+   REQUIRE LOGIN
+========================================================= */
 
-function getMediaURL(item) {
-
-  return (
-    item.url ||
-    item.video ||
-    item.src ||
-    item.file ||
-    ""
-  );
-
-}
-
-
-// ===============================
-// LOAD VIDEOS / SHORTS
-// ===============================
-
-async function loadMedia(
-  jsonFile,
-  type,
-  containerID
-) {
-
-  const container = $(containerID);
-
-  if (!container) return;
-
-  container.innerHTML = "";
-
-  try {
-
-    const response = await fetch(
-      "./" + jsonFile + "?v=" + Date.now()
-    );
-
-    if (!response.ok) {
-
-      throw new Error(jsonFile + " not found");
-
-    }
-
-    const items = await response.json();
-
-    items.forEach(function (item, index) {
-
-      const id =
-        item.id ||
-        type + "-" + (index + 1);
-
-      const title =
-        item.title ||
-        item.name ||
-        "Bazam-E-Saim Video";
-
-      const author =
-        item.author ||
-        item.speaker ||
-        "Bazam-E-Saim";
-
-      const videoURL =
-        getMediaURL(item);
-
-      const card =
-        document.createElement("article");
-
-      card.className = "card";
-
-      const shortClass =
-        type === "shorts"
-          ? "short-thumb"
-          : "";
-
-      card.innerHTML = `
-
-        <div class="thumb ${shortClass}">
-
-          <video
-            src="${escapeHTML(videoURL)}"
-            preload="metadata"
-            playsinline
-          ></video>
-
-        </div>
-
-        <div class="cardBody">
-
-          <h3>
-            ${escapeHTML(title)}
-          </h3>
-
-          <div class="author">
-            ${escapeHTML(author)}
-          </div>
-
-          <div class="actions">
-
-            <button
-              class="action watchBtn"
-              data-url="${escapeHTML(videoURL)}"
-              data-title="${escapeHTML(title)}"
-              data-type="${escapeHTML(type)}"
-              data-id="${escapeHTML(id)}"
-            >
-              ▶ Watch
-            </button>
-
-            <button
-              class="action likeBtn"
-              data-id="${escapeHTML(id)}"
-              data-type="${escapeHTML(type)}"
-            >
-              ♡ Like
-            </button>
-
-            <button
-              class="action commentBtn"
-              data-id="${escapeHTML(id)}"
-              data-type="${escapeHTML(type)}"
-            >
-              💬 Comment
-            </button>
-
-            <button
-              class="action shareBtn"
-              data-title="${escapeHTML(title)}"
-            >
-              ↗ Share
-            </button>
-
-          </div>
-
-        </div>
-      `;
-
-      container.appendChild(card);
-
-    });
+async function requireLogin() {
 
     if (currentUser) {
-
-      container
-        .querySelectorAll(".likeBtn")
-        .forEach(loadLikeState);
-
+        return currentUser;
     }
 
-  } catch (error) {
-
-    console.error(error);
-
-    container.innerHTML = `
-      <div class="empty">
-        ${escapeHTML(jsonFile)}
-        load nahi hui.
-        <br>
-        ${escapeHTML(error.message)}
-      </div>
-    `;
-
-  }
-
-}
-
-
-// ===============================
-// LIKE
-// ===============================
-
-async function likeContent(
-  id,
-  type,
-  button
-) {
-
-  if (!await requireLogin()) {
-
-    return;
-
-  }
-
-  try {
-
-    const likeID =
-      `${type}_${id}_${currentUser.uid}`;
-
-    const likeRef =
-      doc(db, "likes", likeID);
-
-    const likeSnap =
-      await getDoc(likeRef);
-
-
-    if (likeSnap.exists()) {
-
-      await deleteDoc(likeRef);
-
-      button.classList.remove("liked");
-
-      button.textContent = "♡ Like";
-
-      showToast("Like removed");
-
-    } else {
-
-      await setDoc(
-        likeRef,
-        {
-          contentId: id,
-          contentType: type,
-          userId: currentUser.uid,
-          userName:
-            currentUser.displayName ||
-            "User",
-          createdAt:
-            serverTimestamp()
-        }
-      );
-
-      button.classList.add("liked");
-
-      button.textContent = "♥ Liked";
-
-      showToast("Liked ❤️");
-
-    }
-
-  } catch (error) {
-
-    console.error(error);
-
-    showToast(
-      "Like error: " + error.message
+    const login = confirm(
+        "Please login with Google first to like or comment.\n\n" +
+        "Press OK to continue with Google."
     );
 
-  }
-
-}
-
-
-// ===============================
-// CHECK LIKE
-// ===============================
-
-async function loadLikeState(button) {
-
-  if (!currentUser) return;
-
-  const id = button.dataset.id;
-
-  const type = button.dataset.type;
-
-  try {
-
-    const likeRef =
-      doc(
-        db,
-        "likes",
-        `${type}_${id}_${currentUser.uid}`
-      );
-
-    const snap =
-      await getDoc(likeRef);
-
-    if (snap.exists()) {
-
-      button.classList.add("liked");
-
-      button.textContent = "♥ Liked";
-
+    if (!login) {
+        return null;
     }
 
-  } catch (error) {
-
-    console.error(error);
-
-  }
-
+    return await googleLogin();
 }
 
 
-// ===============================
-// COMMENTS
-// ===============================
+/* =========================================================
+   SAFE HTML
+========================================================= */
 
-async function openComments(
-  id,
-  type
-) {
+function escapeHTML(value) {
 
-  currentContent = {
-    id: id,
-    type: type
-  };
-
-  const idInput =
-    $("commentContentId");
-
-  const typeInput =
-    $("commentContentType");
-
-  if (idInput) {
-
-    idInput.value = id;
-
-  }
-
-  if (typeInput) {
-
-    typeInput.value = type;
-
-  }
-
-  const list =
-    $("commentsList");
-
-  if (list) {
-
-    list.innerHTML =
-      "<p>Loading comments...</p>";
-
-  }
-
-  openModal("commentsModal");
-
-
-  try {
-
-    const commentsQuery =
-      query(
-        collection(db, "comments"),
-        where("contentId", "==", id),
-        where("contentType", "==", type)
-      );
-
-    const snapshot =
-      await getDocs(commentsQuery);
-
-    const comments = [];
-
-    snapshot.forEach(function (item) {
-
-      comments.push(item.data());
-
-    });
-
-    comments.sort(function (a, b) {
-
-      return (
-        (b.createdAt?.seconds || 0) -
-        (a.createdAt?.seconds || 0)
-      );
-
-    });
-
-
-    if (!comments.length) {
-
-      list.innerHTML =
-        "<p>No comments yet.</p>";
-
-      return;
-
+    if (value === null || value === undefined) {
+        return "";
     }
 
-
-    list.innerHTML =
-      comments
-        .map(function (comment) {
-
-          return `
-
-            <div class="comment">
-
-              <b>
-                ${escapeHTML(
-                  comment.userName ||
-                  "User"
-                )}
-              </b>
-
-              <p>
-                ${escapeHTML(
-                  comment.text
-                )}
-              </p>
-
-            </div>
-
-          `;
-
-        })
-        .join("");
-
-  } catch (error) {
-
-    console.error(error);
-
-    list.innerHTML = `
-      <p>
-        Comments load nahi ho sake.
-      </p>
-    `;
-
-  }
-
+    return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
 }
 
 
-// ===============================
-// POST COMMENT
-// ===============================
+/* =========================================================
+   JSON LOADER
+========================================================= */
 
-const commentForm =
-  $("commentForm");
+async function loadJSON(file) {
 
-if (commentForm) {
+    try {
 
-  commentForm.addEventListener(
-    "submit",
-    async function (event) {
-
-      event.preventDefault();
-
-      if (!await requireLogin()) {
-
-        return;
-
-      }
-
-      const text =
-        $("commentText")
-          ?.value
-          .trim();
-
-      if (!text) {
-
-        return;
-
-      }
-
-
-      try {
-
-        await addDoc(
-          collection(db, "comments"),
-          {
-
-            contentId:
-              currentContent.id,
-
-            contentType:
-              currentContent.type,
-
-            text: text,
-
-            userId:
-              currentUser.uid,
-
-            userName:
-              currentUser.displayName ||
-              "User",
-
-            userPhoto:
-              currentUser.photoURL ||
-              "",
-
-            createdAt:
-              serverTimestamp()
-
-          }
+        const response = await fetch(
+            `./${file}?v=${Date.now()}`
         );
 
+        if (!response.ok) {
 
-        $("commentText").value = "";
+            throw new Error(
+                `${file} not found (${response.status})`
+            );
+        }
 
-        showToast(
-          "Comment posted 💬"
-        );
+        const data = await response.json();
 
-        openComments(
-          currentContent.id,
-          currentContent.type
-        );
+        if (!Array.isArray(data)) {
 
-      } catch (error) {
+            throw new Error(
+                `${file} must contain an array`
+            );
+        }
+
+        return data;
+
+    } catch (error) {
 
         console.error(error);
 
-        showToast(
-          "Comment error: " +
-          error.message
+        return [];
+    }
+}
+
+
+/* =========================================================
+   GET FIRST AVAILABLE VALUE
+========================================================= */
+
+function getValue(item, keys, fallback = "") {
+
+    for (const key of keys) {
+
+        if (
+            item &&
+            item[key] !== undefined &&
+            item[key] !== null &&
+            item[key] !== ""
+        ) {
+
+            return item[key];
+        }
+    }
+
+    return fallback;
+}
+
+
+/* =========================================================
+   FIND BOOK URL
+========================================================= */
+
+function getBookURL(book) {
+
+    return getValue(
+        book,
+        [
+            "url",
+            "pdf",
+            "pdfUrl",
+            "file",
+            "fileUrl",
+            "downloadURL",
+            "downloadUrl"
+        ],
+        ""
+    );
+}
+
+
+/* =========================================================
+   FIND VIDEO URL
+========================================================= */
+
+function getVideoURL(video) {
+
+    return getValue(
+        video,
+        [
+            "video",
+            "videoUrl",
+            "url",
+            "file",
+            "fileUrl",
+            "src",
+            "downloadURL",
+            "downloadUrl"
+        ],
+        ""
+    );
+}
+
+
+/* =========================================================
+   FIND IMAGE
+========================================================= */
+
+function getImageURL(item) {
+
+    return getValue(
+        item,
+        [
+            "image",
+            "img",
+            "cover",
+            "coverUrl",
+            "thumbnail",
+            "imageUrl"
+        ],
+        ""
+    );
+}
+
+
+/* =========================================================
+   BOOKS
+========================================================= */
+
+async function loadBooks() {
+
+    const container =
+        document.getElementById("books-container");
+
+    if (!container) return;
+
+    container.innerHTML =
+        `<div class="loading">Loading books...</div>`;
+
+
+    booksData = await loadJSON("books.json");
+
+
+    if (!booksData.length) {
+
+        container.innerHTML = `
+            <div class="error">
+                Books could not be loaded.
+                <br>
+                Check <b>books.json</b>.
+            </div>
+        `;
+
+        return;
+    }
+
+
+    container.innerHTML = "";
+
+
+    booksData.forEach((book, index) => {
+
+        const title = escapeHTML(
+            getValue(
+                book,
+                ["title", "name"],
+                "Untitled Book"
+            )
         );
 
-      }
+        const author = escapeHTML(
+            getValue(
+                book,
+                ["author", "writer", "speaker"],
+                "Bazam-E-Saim"
+            )
+        );
 
+        const image = getImageURL(book);
+
+        const bookURL = getBookURL(book);
+
+        const id =
+            book.id ||
+            book.bookId ||
+            `book-${index}`;
+
+
+        const card =
+            document.createElement("article");
+
+        card.className = "book-card";
+
+
+        card.innerHTML = `
+
+            ${
+                image
+                    ? `
+                    <img
+                        src="${escapeHTML(image)}"
+                        alt="${title}"
+                        loading="lazy"
+                        onerror="
+                            this.style.display='none';
+                        "
+                    >
+                    `
+                    : ""
+            }
+
+
+            <div class="book-card-content">
+
+                <h3>
+                    ${title}
+                </h3>
+
+                <p class="author">
+                    ${author}
+                </p>
+
+
+                ${
+                    bookURL
+                        ? `
+                        <button
+                            class="read-btn"
+                            data-book-index="${index}"
+                        >
+                            📖 Read Book
+                        </button>
+                        `
+                        : `
+                        <p class="error">
+                            Book PDF URL missing
+                        </p>
+                        `
+                }
+
+
+                <div class="book-actions">
+
+                    <button
+                        class="like-btn"
+                        data-type="book"
+                        data-id="${escapeHTML(id)}"
+                    >
+                        ❤️ <span>Like</span>
+                    </button>
+
+
+                    <button
+                        class="comment-btn"
+                        data-type="book"
+                        data-id="${escapeHTML(id)}"
+                    >
+                        💬 Comment
+                    </button>
+
+
+                    <button
+                        class="share-btn"
+                        data-title="${title}"
+                        data-url="${escapeHTML(bookURL)}"
+                    >
+                        ↗️ Share
+                    </button>
+
+                </div>
+
+
+                <div
+                    class="comments"
+                    id="comments-book-${escapeHTML(id)}"
+                    style="display:none;"
+                ></div>
+
+            </div>
+        `;
+
+
+        container.appendChild(card);
+
+    });
+
+
+    addBookEvents();
+}
+
+
+/* =========================================================
+   BOOK EVENTS
+========================================================= */
+
+function addBookEvents() {
+
+    document
+        .querySelectorAll("[data-book-index]")
+        .forEach((button) => {
+
+            button.addEventListener(
+                "click",
+                () => {
+
+                    const index =
+                        Number(
+                            button.dataset.bookIndex
+                        );
+
+                    openBookReader(
+                        booksData[index]
+                    );
+
+                }
+            );
+
+        });
+
+
+    addSocialEvents();
+}
+
+
+/* =========================================================
+   BOOK READER
+========================================================= */
+
+function openBookReader(book) {
+
+    const url = getBookURL(book);
+
+    if (!url) {
+
+        alert("Book PDF URL is missing.");
+
+        return;
     }
-  );
+
+
+    const title =
+        getValue(
+            book,
+            ["title", "name"],
+            "Book"
+        );
+
+
+    const existing =
+        document.getElementById(
+            "book-reader-modal"
+        );
+
+
+    if (existing) {
+        existing.remove();
+    }
+
+
+    const modal =
+        document.createElement("div");
+
+    modal.id = "book-reader-modal";
+
+
+    modal.style.cssText = `
+        position:fixed;
+        inset:0;
+        z-index:99999;
+        background:#050505;
+        display:flex;
+        flex-direction:column;
+    `;
+
+
+    modal.innerHTML = `
+
+        <div
+            style="
+                display:flex;
+                align-items:center;
+                justify-content:space-between;
+                gap:10px;
+                padding:10px 15px;
+                background:#101010;
+                border-bottom:1px solid #d4af37;
+            "
+        >
+
+            <strong
+                style="
+                    color:#d4af37;
+                    font-size:16px;
+                "
+            >
+                ${escapeHTML(title)}
+            </strong>
+
+
+            <div
+                style="
+                    display:flex;
+                    gap:7px;
+                    flex-wrap:wrap;
+                "
+            >
+
+                <button
+                    id="book-prev-page"
+                >
+                    ◀ Previous
+                </button>
+
+
+                <button
+                    id="book-next-page"
+                >
+                    Next ▶
+                </button>
+
+
+                <button
+                    id="book-zoom-out"
+                >
+                    −
+                </button>
+
+
+                <button
+                    id="book-zoom-in"
+                >
+                    +
+                </button>
+
+
+                <button
+                    id="book-new-tab"
+                >
+                    Open ↗
+                </button>
+
+
+                <button
+                    id="book-close"
+                >
+                    ✕ Close
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <div
+            id="book-frame-area"
+            style="
+                flex:1;
+                overflow:auto;
+                background:#222;
+                display:flex;
+                justify-content:center;
+            "
+        >
+
+            <iframe
+                id="book-pdf-frame"
+                src="${escapeHTML(url)}"
+                title="${escapeHTML(title)}"
+                style="
+                    width:100%;
+                    height:100%;
+                    border:0;
+                    background:white;
+                "
+            ></iframe>
+
+        </div>
+    `;
+
+
+    document.body.appendChild(modal);
+
+
+    document
+        .getElementById("book-close")
+        .onclick = () => {
+
+            modal.remove();
+
+        };
+
+
+    document
+        .getElementById("book-new-tab")
+        .onclick = () => {
+
+            window.open(
+                url,
+                "_blank",
+                "noopener,noreferrer"
+            );
+
+        };
+
+
+    /*
+       Browser PDF viewer controls the actual
+       page movement. These buttons try to use
+       browser PDF viewer commands where possible.
+    */
+
+    document
+        .getElementById("book-prev-page")
+        .onclick = () => {
+
+            alert(
+                "PDF page controls are available in the PDF viewer. " +
+                "Use the Previous Page button inside the viewer."
+            );
+
+        };
+
+
+    document
+        .getElementById("book-next-page")
+        .onclick = () => {
+
+            alert(
+                "PDF page controls are available in the PDF viewer. " +
+                "Use the Next Page button inside the viewer."
+            );
+
+        };
+
+
+    let zoom = 1;
+
+
+    document
+        .getElementById("book-zoom-in")
+        .onclick = () => {
+
+            zoom += 0.1;
+
+            const frame =
+                document.getElementById(
+                    "book-pdf-frame"
+                );
+
+            frame.style.transform =
+                `scale(${zoom})`;
+
+            frame.style.transformOrigin =
+                "top center";
+
+        };
+
+
+    document
+        .getElementById("book-zoom-out")
+        .onclick = () => {
+
+            zoom = Math.max(
+                0.6,
+                zoom - 0.1
+            );
+
+            const frame =
+                document.getElementById(
+                    "book-pdf-frame"
+                );
+
+            frame.style.transform =
+                `scale(${zoom})`;
+
+            frame.style.transformOrigin =
+                "top center";
+
+        };
 
 }
 
 
-// ===============================
-// VIDEO PLAYER
-// ===============================
+/* =========================================================
+   VIDEOS
+========================================================= */
 
-function openVideoPlayer(
-  url,
-  title,
-  type,
-  id
+async function loadVideos() {
+
+    const container =
+        document.getElementById(
+            "videos-container"
+        );
+
+    if (!container) return;
+
+
+    container.innerHTML =
+        `<div class="loading">Loading videos...</div>`;
+
+
+    videosData =
+        await loadJSON("videos.json");
+
+
+    if (!videosData.length) {
+
+        container.innerHTML = `
+
+            <div class="error">
+
+                videos.json not found
+                <br><br>
+
+                Make sure the file is in the
+                same folder as index.html.
+
+            </div>
+
+        `;
+
+        return;
+    }
+
+
+    container.innerHTML = "";
+
+
+    videosData.forEach((video, index) => {
+
+        const title =
+            escapeHTML(
+                getValue(
+                    video,
+                    ["title", "name"],
+                    "Untitled Video"
+                )
+            );
+
+
+        const description =
+            escapeHTML(
+                getValue(
+                    video,
+                    ["description", "desc"],
+                    ""
+                )
+            );
+
+
+        const src =
+            getVideoURL(video);
+
+
+        const image =
+            getImageURL(video);
+
+
+        const id =
+            video.id ||
+            video.videoId ||
+            `video-${index}`;
+
+
+        const card =
+            document.createElement("article");
+
+        card.className =
+            "video-card";
+
+
+        card.innerHTML = `
+
+            ${
+                src
+                    ? `
+
+                    <video
+                        class="bzs-video"
+                        preload="metadata"
+                        ${image
+                            ? `poster="${escapeHTML(image)}"`
+                            : ""
+                        }
+                    >
+
+                        <source
+                            src="${escapeHTML(src)}"
+                            type="video/mp4"
+                        >
+
+                        Your browser does not support
+                        video playback.
+
+                    </video>
+
+                    `
+                    : `
+
+                    <div
+                        class="error"
+                        style="padding:40px 10px;"
+                    >
+                        Video URL missing
+                    </div>
+
+                    `
+            }
+
+
+            <div class="video-info">
+
+                <h3>
+                    ${title}
+                </h3>
+
+
+                ${
+                    description
+                        ? `
+                        <p>
+                            ${description}
+                        </p>
+                        `
+                        : ""
+                }
+
+
+                ${
+                    src
+                        ? createVideoControls()
+                        : ""
+                }
+
+
+                <div class="video-actions">
+
+                    <button
+                        class="like-btn"
+                        data-type="video"
+                        data-id="${escapeHTML(id)}"
+                    >
+                        ❤️ <span>Like</span>
+                    </button>
+
+
+                    <button
+                        class="comment-btn"
+                        data-type="video"
+                        data-id="${escapeHTML(id)}"
+                    >
+                        💬 Comment
+                    </button>
+
+
+                    <button
+                        class="share-btn"
+                        data-title="${title}"
+                        data-url="${escapeHTML(src)}"
+                    >
+                        ↗️ Share
+                    </button>
+
+                </div>
+
+
+                <div
+                    class="comments"
+                    id="comments-video-${escapeHTML(id)}"
+                    style="display:none;"
+                ></div>
+
+            </div>
+
+        `;
+
+
+        container.appendChild(card);
+
+    });
+
+
+    setupVideoPlayers();
+
+    addSocialEvents();
+}
+
+
+/* =========================================================
+   VIDEO CONTROLS HTML
+========================================================= */
+
+function createVideoControls() {
+
+    return `
+
+        <div
+            class="custom-video-controls"
+            style="
+                display:flex;
+                flex-wrap:wrap;
+                gap:6px;
+                margin-top:12px;
+            "
+        >
+
+            <button
+                type="button"
+                class="video-play"
+            >
+                ▶ Play
+            </button>
+
+
+            <button
+                type="button"
+                class="video-pause"
+            >
+                ⏸ Pause
+            </button>
+
+
+            <button
+                type="button"
+                class="video-stop"
+            >
+                ⏹ Stop
+            </button>
+
+
+            <button
+                type="button"
+                class="video-back"
+            >
+                ⏪ 10s
+            </button>
+
+
+            <button
+                type="button"
+                class="video-forward"
+            >
+                10s ⏩
+            </button>
+
+
+            <button
+                type="button"
+                class="video-mute"
+            >
+                🔊
+            </button>
+
+
+            <select
+                class="video-speed"
+                style="
+                    background:#171717;
+                    color:#fff;
+                    border:1px solid #6d5712;
+                    border-radius:7px;
+                    padding:7px;
+                "
+            >
+
+                <option value="0.5">
+                    0.5x
+                </option>
+
+                <option value="0.75">
+                    0.75x
+                </option>
+
+                <option value="1" selected>
+                    Normal
+                </option>
+
+                <option value="1.25">
+                    1.25x
+                </option>
+
+                <option value="1.5">
+                    1.5x
+                </option>
+
+                <option value="2">
+                    2x
+                </option>
+
+            </select>
+
+        </div>
+
+    `;
+}
+
+
+/* =========================================================
+   VIDEO PLAYER LOGIC
+========================================================= */
+
+function setupVideoPlayers() {
+
+    document
+        .querySelectorAll(".video-card")
+        .forEach((card) => {
+
+            const video =
+                card.querySelector("video");
+
+            if (!video) return;
+
+
+            const play =
+                card.querySelector(
+                    ".video-play"
+                );
+
+            const pause =
+                card.querySelector(
+                    ".video-pause"
+                );
+
+            const stop =
+                card.querySelector(
+                    ".video-stop"
+                );
+
+            const back =
+                card.querySelector(
+                    ".video-back"
+                );
+
+            const forward =
+                card.querySelector(
+                    ".video-forward"
+                );
+
+            const mute =
+                card.querySelector(
+                    ".video-mute"
+                );
+
+            const speed =
+                card.querySelector(
+                    ".video-speed"
+                );
+
+
+            play?.addEventListener(
+                "click",
+                () => {
+
+                    video.play()
+                        .catch((error) => {
+                            console.error(
+                                "Video play error:",
+                                error
+                            );
+                        });
+
+                }
+            );
+
+
+            pause?.addEventListener(
+                "click",
+                () => {
+
+                    video.pause();
+
+                }
+            );
+
+
+            stop?.addEventListener(
+                "click",
+                () => {
+
+                    video.pause();
+
+                    video.currentTime = 0;
+
+                }
+            );
+
+
+            back?.addEventListener(
+                "click",
+                () => {
+
+                    video.currentTime =
+                        Math.max(
+                            0,
+                            video.currentTime - 10
+                        );
+
+                }
+            );
+
+
+            forward?.addEventListener(
+                "click",
+                () => {
+
+                    video.currentTime =
+                        Math.min(
+                            video.duration || Infinity,
+                            video.currentTime + 10
+                        );
+
+                }
+            );
+
+
+            mute?.addEventListener(
+                "click",
+                () => {
+
+                    video.muted =
+                        !video.muted;
+
+                    mute.textContent =
+                        video.muted
+                            ? "🔇"
+                            : "🔊";
+
+                }
+            );
+
+
+            speed?.addEventListener(
+                "change",
+                () => {
+
+                    video.playbackRate =
+                        Number(
+                            speed.value
+                        );
+
+                }
+            );
+
+        });
+}
+
+
+/* =========================================================
+   SHORTS
+========================================================= */
+
+async function loadShorts() {
+
+    const container =
+        document.getElementById(
+            "shorts-container"
+        );
+
+    if (!container) return;
+
+
+    container.innerHTML =
+        `<div class="loading">Loading shorts...</div>`;
+
+
+    shortsData =
+        await loadJSON("shorts.json");
+
+
+    if (!shortsData.length) {
+
+        container.innerHTML = `
+
+            <div class="error">
+
+                shorts.json not found
+
+            </div>
+
+        `;
+
+        return;
+    }
+
+
+    container.innerHTML = "";
+
+
+    shortsData.forEach((short, index) => {
+
+        const title =
+            escapeHTML(
+                getValue(
+                    short,
+                    ["title", "name"],
+                    "Short"
+                )
+            );
+
+
+        const src =
+            getVideoURL(short);
+
+
+        const image =
+            getImageURL(short);
+
+
+        const id =
+            short.id ||
+            short.shortId ||
+            `short-${index}`;
+
+
+        const card =
+            document.createElement("article");
+
+        card.className =
+            "short-card";
+
+
+        card.innerHTML = `
+
+            ${
+                src
+                    ? `
+
+                    <video
+                        class="bzs-video"
+                        preload="metadata"
+                        controls
+                        playsinline
+                        ${image
+                            ? `poster="${escapeHTML(image)}"`
+                            : ""
+                        }
+                    >
+
+                        <source
+                            src="${escapeHTML(src)}"
+                            type="video/mp4"
+                        >
+
+                    </video>
+
+                    `
+                    : `
+
+                    <div class="error">
+                        Short video URL missing
+                    </div>
+
+                    `
+            }
+
+
+            <div class="short-info">
+
+                <h3>
+                    ${title}
+                </h3>
+
+
+                <div class="short-actions">
+
+                    <button
+                        class="like-btn"
+                        data-type="short"
+                        data-id="${escapeHTML(id)}"
+                    >
+                        ❤️ <span>Like</span>
+                    </button>
+
+
+                    <button
+                        class="comment-btn"
+                        data-type="short"
+                        data-id="${escapeHTML(id)}"
+                    >
+                        💬 Comment
+                    </button>
+
+
+                    <button
+                        class="share-btn"
+                        data-title="${title}"
+                        data-url="${escapeHTML(src)}"
+                    >
+                        ↗️ Share
+                    </button>
+
+                </div>
+
+
+                <div
+                    class="comments"
+                    id="comments-short-${escapeHTML(id)}"
+                    style="display:none;"
+                ></div>
+
+            </div>
+
+        `;
+
+
+        container.appendChild(card);
+
+    });
+
+
+    addSocialEvents();
+}
+
+
+/* =========================================================
+   SOCIAL EVENTS
+========================================================= */
+
+function addSocialEvents() {
+
+    document
+        .querySelectorAll(".like-btn")
+        .forEach((button) => {
+
+            button.onclick = async () => {
+
+                await likeContent(
+                    button.dataset.type,
+                    button.dataset.id,
+                    button
+                );
+
+            };
+
+        });
+
+
+    document
+        .querySelectorAll(".comment-btn")
+        .forEach((button) => {
+
+            button.onclick = async () => {
+
+                await showComments(
+                    button.dataset.type,
+                    button.dataset.id
+                );
+
+            };
+
+        });
+
+
+    document
+        .querySelectorAll(".share-btn")
+        .forEach((button) => {
+
+            button.onclick = async () => {
+
+                await shareContent(
+                    button.dataset.title,
+                    button.dataset.url
+                );
+
+            };
+
+        });
+
+}
+
+
+/* =========================================================
+   LIKE
+========================================================= */
+
+async function likeContent(
+    type,
+    contentId,
+    button
 ) {
 
-  if (!url) {
+    const user =
+        await requireLogin();
 
-    showToast(
-      "Video URL missing"
-    );
-
-    return;
-
-  }
+    if (!user) return;
 
 
-  const playerBody =
-    $("playerBody");
+    try {
 
-  if (!playerBody) return;
+        const likeQuery =
+            query(
+                collection(
+                    db,
+                    "likes"
+                ),
 
+                where(
+                    "userId",
+                    "==",
+                    user.uid
+                ),
 
-  playerBody.innerHTML = `
+                where(
+                    "contentId",
+                    "==",
+                    contentId
+                ),
 
-    <div class="player">
-
-      <video
-        id="mainVideo"
-        src="${escapeHTML(url)}"
-        controls
-        playsinline
-        preload="metadata"
-      ></video>
-
-      <h2>
-        ${escapeHTML(title)}
-      </h2>
-
-      <div class="meta">
-        ${escapeHTML(type)}
-      </div>
-
-
-      <div class="playerActions">
-
-        <button
-          class="action"
-          id="back10"
-        >
-          ⏪ 10s
-        </button>
-
-        <button
-          class="action"
-          id="forward10"
-        >
-          10s ⏩
-        </button>
-
-        <button
-          class="action"
-          id="speedButton"
-        >
-          Speed 1x
-        </button>
-
-        <button
-          class="action likeBtn"
-          data-id="${escapeHTML(id)}"
-          data-type="${escapeHTML(type)}"
-        >
-          ♡ Like
-        </button>
-
-        <button
-          class="action commentBtn"
-          data-id="${escapeHTML(id)}"
-          data-type="${escapeHTML(type)}"
-        >
-          💬 Comment
-        </button>
-
-        <button
-          class="action"
-          id="shareVideo"
-        >
-          ↗ Share
-        </button>
-
-      </div>
-
-    </div>
-
-  `;
+                where(
+                    "type",
+                    "==",
+                    type
+                )
+            );
 
 
-  openModal("playerModal");
+        const existing =
+            await getDocs(
+                likeQuery
+            );
 
 
-  const video =
-    $("mainVideo");
+        if (!existing.empty) {
+
+            button.classList.remove(
+                "liked"
+            );
+
+            button.querySelector(
+                "span"
+            ).textContent = "Like";
+
+            return;
+
+        }
 
 
-  $("back10").onclick =
-    function () {
+        await addDoc(
+            collection(
+                db,
+                "likes"
+            ),
+            {
 
-      video.currentTime =
-        Math.max(
-          0,
-          video.currentTime - 10
+                userId: user.uid,
+
+                userName:
+                    user.displayName ||
+                    user.email ||
+                    "User",
+
+                contentId,
+
+                type,
+
+                createdAt:
+                    serverTimestamp()
+
+            }
         );
 
-    };
 
-
-  $("forward10").onclick =
-    function () {
-
-      video.currentTime =
-        Math.min(
-          video.duration || 0,
-          video.currentTime + 10
+        button.classList.add(
+            "liked"
         );
 
-    };
+
+        button.querySelector(
+            "span"
+        ).textContent =
+            "Liked";
 
 
-  const speeds =
-    [
-      0.5,
-      1,
-      1.25,
-      1.5,
-      2
-    ];
+    } catch (error) {
 
-  let speedIndex = 1;
-
-
-  $("speedButton").onclick =
-    function () {
-
-      speedIndex++;
-
-      if (
-        speedIndex >=
-        speeds.length
-      ) {
-
-        speedIndex = 0;
-
-      }
-
-      const speed =
-        speeds[speedIndex];
-
-      video.playbackRate =
-        speed;
-
-      $("speedButton").textContent =
-        `Speed ${speed}x`;
-
-    };
-
-
-  $("shareVideo").onclick =
-    function () {
-
-      shareContent(title);
-
-    };
-
-
-  const likeButton =
-    playerBody.querySelector(
-      ".likeBtn"
-    );
-
-  if (likeButton) {
-
-    likeButton.onclick =
-      function () {
-
-        likeContent(
-          id,
-          type,
-          likeButton
+        console.error(
+            "Like error:",
+            error
         );
 
-      };
-
-    loadLikeState(
-      likeButton
-    );
-
-  }
-
-
-  const commentButton =
-    playerBody.querySelector(
-      ".commentBtn"
-    );
-
-  if (commentButton) {
-
-    commentButton.onclick =
-      function () {
-
-        openComments(
-          id,
-          type
+        alert(
+            "Like failed: " +
+            error.message
         );
 
-      };
-
-  }
+    }
 
 }
 
 
-// ===============================
-// SHARE
-// ===============================
+/* =========================================================
+   COMMENTS
+========================================================= */
 
-async function shareContent(title) {
+async function showComments(
+    type,
+    contentId
+) {
 
-  try {
+    const user =
+        await requireLogin();
+
+    if (!user) return;
+
+
+    const box =
+        document.getElementById(
+            `comments-${type}-${contentId}`
+        );
+
+
+    if (!box) {
+
+        alert(
+            "Comment area not found."
+        );
+
+        return;
+    }
+
+
+    box.style.display =
+        box.style.display === "none"
+            ? "block"
+            : "none";
+
 
     if (
-      navigator.share
+        box.dataset.loaded === "true"
     ) {
 
-      await navigator.share({
-
-        title:
-          title,
-
-        text:
-          title,
-
-        url:
-          window.location.href
-
-      });
-
-    } else {
-
-      await navigator.clipboard.writeText(
-        window.location.href
-      );
-
-      showToast(
-        "Link copied"
-      );
-
-    }
-
-  } catch (error) {
-
-    console.log(
-      "Share cancelled"
-    );
-
-  }
-
-}
-
-
-// ===============================
-// GLOBAL CLICK HANDLER
-// ===============================
-
-document.addEventListener(
-  "click",
-  function (event) {
-
-
-    const likeButton =
-      event.target.closest(
-        ".likeBtn"
-      );
-
-    if (likeButton) {
-
-      likeContent(
-        likeButton.dataset.id,
-        likeButton.dataset.type,
-        likeButton
-      );
-
-      return;
-
+        return;
     }
 
 
-    const commentButton =
-      event.target.closest(
-        ".commentBtn"
-      );
+    box.innerHTML = `
 
-    if (commentButton) {
+        <div
+            style="
+                margin-bottom:12px;
+            "
+        >
 
-      openComments(
-        commentButton.dataset.id,
-        commentButton.dataset.type
-      );
-
-      return;
-
-    }
-
-
-    const shareButton =
-      event.target.closest(
-        ".shareBtn"
-      );
-
-    if (shareButton) {
-
-      shareContent(
-        shareButton.dataset.title
-      );
-
-      return;
-
-    }
+            <textarea
+                class="comment-input"
+                placeholder="Write your comment..."
+                style="
+                    width:100%;
+                    min-height:80px;
+                    background:#0b0b0b;
+                    color:#fff;
+                    border:1px solid #555;
+                    border-radius:8px;
+                    padding:10px;
+                "
+            ></textarea>
 
 
-    const watchButton =
-      event.target.closest(
-        ".watchBtn"
-      );
+            <button
+                class="comment-submit"
+                style="
+                    margin-top:8px;
+                "
+            >
+                Post Comment
+            </button>
 
-    if (watchButton) {
-
-      openVideoPlayer(
-
-        watchButton.dataset.url,
-
-        watchButton.dataset.title,
-
-        watchButton.dataset.type,
-
-        watchButton.dataset.id
-
-      );
-
-      return;
-
-    }
+        </div>
 
 
-    const closeButton =
-      event.target.closest(
-        "[data-close]"
-      );
+        <div class="comment-list">
+            Loading comments...
+        </div>
 
-    if (closeButton) {
-
-      closeModal(
-        closeButton.dataset.close
-      );
-
-    }
-
-  }
-);
+    `;
 
 
-// ===============================
-// BUTTONS
-// ===============================
-
-const signInButton =
-  $("signinBtn");
-
-if (signInButton) {
-
-  signInButton.onclick =
-    googleLogin;
-
-}
-
-
-const mobileSignin =
-  $("mobileSignin");
-
-if (mobileSignin) {
-
-  mobileSignin.onclick =
-    googleLogin;
-
-}
-
-
-const googleButton =
-  $("googleBtn");
-
-if (googleButton) {
-
-  googleButton.onclick =
-    googleLogin;
-
-}
-
-
-const menuButton =
-  $("menuBtn");
-
-if (menuButton) {
-
-  menuButton.onclick =
-    function () {
-
-      const menu =
-        $("mobileNav");
-
-      if (menu) {
-
-        menu.classList.toggle(
-          "active"
+    const textarea =
+        box.querySelector(
+            ".comment-input"
         );
 
-      }
 
-    };
+    const submit =
+        box.querySelector(
+            ".comment-submit"
+        );
+
+
+    const list =
+        box.querySelector(
+            ".comment-list"
+        );
+
+
+    submit.onclick =
+        async () => {
+
+            const text =
+                textarea.value.trim();
+
+
+            if (!text) {
+
+                alert(
+                    "Please write a comment."
+                );
+
+                return;
+            }
+
+
+            try {
+
+                await addDoc(
+                    collection(
+                        db,
+                        "comments"
+                    ),
+                    {
+
+                        type,
+
+                        contentId,
+
+                        text,
+
+                        userId:
+                            user.uid,
+
+                        userName:
+                            user.displayName ||
+                            user.email ||
+                            "User",
+
+                        userPhoto:
+                            user.photoURL ||
+                            "",
+
+                        createdAt:
+                            serverTimestamp()
+
+                    }
+                );
+
+
+                textarea.value = "";
+
+                await loadComments(
+                    type,
+                    contentId,
+                    list
+                );
+
+
+            } catch (error) {
+
+                console.error(
+                    "Comment error:",
+                    error
+                );
+
+                alert(
+                    "Comment failed: " +
+                    error.message
+                );
+
+            }
+
+        };
+
+
+    await loadComments(
+        type,
+        contentId,
+        list
+    );
+
+
+    box.dataset.loaded = "true";
 
 }
 
 
-// ===============================
-// YEAR
-// ===============================
+/* =========================================================
+   LOAD COMMENTS
+========================================================= */
 
-const year =
-  $("year");
+async function loadComments(
+    type,
+    contentId,
+    list
+) {
 
-if (year) {
+    try {
 
-  year.textContent =
-    new Date().getFullYear();
+        const commentsQuery =
+            query(
+                collection(
+                    db,
+                    "comments"
+                ),
+
+                where(
+                    "type",
+                    "==",
+                    type
+                ),
+
+                where(
+                    "contentId",
+                    "==",
+                    contentId
+                )
+            );
+
+
+        const snapshot =
+            await getDocs(
+                commentsQuery
+            );
+
+
+        if (snapshot.empty) {
+
+            list.innerHTML = `
+
+                <p
+                    style="
+                        color:#999;
+                        padding:10px 0;
+                    "
+                >
+                    No comments yet.
+                </p>
+
+            `;
+
+            return;
+        }
+
+
+        const comments =
+            snapshot.docs.map(
+                item => ({
+                    id: item.id,
+                    ...item.data()
+                })
+            );
+
+
+        comments.sort(
+            (a, b) => {
+
+                const aTime =
+                    a.createdAt?.seconds ||
+                    0;
+
+                const bTime =
+                    b.createdAt?.seconds ||
+                    0;
+
+                return bTime - aTime;
+
+            }
+        );
+
+
+        list.innerHTML =
+            comments.map(
+                comment => `
+
+                <div
+                    class="comment-item"
+                    style="
+                        padding:10px 0;
+                        border-bottom:1px solid #292929;
+                    "
+                >
+
+                    <strong
+                        style="
+                            color:#d4af37;
+                        "
+                    >
+                        ${escapeHTML(
+                            comment.userName ||
+                            "User"
+                        )}
+                    </strong>
+
+                    <p
+                        style="
+                            color:#ddd;
+                            margin-top:3px;
+                        "
+                    >
+                        ${escapeHTML(
+                            comment.text
+                        )}
+                    </p>
+
+                </div>
+
+                `
+            ).join("");
+
+
+    } catch (error) {
+
+        console.error(
+            "Load comments error:",
+            error
+        );
+
+
+        list.innerHTML = `
+
+            <p
+                style="
+                    color:#ff7777;
+                "
+            >
+                Could not load comments.
+            </p>
+
+        `;
+
+    }
 
 }
 
 
-// ===============================
-// LOAD WEBSITE DATA
-// ===============================
+/* =========================================================
+   SHARE
+========================================================= */
 
-loadBooks();
+async function shareContent(
+    title,
+    url
+) {
 
-loadMedia(
-  "videos.json",
-  "videos",
-  "videosGrid"
+    const shareURL =
+        url ||
+        window.location.href;
+
+
+    if (
+        navigator.share
+    ) {
+
+        try {
+
+            await navigator.share({
+
+                title:
+                    title ||
+                    "Bazam-E-Saim",
+
+                text:
+                    title ||
+                    "Bazam-E-Saim",
+
+                url:
+                    shareURL
+
+            });
+
+            return;
+
+        } catch (error) {
+
+            console.log(
+                "Share cancelled"
+            );
+
+        }
+
+    }
+
+
+    try {
+
+        await navigator.clipboard.writeText(
+            shareURL
+        );
+
+        alert(
+            "Link copied!"
+        );
+
+    } catch (error) {
+
+        prompt(
+            "Copy this link:",
+            shareURL
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   LOAD EVERYTHING
+========================================================= */
+
+async function loadAllContent() {
+
+    await Promise.all([
+        loadBooks(),
+        loadVideos(),
+        loadShorts()
+    ]);
+
+}
+
+
+/* =========================================================
+   START
+========================================================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    () => {
+
+        loadAllContent();
+
+    }
 );
 
-loadMedia(
-  "shorts.json",
-  "shorts",
-  "shortsGrid"
-);
+
+/* =========================================================
+   GLOBAL FUNCTIONS
+========================================================= */
+
+window.BazamE = {
+
+    loadBooks,
+
+    loadVideos,
+
+    loadShorts,
+
+    loadAllContent,
+
+    googleLogin,
+
+    openBookReader,
+
+    shareContent
+
+};
