@@ -1,16 +1,17 @@
 [
   {
-    "id": "video-001",
-    "title": "Heart Touching Punjabi Poetry by Allama Saim Chishti",
-    "description": "Beautiful Punjabi poetry by Allama Saim Chishti.",
-    "video": "videos/video1.mp4",
-    "thumbnail": ""
+    "id": "video-1",
+    "title": "Mahfil E Naat",
+    "video": "./mahfil%20e%20natt%20short.mp4"
   },
   {
-    "id": "video-002",
-    "title": "Allama Saim Chishti",
-    "description": "Islamic poetry and beautiful words.",
-    "video": "videos/video2.mp4",
-    "thumbnail": ""
+    "id": "video-2",
+    "title": "Sahibzada Latif Sajid Chishti",
+    "video": "./sahibzada%20latif%20sajid%20chishti.mp4"
+  },
+  {
+    "id": "video-3",
+    "title": "New Heart Touching Beautiful Naat Sharif Kalam Hazrat Saim Chishti Iqra Saim Chishti",
+    "video": "./New%20Heart%20Touching%20Beautiful%20Naat%20Sharif%20Kalam%20Hazrat%20Saim%20chishti%20iqra%20saim%20chishti.mp4"
   }
 ]
