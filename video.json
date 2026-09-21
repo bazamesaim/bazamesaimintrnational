@@ -1,12 +1,16 @@
 [
   {
     "id": "video-001",
-    "title": "Heart Touching Punjabi Poetry",
-    "titleUrdu": "دل کو چھو لینے والی پنجابی شاعری",
-    "author": "Allama Saim Chishti",
-    "authorUrdu": "علامہ صائم چشتی",
-    "description": "Heart touching Punjabi poetry by Allama Saim Chishti.",
-    "descriptionUrdu": "علامہ صائم چشتی کی دل کو چھو لینے والی پنجابی شاعری۔",
-    "video": "Heart Touching Punjabi Poetry by Allama Saim Chishti.mp4"
+    "title": "Heart Touching Punjabi Poetry by Allama Saim Chishti",
+    "description": "Beautiful Punjabi poetry by Allama Saim Chishti.",
+    "video": "videos/video1.mp4",
+    "thumbnail": ""
+  },
+  {
+    "id": "video-002",
+    "title": "Allama Saim Chishti",
+    "description": "Islamic poetry and beautiful words.",
+    "video": "videos/video2.mp4",
+    "thumbnail": ""
   }
 ]
