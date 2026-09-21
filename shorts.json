@@ -1,0 +1,17 @@
+[
+  {
+    "id": "short-001",
+    "title": "Saim Chishti Short 1",
+    "video": "shorts/short1.mp4"
+  },
+  {
+    "id": "short-002",
+    "title": "Saim Chishti Short 2",
+    "video": "shorts/short2.mp4"
+  },
+  {
+    "id": "short-003",
+    "title": "Saim Chishti Short 3",
+    "video": "shorts/short3.mp4"
+  }
+]
