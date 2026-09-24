@@ -1,9 +1,11 @@
 /* =========================================================
    BAZAM-E-SAIM
-   FULL WEBSITE SCRIPT
-   BOOKS + VIDEOS + SHORTS
-   FIREBASE + LIKE + COMMENT + SHARE
-   GOOGLE LOGIN
+   MAIN WEBSITE SCRIPT
+========================================================= */
+
+
+/* =========================================================
+   FIREBASE
 ========================================================= */
 
 import {
@@ -24,35 +26,53 @@ import {
     getDocs,
     query,
     where,
-    orderBy,
     serverTimestamp,
+    increment,
     updateDoc,
-    doc,
-    increment
+    doc
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 
-/* =========================================================
-   FIREBASE
-========================================================= */
-
 const firebaseConfig = {
-    apiKey: "AIzaSyBFzwp8J3L1oUxAeDDq23T2CmydtgTa1k",
-    authDomain: "bazamesaiminternational.firebaseapp.com",
-    projectId: "bazamesaiminternational",
-    storageBucket: "bazamesaiminternational.firebasestorage.app",
-    messagingSenderId: "879282438130",
-    appId: "1:879282438130:web:a285d48f427e6659e3f56b",
-    measurementId: "G-S79YY7WPWX"
+
+    apiKey:
+        "AIzaSyBFzwp8J3L1oUxAeDDq23T2CmydtgTa1k",
+
+    authDomain:
+        "bazamesaiminternational.firebaseapp.com",
+
+    projectId:
+        "bazamesaiminternational",
+
+    storageBucket:
+        "bazamesaiminternational.firebasestorage.app",
+
+    messagingSenderId:
+        "879282438130",
+
+    appId:
+        "1:879282438130:web:a285d48f427e6659e3f56b",
+
+    measurementId:
+        "G-S79YY7WPWX"
+
 };
 
-const app = initializeApp(firebaseConfig);
 
-const auth = getAuth(app);
+const firebaseApp =
+    initializeApp(firebaseConfig);
 
-const db = getFirestore(app);
 
-const googleProvider = new GoogleAuthProvider();
+const auth =
+    getAuth(firebaseApp);
+
+
+const db =
+    getFirestore(firebaseApp);
+
+
+const googleProvider =
+    new GoogleAuthProvider();
 
 
 console.log(
@@ -61,55 +81,52 @@ console.log(
 );
 
 
-/* =========================================================
-   GLOBAL STATE
-========================================================= */
-
 let currentUser = null;
 
-let booksData = [];
-let videosData = [];
-let shortsData = [];
-
 
 /* =========================================================
-   AUTH STATE
+   AUTH
 ========================================================= */
 
-onAuthStateChanged(auth, (user) => {
+onAuthStateChanged(
+    auth,
+    (user) => {
 
-    currentUser = user || null;
+        currentUser =
+            user || null;
 
-    console.log(
-        "Current user:",
-        currentUser
-            ? currentUser.displayName || currentUser.email
-            : "Not logged in"
-    );
+        console.log(
+            "Current user:",
+            currentUser
+                ? currentUser.email
+                : "Not logged in"
+        );
 
-});
+    }
+);
 
 
-/* =========================================================
-   GOOGLE LOGIN
-========================================================= */
-
-async function googleLogin() {
+async function loginWithGoogle() {
 
     try {
 
-        const result = await signInWithPopup(
-            auth,
-            googleProvider
-        );
+        const result =
+            await signInWithPopup(
+                auth,
+                googleProvider
+            );
 
-        currentUser = result.user;
+        currentUser =
+            result.user;
 
         return currentUser;
 
     } catch (error) {
 
-        console.error("Google login error:", error);
+        console.error(
+            "Google login error:",
+            error
+        );
 
         alert(
             "Google login failed.\n\n" +
@@ -117,96 +134,115 @@ async function googleLogin() {
         );
 
         return null;
+
     }
+
 }
 
-
-/* =========================================================
-   REQUIRE LOGIN
-========================================================= */
 
 async function requireLogin() {
 
     if (currentUser) {
+
         return currentUser;
+
     }
 
-    const login = confirm(
-        "Please login with Google first to like or comment.\n\n" +
-        "Press OK to continue with Google."
-    );
 
-    if (!login) {
+    const answer =
+        confirm(
+            "Login with Google is required for Like and Comment.\n\nContinue?"
+        );
+
+
+    if (!answer) {
+
         return null;
+
     }
 
-    return await googleLogin();
+
+    return await loginWithGoogle();
+
 }
 
 
 /* =========================================================
-   SAFE HTML
+   MOBILE MENU
+========================================================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    () => {
+
+        const menuButton =
+            document.getElementById(
+                "mobile-menu-btn"
+            );
+
+        const nav =
+            document.getElementById(
+                "main-nav"
+            );
+
+
+        menuButton?.addEventListener(
+            "click",
+            () => {
+
+                nav.classList.toggle(
+                    "open"
+                );
+
+            }
+        );
+
+
+        nav?.querySelectorAll("a")
+            .forEach(
+                link => {
+
+                    link.addEventListener(
+                        "click",
+                        () => {
+
+                            nav.classList.remove(
+                                "open"
+                            );
+
+                        }
+                    );
+
+                }
+            );
+
+    }
+);
+
+
+/* =========================================================
+   HELPERS
 ========================================================= */
 
 function escapeHTML(value) {
 
-    if (value === null || value === undefined) {
-        return "";
-    }
-
-    return String(value)
+    return String(
+        value ?? ""
+    )
         .replaceAll("&", "&amp;")
         .replaceAll("<", "&lt;")
         .replaceAll(">", "&gt;")
         .replaceAll('"', "&quot;")
         .replaceAll("'", "&#039;");
+
 }
 
 
-/* =========================================================
-   JSON LOADER
-========================================================= */
-
-async function loadJSON(file) {
-
-    try {
-
-        const response = await fetch(
-            `./${file}?v=${Date.now()}`
-        );
-
-        if (!response.ok) {
-
-            throw new Error(
-                `${file} not found (${response.status})`
-            );
-        }
-
-        const data = await response.json();
-
-        if (!Array.isArray(data)) {
-
-            throw new Error(
-                `${file} must contain an array`
-            );
-        }
-
-        return data;
-
-    } catch (error) {
-
-        console.error(error);
-
-        return [];
-    }
-}
-
-
-/* =========================================================
-   GET FIRST AVAILABLE VALUE
-========================================================= */
-
-function getValue(item, keys, fallback = "") {
+function valueOf(
+    item,
+    keys,
+    fallback = ""
+) {
 
     for (const key of keys) {
 
@@ -218,21 +254,108 @@ function getValue(item, keys, fallback = "") {
         ) {
 
             return item[key];
+
         }
+
     }
 
     return fallback;
+
+}
+
+
+async function loadJSON(file) {
+
+    try {
+
+        const response =
+            await fetch(
+                `./${file}?v=${Date.now()}`
+            );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                `${file} HTTP ${response.status}`
+            );
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        if (!Array.isArray(data)) {
+
+            throw new Error(
+                `${file} must contain an array`
+            );
+
+        }
+
+
+        return data;
+
+    } catch (error) {
+
+        console.error(
+            `Could not load ${file}:`,
+            error
+        );
+
+        return [];
+
+    }
+
 }
 
 
 /* =========================================================
-   FIND BOOK URL
+   URL HELPERS
 ========================================================= */
 
-function getBookURL(book) {
+function getVideoURL(item) {
 
-    return getValue(
-        book,
+    return valueOf(
+        item,
+        [
+            "video",
+            "videoUrl",
+            "url",
+            "src",
+            "file",
+            "fileUrl",
+            "downloadURL",
+            "downloadUrl"
+        ]
+    );
+
+}
+
+
+function getImageURL(item) {
+
+    return valueOf(
+        item,
+        [
+            "image",
+            "imageUrl",
+            "img",
+            "cover",
+            "coverUrl",
+            "thumbnail"
+        ]
+    );
+
+}
+
+
+function getBookURL(item) {
+
+    return valueOf(
+        item,
         [
             "url",
             "pdf",
@@ -241,53 +364,9 @@ function getBookURL(book) {
             "fileUrl",
             "downloadURL",
             "downloadUrl"
-        ],
-        ""
+        ]
     );
-}
 
-
-/* =========================================================
-   FIND VIDEO URL
-========================================================= */
-
-function getVideoURL(video) {
-
-    return getValue(
-        video,
-        [
-            "video",
-            "videoUrl",
-            "url",
-            "file",
-            "fileUrl",
-            "src",
-            "downloadURL",
-            "downloadUrl"
-        ],
-        ""
-    );
-}
-
-
-/* =========================================================
-   FIND IMAGE
-========================================================= */
-
-function getImageURL(item) {
-
-    return getValue(
-        item,
-        [
-            "image",
-            "img",
-            "cover",
-            "coverUrl",
-            "thumbnail",
-            "imageUrl"
-        ],
-        ""
-    );
 }
 
 
@@ -298,94 +377,164 @@ function getImageURL(item) {
 async function loadBooks() {
 
     const container =
-        document.getElementById("books-container");
+        document.getElementById(
+            "books-container"
+        );
+
 
     if (!container) return;
 
-    container.innerHTML =
-        `<div class="loading">Loading books...</div>`;
+
+    const books =
+        await loadJSON(
+            "books.json"
+        );
 
 
-    booksData = await loadJSON("books.json");
-
-
-    if (!booksData.length) {
+    if (!books.length) {
 
         container.innerHTML = `
-            <div class="error">
+            <div class="error-card">
                 Books could not be loaded.
                 <br>
-                Check <b>books.json</b>.
+                Check books.json
             </div>
         `;
 
         return;
+
     }
 
 
-    container.innerHTML = "";
+    /*
+       Duplicate cards so the CSS animation
+       can make a continuous cycle.
+    */
+
+    const cards =
+        books.map(
+            (book, index) =>
+                createBookCard(
+                    book,
+                    index
+                )
+        ).join("");
 
 
-    booksData.forEach((book, index) => {
+    container.innerHTML =
+        cards + cards;
 
-        const title = escapeHTML(
-            getValue(
-                book,
-                ["title", "name"],
-                "Untitled Book"
-            )
+
+    container
+        .querySelectorAll(
+            ".read-book-btn"
+        )
+        .forEach(
+            button => {
+
+                button.addEventListener(
+                    "click",
+                    () => {
+
+                        const index =
+                            Number(
+                                button.dataset.index
+                            );
+
+                        openBook(
+                            books[index]
+                        );
+
+                    }
+                );
+
+            }
         );
 
-        const author = escapeHTML(
-            getValue(
-                book,
-                ["author", "writer", "speaker"],
-                "Bazam-E-Saim"
-            )
+
+    attachSocialEvents();
+
+}
+
+
+function createBookCard(
+    book,
+    index
+) {
+
+    const title =
+        valueOf(
+            book,
+            ["title", "name"],
+            "Untitled Book"
         );
 
-        const image = getImageURL(book);
 
-        const bookURL = getBookURL(book);
-
-        const id =
-            book.id ||
-            book.bookId ||
-            `book-${index}`;
-
-
-        const card =
-            document.createElement("article");
-
-        card.className = "book-card";
+    const author =
+        valueOf(
+            book,
+            ["author", "writer"],
+            "Hazrat Allama Saim Chishti"
+        );
 
 
-        card.innerHTML = `
+    const image =
+        getImageURL(book);
+
+
+    const bookURL =
+        getBookURL(book);
+
+
+    const id =
+        valueOf(
+            book,
+            ["id", "bookId"],
+            `book-${index}`
+        );
+
+
+    return `
+
+        <article
+            class="book-card"
+        >
 
             ${
                 image
                     ? `
                     <img
                         src="${escapeHTML(image)}"
-                        alt="${title}"
+                        alt="${escapeHTML(title)}"
                         loading="lazy"
-                        onerror="
-                            this.style.display='none';
-                        "
                     >
                     `
-                    : ""
+                    : `
+                    <div
+                        style="
+                            height:350px;
+                            background:#111;
+                            display:flex;
+                            align-items:center;
+                            justify-content:center;
+                            color:#d4af37;
+                            font-size:45px;
+                        "
+                    >
+                        📚
+                    </div>
+                    `
             }
 
 
             <div class="book-card-content">
 
                 <h3>
-                    ${title}
+                    ${escapeHTML(title)}
                 </h3>
 
                 <p class="author">
-                    ${author}
+                    ${escapeHTML(author)}
                 </p>
 
 
@@ -393,47 +542,28 @@ async function loadBooks() {
                     bookURL
                         ? `
                         <button
-                            class="read-btn"
-                            data-book-index="${index}"
+                            class="read-btn read-book-btn"
+                            data-index="${index}"
                         >
                             📖 Read Book
                         </button>
                         `
                         : `
-                        <p class="error">
-                            Book PDF URL missing
-                        </p>
+                        <div class="error-card">
+                            Book URL missing
+                        </div>
                         `
                 }
 
 
                 <div class="book-actions">
 
-                    <button
-                        class="like-btn"
-                        data-type="book"
-                        data-id="${escapeHTML(id)}"
-                    >
-                        ❤️ <span>Like</span>
-                    </button>
-
-
-                    <button
-                        class="comment-btn"
-                        data-type="book"
-                        data-id="${escapeHTML(id)}"
-                    >
-                        💬 Comment
-                    </button>
-
-
-                    <button
-                        class="share-btn"
-                        data-title="${title}"
-                        data-url="${escapeHTML(bookURL)}"
-                    >
-                        ↗️ Share
-                    </button>
+                    ${socialButtons(
+                        "book",
+                        id,
+                        title,
+                        bookURL
+                    )}
 
                 </div>
 
@@ -441,52 +571,14 @@ async function loadBooks() {
                 <div
                     class="comments"
                     id="comments-book-${escapeHTML(id)}"
-                    style="display:none;"
                 ></div>
 
             </div>
-        `;
 
+        </article>
 
-        container.appendChild(card);
+    `;
 
-    });
-
-
-    addBookEvents();
-}
-
-
-/* =========================================================
-   BOOK EVENTS
-========================================================= */
-
-function addBookEvents() {
-
-    document
-        .querySelectorAll("[data-book-index]")
-        .forEach((button) => {
-
-            button.addEventListener(
-                "click",
-                () => {
-
-                    const index =
-                        Number(
-                            button.dataset.bookIndex
-                        );
-
-                    openBookReader(
-                        booksData[index]
-                    );
-
-                }
-            );
-
-        });
-
-
-    addSocialEvents();
 }
 
 
@@ -494,50 +586,46 @@ function addBookEvents() {
    BOOK READER
 ========================================================= */
 
-function openBookReader(book) {
+function openBook(book) {
 
-    const url = getBookURL(book);
+    const url =
+        getBookURL(book);
+
 
     if (!url) {
 
-        alert("Book PDF URL is missing.");
+        alert(
+            "Book URL is missing."
+        );
 
         return;
+
     }
 
 
     const title =
-        getValue(
+        valueOf(
             book,
             ["title", "name"],
             "Book"
         );
 
 
-    const existing =
-        document.getElementById(
-            "book-reader-modal"
+    const modal =
+        document.createElement(
+            "div"
         );
 
 
-    if (existing) {
-        existing.remove();
-    }
-
-
-    const modal =
-        document.createElement("div");
-
-    modal.id = "book-reader-modal";
-
-
     modal.style.cssText = `
+
         position:fixed;
         inset:0;
         z-index:99999;
         background:#050505;
         display:flex;
         flex-direction:column;
+
     `;
 
 
@@ -545,11 +633,12 @@ function openBookReader(book) {
 
         <div
             style="
+                height:60px;
                 display:flex;
                 align-items:center;
                 justify-content:space-between;
                 gap:10px;
-                padding:10px 15px;
+                padding:8px 14px;
                 background:#101010;
                 border-bottom:1px solid #d4af37;
             "
@@ -557,59 +646,25 @@ function openBookReader(book) {
 
             <strong
                 style="
-                    color:#d4af37;
-                    font-size:16px;
+                    color:#f4d77d;
                 "
             >
                 ${escapeHTML(title)}
             </strong>
 
 
-            <div
-                style="
-                    display:flex;
-                    gap:7px;
-                    flex-wrap:wrap;
-                "
-            >
+            <div>
 
                 <button
-                    id="book-prev-page"
-                >
-                    ◀ Previous
-                </button>
-
-
-                <button
-                    id="book-next-page"
-                >
-                    Next ▶
-                </button>
-
-
-                <button
-                    id="book-zoom-out"
-                >
-                    −
-                </button>
-
-
-                <button
-                    id="book-zoom-in"
-                >
-                    +
-                </button>
-
-
-                <button
-                    id="book-new-tab"
+                    class="reader-btn"
+                    id="reader-open"
                 >
                     Open ↗
                 </button>
 
-
                 <button
-                    id="book-close"
+                    class="reader-btn"
+                    id="reader-close"
                 >
                     ✕ Close
                 </button>
@@ -619,132 +674,47 @@ function openBookReader(book) {
         </div>
 
 
-        <div
-            id="book-frame-area"
+        <iframe
+            src="${escapeHTML(url)}"
+            title="${escapeHTML(title)}"
             style="
+                width:100%;
                 flex:1;
-                overflow:auto;
-                background:#222;
-                display:flex;
-                justify-content:center;
+                border:0;
+                background:#fff;
             "
-        >
+        ></iframe>
 
-            <iframe
-                id="book-pdf-frame"
-                src="${escapeHTML(url)}"
-                title="${escapeHTML(title)}"
-                style="
-                    width:100%;
-                    height:100%;
-                    border:0;
-                    background:white;
-                "
-            ></iframe>
-
-        </div>
     `;
 
 
-    document.body.appendChild(modal);
+    document.body.appendChild(
+        modal
+    );
 
 
-    document
-        .getElementById("book-close")
-        .onclick = () => {
-
-            modal.remove();
-
-        };
-
-
-    document
-        .getElementById("book-new-tab")
-        .onclick = () => {
-
-            window.open(
-                url,
-                "_blank",
-                "noopener,noreferrer"
-            );
-
-        };
+    modal
+        .querySelector(
+            "#reader-close"
+        )
+        .onclick =
+            () => modal.remove();
 
 
-    /*
-       Browser PDF viewer controls the actual
-       page movement. These buttons try to use
-       browser PDF viewer commands where possible.
-    */
+    modal
+        .querySelector(
+            "#reader-open"
+        )
+        .onclick =
+            () => {
 
-    document
-        .getElementById("book-prev-page")
-        .onclick = () => {
-
-            alert(
-                "PDF page controls are available in the PDF viewer. " +
-                "Use the Previous Page button inside the viewer."
-            );
-
-        };
-
-
-    document
-        .getElementById("book-next-page")
-        .onclick = () => {
-
-            alert(
-                "PDF page controls are available in the PDF viewer. " +
-                "Use the Next Page button inside the viewer."
-            );
-
-        };
-
-
-    let zoom = 1;
-
-
-    document
-        .getElementById("book-zoom-in")
-        .onclick = () => {
-
-            zoom += 0.1;
-
-            const frame =
-                document.getElementById(
-                    "book-pdf-frame"
+                window.open(
+                    url,
+                    "_blank",
+                    "noopener,noreferrer"
                 );
 
-            frame.style.transform =
-                `scale(${zoom})`;
-
-            frame.style.transformOrigin =
-                "top center";
-
-        };
-
-
-    document
-        .getElementById("book-zoom-out")
-        .onclick = () => {
-
-            zoom = Math.max(
-                0.6,
-                zoom - 0.1
-            );
-
-            const frame =
-                document.getElementById(
-                    "book-pdf-frame"
-                );
-
-            frame.style.transform =
-                `scale(${zoom})`;
-
-            frame.style.transformOrigin =
-                "top center";
-
-        };
+            };
 
 }
 
@@ -760,94 +730,188 @@ async function loadVideos() {
             "videos-container"
         );
 
+
     if (!container) return;
 
 
-    container.innerHTML =
-        `<div class="loading">Loading videos...</div>`;
+    const videos =
+        await loadJSON(
+            "videos.json"
+        );
 
 
-    videosData =
-        await loadJSON("videos.json");
-
-
-    if (!videosData.length) {
+    if (!videos.length) {
 
         container.innerHTML = `
 
-            <div class="error">
+            <div class="error-card">
 
                 videos.json not found
+
                 <br><br>
 
-                Make sure the file is in the
-                same folder as index.html.
+                Make sure videos.json
+                is beside index.html.
 
             </div>
 
         `;
 
         return;
+
     }
 
 
-    container.innerHTML = "";
-
-
-    videosData.forEach((video, index) => {
-
-        const title =
-            escapeHTML(
-                getValue(
+    const cards =
+        videos.map(
+            (video, index) =>
+                createVideoCard(
                     video,
-                    ["title", "name"],
-                    "Untitled Video"
+                    index,
+                    "video"
                 )
-            );
+        ).join("");
 
 
-        const description =
-            escapeHTML(
-                getValue(
-                    video,
-                    ["description", "desc"],
-                    ""
+    container.innerHTML =
+        cards + cards;
+
+
+    setupVideoPlayers();
+
+    attachSocialEvents();
+
+}
+
+
+/* =========================================================
+   SHORTS
+========================================================= */
+
+async function loadShorts() {
+
+    const container =
+        document.getElementById(
+            "shorts-container"
+        );
+
+
+    if (!container) return;
+
+
+    const shorts =
+        await loadJSON(
+            "shorts.json"
+        );
+
+
+    if (!shorts.length) {
+
+        container.innerHTML = `
+
+            <div class="error-card">
+
+                shorts.json not found
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    const cards =
+        shorts.map(
+            (item, index) =>
+                createVideoCard(
+                    item,
+                    index,
+                    "short"
                 )
-            );
+        ).join("");
 
 
-        const src =
-            getVideoURL(video);
+    container.innerHTML =
+        cards + cards;
 
 
-        const image =
-            getImageURL(video);
+    setupVideoPlayers();
+
+    attachSocialEvents();
+
+}
 
 
-        const id =
-            video.id ||
-            video.videoId ||
-            `video-${index}`;
+/* =========================================================
+   VIDEO CARD
+========================================================= */
+
+function createVideoCard(
+    item,
+    index,
+    type
+) {
+
+    const title =
+        valueOf(
+            item,
+            ["title", "name"],
+            type === "short"
+                ? "Short Video"
+                : "Video"
+        );
 
 
-        const card =
-            document.createElement("article");
+    const description =
+        valueOf(
+            item,
+            ["description", "desc"],
+            ""
+        );
 
-        card.className =
-            "video-card";
+
+    const src =
+        getVideoURL(item);
 
 
-        card.innerHTML = `
+    const poster =
+        getImageURL(item);
+
+
+    const id =
+        valueOf(
+            item,
+            [
+                "id",
+                type === "short"
+                    ? "shortId"
+                    : "videoId"
+            ],
+            `${type}-${index}`
+        );
+
+
+    return `
+
+        <article
+            class="${
+                type === "short"
+                    ? "short-card"
+                    : "video-card"
+            }"
+        >
 
             ${
                 src
                     ? `
-
                     <video
                         class="bzs-video"
                         preload="metadata"
-                        ${image
-                            ? `poster="${escapeHTML(image)}"`
+                        playsinline
+                        ${poster
+                            ? `poster="${escapeHTML(poster)}"`
                             : ""
                         }
                     >
@@ -857,37 +921,42 @@ async function loadVideos() {
                             type="video/mp4"
                         >
 
-                        Your browser does not support
-                        video playback.
+                        Your browser does not
+                        support video playback.
 
                     </video>
-
                     `
                     : `
-
-                    <div
-                        class="error"
-                        style="padding:40px 10px;"
-                    >
+                    <div class="error-card">
                         Video URL missing
                     </div>
-
                     `
             }
 
 
-            <div class="video-info">
+            <div
+                class="${
+                    type === "short"
+                        ? "short-info"
+                        : "video-info"
+                }"
+            >
 
                 <h3>
-                    ${title}
+                    ${escapeHTML(title)}
                 </h3>
 
 
                 ${
                     description
                         ? `
-                        <p>
-                            ${description}
+                        <p
+                            style="
+                                color:#999;
+                                margin-top:7px;
+                            "
+                        >
+                            ${escapeHTML(description)}
                         </p>
                         `
                         : ""
@@ -896,125 +965,98 @@ async function loadVideos() {
 
                 ${
                     src
-                        ? createVideoControls()
+                        ? videoControls()
                         : ""
                 }
 
 
-                <div class="video-actions">
+                <div
+                    class="${
+                        type === "short"
+                            ? "short-actions"
+                            : "video-actions"
+                    }"
+                >
 
-                    <button
-                        class="like-btn"
-                        data-type="video"
-                        data-id="${escapeHTML(id)}"
-                    >
-                        ❤️ <span>Like</span>
-                    </button>
-
-
-                    <button
-                        class="comment-btn"
-                        data-type="video"
-                        data-id="${escapeHTML(id)}"
-                    >
-                        💬 Comment
-                    </button>
-
-
-                    <button
-                        class="share-btn"
-                        data-title="${title}"
-                        data-url="${escapeHTML(src)}"
-                    >
-                        ↗️ Share
-                    </button>
+                    ${socialButtons(
+                        type,
+                        id,
+                        title,
+                        src
+                    )}
 
                 </div>
 
 
                 <div
                     class="comments"
-                    id="comments-video-${escapeHTML(id)}"
-                    style="display:none;"
+                    id="comments-${escapeHTML(type)}-${escapeHTML(id)}"
                 ></div>
 
             </div>
 
-        `;
+        </article>
 
+    `;
 
-        container.appendChild(card);
-
-    });
-
-
-    setupVideoPlayers();
-
-    addSocialEvents();
 }
 
 
 /* =========================================================
-   VIDEO CONTROLS HTML
+   VIDEO CONTROLS
 ========================================================= */
 
-function createVideoControls() {
+function videoControls() {
 
     return `
 
         <div
             class="custom-video-controls"
-            style="
-                display:flex;
-                flex-wrap:wrap;
-                gap:6px;
-                margin-top:12px;
-            "
         >
 
             <button
-                type="button"
                 class="video-play"
+                type="button"
             >
                 ▶ Play
             </button>
 
 
             <button
-                type="button"
                 class="video-pause"
+                type="button"
             >
                 ⏸ Pause
             </button>
 
 
             <button
-                type="button"
                 class="video-stop"
+                type="button"
             >
                 ⏹ Stop
             </button>
 
 
             <button
-                type="button"
                 class="video-back"
+                type="button"
             >
                 ⏪ 10s
             </button>
 
 
             <button
-                type="button"
                 class="video-forward"
+                type="button"
             >
                 10s ⏩
             </button>
 
 
             <button
-                type="button"
                 class="video-mute"
+                type="button"
             >
                 🔊
             </button>
@@ -1022,13 +1064,6 @@ function createVideoControls() {
 
             <select
                 class="video-speed"
-                style="
-                    background:#171717;
-                    color:#fff;
-                    border:1px solid #6d5712;
-                    border-radius:7px;
-                    padding:7px;
-                "
             >
 
                 <option value="0.5">
@@ -1040,7 +1075,7 @@ function createVideoControls() {
                 </option>
 
                 <option value="1" selected>
-                    Normal
+                    1x Normal
                 </option>
 
                 <option value="1.25">
@@ -1060,323 +1095,248 @@ function createVideoControls() {
         </div>
 
     `;
+
 }
 
 
 /* =========================================================
-   VIDEO PLAYER LOGIC
+   SOCIAL BUTTONS
+========================================================= */
+
+function socialButtons(
+    type,
+    id,
+    title,
+    url
+) {
+
+    return `
+
+        <button
+            class="like-btn"
+            data-type="${escapeHTML(type)}"
+            data-id="${escapeHTML(id)}"
+        >
+            ❤️ Like
+        </button>
+
+
+        <button
+            class="comment-btn"
+            data-type="${escapeHTML(type)}"
+            data-id="${escapeHTML(id)}"
+        >
+            💬 Comment
+        </button>
+
+
+        <button
+            class="share-btn"
+            data-title="${escapeHTML(title)}"
+            data-url="${escapeHTML(url)}"
+        >
+            ↗️ Share
+        </button>
+
+
+        <button
+            class="view-btn"
+            data-type="${escapeHTML(type)}"
+            data-id="${escapeHTML(id)}"
+            disabled
+        >
+            👁️ <span>Views</span>
+        </button>
+
+    `;
+
+}
+
+
+/* =========================================================
+   VIDEO PLAYER
 ========================================================= */
 
 function setupVideoPlayers() {
 
     document
-        .querySelectorAll(".video-card")
-        .forEach((card) => {
+        .querySelectorAll(
+            ".video-card video, .short-card video"
+        )
+        .forEach(
+            video => {
 
-            const video =
-                card.querySelector("video");
-
-            if (!video) return;
-
-
-            const play =
-                card.querySelector(
-                    ".video-play"
-                );
-
-            const pause =
-                card.querySelector(
-                    ".video-pause"
-                );
-
-            const stop =
-                card.querySelector(
-                    ".video-stop"
-                );
-
-            const back =
-                card.querySelector(
-                    ".video-back"
-                );
-
-            const forward =
-                card.querySelector(
-                    ".video-forward"
-                );
-
-            const mute =
-                card.querySelector(
-                    ".video-mute"
-                );
-
-            const speed =
-                card.querySelector(
-                    ".video-speed"
-                );
+                const card =
+                    video.closest(
+                        ".video-card, .short-card"
+                    );
 
 
-            play?.addEventListener(
-                "click",
-                () => {
+                if (!card) return;
 
-                    video.play()
-                        .catch((error) => {
-                            console.error(
-                                "Video play error:",
-                                error
+
+                const play =
+                    card.querySelector(
+                        ".video-play"
+                    );
+
+                const pause =
+                    card.querySelector(
+                        ".video-pause"
+                    );
+
+                const stop =
+                    card.querySelector(
+                        ".video-stop"
+                    );
+
+                const back =
+                    card.querySelector(
+                        ".video-back"
+                    );
+
+                const forward =
+                    card.querySelector(
+                        ".video-forward"
+                    );
+
+                const mute =
+                    card.querySelector(
+                        ".video-mute"
+                    );
+
+                const speed =
+                    card.querySelector(
+                        ".video-speed"
+                    );
+
+
+                play?.addEventListener(
+                    "click",
+                    () => {
+
+                        video.play()
+                            .catch(
+                                console.error
                             );
-                        });
 
-                }
-            );
-
-
-            pause?.addEventListener(
-                "click",
-                () => {
-
-                    video.pause();
-
-                }
-            );
+                    }
+                );
 
 
-            stop?.addEventListener(
-                "click",
-                () => {
+                pause?.addEventListener(
+                    "click",
+                    () => {
 
-                    video.pause();
+                        video.pause();
 
-                    video.currentTime = 0;
-
-                }
-            );
+                    }
+                );
 
 
-            back?.addEventListener(
-                "click",
-                () => {
+                stop?.addEventListener(
+                    "click",
+                    () => {
 
-                    video.currentTime =
-                        Math.max(
-                            0,
-                            video.currentTime - 10
-                        );
+                        video.pause();
 
-                }
-            );
+                        video.currentTime =
+                            0;
 
-
-            forward?.addEventListener(
-                "click",
-                () => {
-
-                    video.currentTime =
-                        Math.min(
-                            video.duration || Infinity,
-                            video.currentTime + 10
-                        );
-
-                }
-            );
+                    }
+                );
 
 
-            mute?.addEventListener(
-                "click",
-                () => {
+                back?.addEventListener(
+                    "click",
+                    () => {
 
-                    video.muted =
-                        !video.muted;
+                        video.currentTime =
+                            Math.max(
+                                0,
+                                video.currentTime - 10
+                            );
 
-                    mute.textContent =
-                        video.muted
-                            ? "🔇"
-                            : "🔊";
-
-                }
-            );
+                    }
+                );
 
 
-            speed?.addEventListener(
-                "change",
-                () => {
+                forward?.addEventListener(
+                    "click",
+                    () => {
 
-                    video.playbackRate =
-                        Number(
-                            speed.value
-                        );
+                        video.currentTime =
+                            Math.min(
+                                video.duration || Infinity,
+                                video.currentTime + 10
+                            );
 
-                }
-            );
-
-        });
-}
+                    }
+                );
 
 
-/* =========================================================
-   SHORTS
-========================================================= */
+                mute?.addEventListener(
+                    "click",
+                    () => {
 
-async function loadShorts() {
+                        video.muted =
+                            !video.muted;
 
-    const container =
-        document.getElementById(
-            "shorts-container"
+                        mute.textContent =
+                            video.muted
+                                ? "🔇"
+                                : "🔊";
+
+                    }
+                );
+
+
+                speed?.addEventListener(
+                    "change",
+                    () => {
+
+                        video.playbackRate =
+                            Number(
+                                speed.value
+                            );
+
+                    }
+                );
+
+
+                /*
+                   Pause other videos when
+                   this video starts playing.
+                */
+
+                video.addEventListener(
+                    "play",
+                    () => {
+
+                        document
+                            .querySelectorAll(
+                                ".bzs-video"
+                            )
+                            .forEach(
+                                other => {
+
+                                    if (
+                                        other !== video
+                                    ) {
+
+                                        other.pause();
+
+                                    }
+
+                                }
+                            );
+
+                    }
+                );
+
+            }
         );
 
-    if (!container) return;
-
-
-    container.innerHTML =
-        `<div class="loading">Loading shorts...</div>`;
-
-
-    shortsData =
-        await loadJSON("shorts.json");
-
-
-    if (!shortsData.length) {
-
-        container.innerHTML = `
-
-            <div class="error">
-
-                shorts.json not found
-
-            </div>
-
-        `;
-
-        return;
-    }
-
-
-    container.innerHTML = "";
-
-
-    shortsData.forEach((short, index) => {
-
-        const title =
-            escapeHTML(
-                getValue(
-                    short,
-                    ["title", "name"],
-                    "Short"
-                )
-            );
-
-
-        const src =
-            getVideoURL(short);
-
-
-        const image =
-            getImageURL(short);
-
-
-        const id =
-            short.id ||
-            short.shortId ||
-            `short-${index}`;
-
-
-        const card =
-            document.createElement("article");
-
-        card.className =
-            "short-card";
-
-
-        card.innerHTML = `
-
-            ${
-                src
-                    ? `
-
-                    <video
-                        class="bzs-video"
-                        preload="metadata"
-                        controls
-                        playsinline
-                        ${image
-                            ? `poster="${escapeHTML(image)}"`
-                            : ""
-                        }
-                    >
-
-                        <source
-                            src="${escapeHTML(src)}"
-                            type="video/mp4"
-                        >
-
-                    </video>
-
-                    `
-                    : `
-
-                    <div class="error">
-                        Short video URL missing
-                    </div>
-
-                    `
-            }
-
-
-            <div class="short-info">
-
-                <h3>
-                    ${title}
-                </h3>
-
-
-                <div class="short-actions">
-
-                    <button
-                        class="like-btn"
-                        data-type="short"
-                        data-id="${escapeHTML(id)}"
-                    >
-                        ❤️ <span>Like</span>
-                    </button>
-
-
-                    <button
-                        class="comment-btn"
-                        data-type="short"
-                        data-id="${escapeHTML(id)}"
-                    >
-                        💬 Comment
-                    </button>
-
-
-                    <button
-                        class="share-btn"
-                        data-title="${title}"
-                        data-url="${escapeHTML(src)}"
-                    >
-                        ↗️ Share
-                    </button>
-
-                </div>
-
-
-                <div
-                    class="comments"
-                    id="comments-short-${escapeHTML(id)}"
-                    style="display:none;"
-                ></div>
-
-            </div>
-
-        `;
-
-
-        container.appendChild(card);
-
-    });
-
-
-    addSocialEvents();
 }
 
 
@@ -1384,55 +1344,90 @@ async function loadShorts() {
    SOCIAL EVENTS
 ========================================================= */
 
-function addSocialEvents() {
+function attachSocialEvents() {
 
     document
-        .querySelectorAll(".like-btn")
-        .forEach((button) => {
+        .querySelectorAll(
+            ".like-btn"
+        )
+        .forEach(
+            button => {
 
-            button.onclick = async () => {
+                button.onclick =
+                    () => {
 
-                await likeContent(
-                    button.dataset.type,
-                    button.dataset.id,
-                    button
-                );
+                        handleLike(
+                            button
+                        );
 
-            };
+                    };
 
-        });
-
-
-    document
-        .querySelectorAll(".comment-btn")
-        .forEach((button) => {
-
-            button.onclick = async () => {
-
-                await showComments(
-                    button.dataset.type,
-                    button.dataset.id
-                );
-
-            };
-
-        });
+            }
+        );
 
 
     document
-        .querySelectorAll(".share-btn")
-        .forEach((button) => {
+        .querySelectorAll(
+            ".comment-btn"
+        )
+        .forEach(
+            button => {
 
-            button.onclick = async () => {
+                button.onclick =
+                    () => {
 
-                await shareContent(
-                    button.dataset.title,
-                    button.dataset.url
+                        handleComments(
+                            button
+                        );
+
+                    };
+
+            }
+        );
+
+
+    document
+        .querySelectorAll(
+            ".share-btn"
+        )
+        .forEach(
+            button => {
+
+                button.onclick =
+                    () => {
+
+                        shareContent(
+                            button
+                        );
+
+                    };
+
+            }
+        );
+
+
+    document
+        .querySelectorAll(
+            ".view-btn"
+        )
+        .forEach(
+            button => {
+
+                button.removeAttribute(
+                    "disabled"
                 );
 
-            };
+                button.onclick =
+                    () => {
 
-        });
+                        addView(
+                            button
+                        );
+
+                    };
+
+            }
+        );
 
 }
 
@@ -1441,62 +1436,61 @@ function addSocialEvents() {
    LIKE
 ========================================================= */
 
-async function likeContent(
-    type,
-    contentId,
+async function handleLike(
     button
 ) {
 
     const user =
         await requireLogin();
 
+
     if (!user) return;
+
+
+    const type =
+        button.dataset.type;
+
+
+    const contentId =
+        button.dataset.id;
 
 
     try {
 
-        const likeQuery =
-            query(
-                collection(
-                    db,
-                    "likes"
-                ),
-
-                where(
-                    "userId",
-                    "==",
-                    user.uid
-                ),
-
-                where(
-                    "contentId",
-                    "==",
-                    contentId
-                ),
-
-                where(
-                    "type",
-                    "==",
-                    type
-                )
-            );
-
-
         const existing =
             await getDocs(
-                likeQuery
+                query(
+                    collection(
+                        db,
+                        "likes"
+                    ),
+
+                    where(
+                        "userId",
+                        "==",
+                        user.uid
+                    ),
+
+                    where(
+                        "contentId",
+                        "==",
+                        contentId
+                    ),
+
+                    where(
+                        "type",
+                        "==",
+                        type
+                    )
+                )
             );
 
 
         if (!existing.empty) {
 
-            button.classList.remove(
+            button.classList.toggle(
                 "liked"
             );
-
-            button.querySelector(
-                "span"
-            ).textContent = "Like";
 
             return;
 
@@ -1510,7 +1504,8 @@ async function likeContent(
             ),
             {
 
-                userId: user.uid,
+                userId:
+                    user.uid,
 
                 userName:
                     user.displayName ||
@@ -1533,10 +1528,8 @@ async function likeContent(
         );
 
 
-        button.querySelector(
-            "span"
-        ).textContent =
-            "Liked";
+        button.innerHTML =
+            "❤️ Liked";
 
 
     } catch (error) {
@@ -1547,7 +1540,7 @@ async function likeContent(
         );
 
         alert(
-            "Like failed: " +
+            "Like error: " +
             error.message
         );
 
@@ -1560,15 +1553,23 @@ async function likeContent(
    COMMENTS
 ========================================================= */
 
-async function showComments(
-    type,
-    contentId
+async function handleComments(
+    button
 ) {
 
     const user =
         await requireLogin();
 
+
     if (!user) return;
+
+
+    const type =
+        button.dataset.type;
+
+
+    const contentId =
+        button.dataset.id;
 
 
     const box =
@@ -1577,175 +1578,149 @@ async function showComments(
         );
 
 
-    if (!box) {
-
-        alert(
-            "Comment area not found."
-        );
-
-        return;
-    }
-
-
-    box.style.display =
-        box.style.display === "none"
-            ? "block"
-            : "none";
+    if (!box) return;
 
 
     if (
-        box.dataset.loaded === "true"
+        box.dataset.open !== "true"
     ) {
 
-        return;
-    }
+        box.dataset.open =
+            "true";
 
-
-    box.innerHTML = `
-
-        <div
-            style="
-                margin-bottom:12px;
-            "
-        >
+        box.innerHTML = `
 
             <textarea
                 class="comment-input"
                 placeholder="Write your comment..."
-                style="
-                    width:100%;
-                    min-height:80px;
-                    background:#0b0b0b;
-                    color:#fff;
-                    border:1px solid #555;
-                    border-radius:8px;
-                    padding:10px;
-                "
             ></textarea>
 
 
             <button
                 class="comment-submit"
-                style="
-                    margin-top:8px;
-                "
             >
                 Post Comment
             </button>
 
-        </div>
+
+            <div
+                class="comment-list"
+                style="margin-top:12px;"
+            >
+                Loading comments...
+            </div>
+
+        `;
+
+        box.style.display =
+            "block";
 
 
-        <div class="comment-list">
-            Loading comments...
-        </div>
-
-    `;
-
-
-    const textarea =
-        box.querySelector(
-            ".comment-input"
-        );
-
-
-    const submit =
         box.querySelector(
             ".comment-submit"
-        );
+        ).onclick =
+            async () => {
+
+                const input =
+                    box.querySelector(
+                        ".comment-input"
+                    );
 
 
-    const list =
-        box.querySelector(
-            ".comment-list"
-        );
+                const text =
+                    input.value.trim();
 
 
-    submit.onclick =
-        async () => {
+                if (!text) {
 
-            const text =
-                textarea.value.trim();
+                    alert(
+                        "Please write a comment."
+                    );
 
+                    return;
 
-            if (!text) {
-
-                alert(
-                    "Please write a comment."
-                );
-
-                return;
-            }
+                }
 
 
-            try {
+                try {
 
-                await addDoc(
-                    collection(
-                        db,
-                        "comments"
-                    ),
-                    {
+                    await addDoc(
+                        collection(
+                            db,
+                            "comments"
+                        ),
+                        {
 
+                            type,
+
+                            contentId,
+
+                            text,
+
+                            userId:
+                                user.uid,
+
+                            userName:
+                                user.displayName ||
+                                user.email ||
+                                "User",
+
+                            userPhoto:
+                                user.photoURL ||
+                                "",
+
+                            createdAt:
+                                serverTimestamp()
+
+                        }
+                    );
+
+
+                    input.value = "";
+
+
+                    await loadComments(
                         type,
-
                         contentId,
-
-                        text,
-
-                        userId:
-                            user.uid,
-
-                        userName:
-                            user.displayName ||
-                            user.email ||
-                            "User",
-
-                        userPhoto:
-                            user.photoURL ||
-                            "",
-
-                        createdAt:
-                            serverTimestamp()
-
-                    }
-                );
+                        box.querySelector(
+                            ".comment-list"
+                        )
+                    );
 
 
-                textarea.value = "";
+                } catch (error) {
 
-                await loadComments(
-                    type,
-                    contentId,
-                    list
-                );
+                    console.error(
+                        "Comment error:",
+                        error
+                    );
 
+                    alert(
+                        "Comment error: " +
+                        error.message
+                    );
 
-            } catch (error) {
+                }
 
-                console.error(
-                    "Comment error:",
-                    error
-                );
-
-                alert(
-                    "Comment failed: " +
-                    error.message
-                );
-
-            }
-
-        };
+            };
 
 
-    await loadComments(
-        type,
-        contentId,
-        list
-    );
+        await loadComments(
+            type,
+            contentId,
+            box.querySelector(
+                ".comment-list"
+            )
+        );
 
+    } else {
 
-    box.dataset.loaded = "true";
+        box.style.display =
+            box.style.display === "none"
+                ? "block"
+                : "none";
+
+    }
 
 }
 
@@ -1757,64 +1732,55 @@ async function showComments(
 async function loadComments(
     type,
     contentId,
-    list
+    container
 ) {
 
     try {
 
-        const commentsQuery =
-            query(
-                collection(
-                    db,
-                    "comments"
-                ),
+        const result =
+            await getDocs(
+                query(
+                    collection(
+                        db,
+                        "comments"
+                    ),
 
-                where(
-                    "type",
-                    "==",
-                    type
-                ),
+                    where(
+                        "type",
+                        "==",
+                        type
+                    ),
 
-                where(
-                    "contentId",
-                    "==",
-                    contentId
+                    where(
+                        "contentId",
+                        "==",
+                        contentId
+                    )
                 )
             );
 
 
-        const snapshot =
-            await getDocs(
-                commentsQuery
-            );
+        if (result.empty) {
 
-
-        if (snapshot.empty) {
-
-            list.innerHTML = `
-
-                <p
-                    style="
-                        color:#999;
-                        padding:10px 0;
-                    "
-                >
+            container.innerHTML = `
+                <p style="color:#777;">
                     No comments yet.
                 </p>
-
             `;
 
             return;
+
         }
 
 
         const comments =
-            snapshot.docs.map(
-                item => ({
-                    id: item.id,
-                    ...item.data()
-                })
-            );
+            result.docs
+                .map(
+                    item => ({
+                        id: item.id,
+                        ...item.data()
+                    })
+                );
 
 
         comments.sort(
@@ -1834,65 +1800,119 @@ async function loadComments(
         );
 
 
-        list.innerHTML =
-            comments.map(
-                comment => `
+        container.innerHTML =
+            comments
+                .map(
+                    comment => `
 
-                <div
-                    class="comment-item"
-                    style="
-                        padding:10px 0;
-                        border-bottom:1px solid #292929;
-                    "
-                >
-
-                    <strong
-                        style="
-                            color:#d4af37;
-                        "
+                    <div
+                        class="comment-item"
                     >
-                        ${escapeHTML(
-                            comment.userName ||
-                            "User"
-                        )}
-                    </strong>
 
-                    <p
-                        style="
-                            color:#ddd;
-                            margin-top:3px;
-                        "
-                    >
-                        ${escapeHTML(
-                            comment.text
-                        )}
-                    </p>
+                        <div
+                            class="comment-user"
+                        >
+                            ${escapeHTML(
+                                comment.userName ||
+                                "User"
+                            )}
+                        </div>
 
-                </div>
+                        <div
+                            class="comment-text"
+                        >
+                            ${escapeHTML(
+                                comment.text
+                            )}
+                        </div>
 
-                `
-            ).join("");
+                    </div>
+
+                    `
+                )
+                .join("");
 
 
     } catch (error) {
 
         console.error(
-            "Load comments error:",
+            "Comments loading error:",
             error
         );
 
 
-        list.innerHTML = `
-
-            <p
-                style="
-                    color:#ff7777;
-                "
-            >
-                Could not load comments.
+        container.innerHTML = `
+            <p style="color:#ff7777;">
+                Comments could not be loaded.
             </p>
-
         `;
+
+    }
+
+}
+
+
+/* =========================================================
+   VIEWS
+========================================================= */
+
+async function addView(
+    button
+) {
+
+    if (
+        button.dataset.counted === "true"
+    ) {
+
+        return;
+
+    }
+
+
+    button.dataset.counted =
+        "true";
+
+
+    const type =
+        button.dataset.type;
+
+
+    const contentId =
+        button.dataset.id;
+
+
+    try {
+
+        /*
+           Each view is stored separately.
+           This works for anonymous visitors too
+           if your Firestore rules allow it.
+        */
+
+        await addDoc(
+            collection(
+                db,
+                "views"
+            ),
+            {
+
+                type,
+
+                contentId,
+
+                createdAt:
+                    serverTimestamp()
+
+            }
+        );
+
+
+    } catch (error) {
+
+        console.warn(
+            "View could not be saved:",
+            error
+        );
 
     }
 
@@ -1904,12 +1924,16 @@ async function loadComments(
 ========================================================= */
 
 async function shareContent(
-    title,
-    url
+    button
 ) {
 
-    const shareURL =
-        url ||
+    const title =
+        button.dataset.title ||
+        "Bazam-E-Saim";
+
+
+    const url =
+        button.dataset.url ||
         window.location.href;
 
 
@@ -1921,26 +1945,22 @@ async function shareContent(
 
             await navigator.share({
 
-                title:
-                    title ||
-                    "Bazam-E-Saim",
+                title,
 
                 text:
-                    title ||
-                    "Bazam-E-Saim",
+                    title,
 
                 url:
-                    shareURL
+                    url ||
+                    window.location.href
 
             });
 
             return;
 
-        } catch (error) {
+        } catch {
 
-            console.log(
-                "Share cancelled"
-            );
+            return;
 
         }
 
@@ -1950,18 +1970,21 @@ async function shareContent(
     try {
 
         await navigator.clipboard.writeText(
-            shareURL
+            url ||
+            window.location.href
         );
+
 
         alert(
             "Link copied!"
         );
 
-    } catch (error) {
+    } catch {
 
         prompt(
             "Copy this link:",
-            shareURL
+            url ||
+            window.location.href
         );
 
     }
@@ -1970,18 +1993,66 @@ async function shareContent(
 
 
 /* =========================================================
-   LOAD EVERYTHING
+   MANUAL SLIDER BUTTONS
 ========================================================= */
 
-async function loadAllContent() {
+document.addEventListener(
+    "DOMContentLoaded",
+    () => {
 
-    await Promise.all([
-        loadBooks(),
-        loadVideos(),
-        loadShorts()
-    ]);
+        document
+            .querySelectorAll(
+                ".slider-arrow"
+            )
+            .forEach(
+                button => {
 
-}
+                    button.addEventListener(
+                        "click",
+                        () => {
+
+                            const name =
+                                button.dataset.slider;
+
+
+                            const container =
+                                document.getElementById(
+                                    `${name}-container`
+                                );
+
+
+                            if (!container)
+                                return;
+
+
+                            const distance =
+                                350;
+
+
+                            if (
+                                button.classList.contains(
+                                    "slider-next"
+                                )
+                            ) {
+
+                                container.style.transform =
+                                    `translateX(-${distance}px)`;
+
+                            } else {
+
+                                container.style.transform =
+                                    "translateX(0)";
+
+                            }
+
+                        }
+                    );
+
+                }
+            );
+
+    }
+);
 
 
 /* =========================================================
@@ -1990,31 +2061,31 @@ async function loadAllContent() {
 
 document.addEventListener(
     "DOMContentLoaded",
-    () => {
+    async () => {
 
-        loadAllContent();
+        await Promise.all([
+            loadBooks(),
+            loadVideos(),
+            loadShorts()
+        ]);
 
     }
 );
 
 
 /* =========================================================
-   GLOBAL FUNCTIONS
+   GLOBAL
 ========================================================= */
 
-window.BazamE = {
+window.BazamESaim = {
+
+    loginWithGoogle,
 
     loadBooks,
 
     loadVideos,
 
     loadShorts,
-
-    loadAllContent,
-
-    googleLogin,
-
-    openBookReader,
 
     shareContent
 
