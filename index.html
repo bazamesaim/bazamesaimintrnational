@@ -5,19 +5,17 @@
 
     <meta charset="UTF-8">
 
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
-    <title>Bazam-E-Saim | صائم</title>
+    <title>Bazam-E-Saim | بزمِ صائم</title>
 
     <meta
         name="description"
-        content="Bazam-E-Saim - Books, Videos, Shorts and Islamic content"
+        content="Bazam-E-Saim - Books, Videos, Shorts, Naat, Poetry and Islamic content"
     >
-
-    <!-- ================================
-         FAVICON
-    ================================= -->
 
     <link
         rel="icon"
@@ -30,10 +28,6 @@
         href="./logo.png"
     >
 
-    <!-- ================================
-         CSS
-    ================================= -->
-
     <link
         rel="stylesheet"
         href="./style.css"
@@ -45,80 +39,92 @@
 <body>
 
 
-<!-- =====================================================
-     HEADER
-===================================================== -->
+<!-- =========================
+     BACKGROUND GLOW
+========================= -->
 
-<header>
+<div class="background-glow glow-one"></div>
+<div class="background-glow glow-two"></div>
+<div class="background-glow glow-three"></div>
+
+
+<!-- =========================
+     HEADER
+========================= -->
+
+<header class="site-header">
 
     <div class="navbar">
 
-        <!-- LOGO -->
+        <a
+            href="#home"
+            class="brand"
+        >
 
-        <div class="logo">
+            <img
+                src="./logo.png"
+                alt="Bazam-E-Saim Logo"
+            >
 
-            <a href="./index.html">
+            <div>
 
-                <img
-                    src="./logo.png"
-                    alt="Bazam-E-Saim"
-                    style="
-                        width:45px;
-                        height:45px;
-                        object-fit:contain;
-                        display:inline-block;
-                        vertical-align:middle;
-                        margin-right:8px;
-                    "
-                >
+                <strong>
+                    Bazam-E-Saim
+                </strong>
 
-                Bazam-E-Saim
+                <span>
+                    بزمِ صائم
+                </span>
 
+            </div>
+
+        </a>
+
+
+        <button
+            class="mobile-menu-btn"
+            id="mobile-menu-btn"
+            aria-label="Open menu"
+        >
+            ☰
+        </button>
+
+
+        <nav
+            id="main-nav"
+            class="main-nav"
+        >
+
+            <a href="#home">
+                Home
             </a>
 
-        </div>
+            <a href="#books">
+                Books
+            </a>
 
+            <a href="#videos">
+                Videos
+            </a>
 
-        <!-- NAVIGATION -->
+            <a href="#shorts">
+                Shorts
+            </a>
 
-        <nav>
+            <a href="#about">
+                About
+            </a>
 
-            <ul class="nav-links">
+            <a href="#contact">
+                Contact
+            </a>
 
-                <li>
-                    <a href="#home">Home</a>
-                </li>
-
-                <li>
-                    <a href="#books">Books</a>
-                </li>
-
-                <li>
-                    <a href="#videos">Videos</a>
-                </li>
-
-                <li>
-                    <a href="#shorts">Shorts</a>
-                </li>
-
-                <li>
-                    <a href="#about">About</a>
-                </li>
-
-                <li>
-                    <a href="#contact">Contact</a>
-                </li>
-
-                <li>
-                    <a
-                        href="./login.html"
-                        class="google-login"
-                    >
-                        Login
-                    </a>
-                </li>
-
-            </ul>
+            <a
+                href="./login.html"
+                class="login-nav-btn"
+            >
+                Sign In
+            </a>
 
         </nav>
 
@@ -127,30 +133,42 @@
 </header>
 
 
-<!-- =====================================================
-     HOME
-===================================================== -->
+<!-- =========================
+     HERO
+========================= -->
 
 <main>
 
-
 <section
     id="home"
-    class="hero"
+    class="hero-section"
 >
 
     <div class="hero-content">
+
+        <div class="hero-badge">
+            ✦ Welcome to Bazam-E-Saim ✦
+        </div>
+
 
         <h1>
             Bazam-E-Saim
         </h1>
 
-        <p>
-            Books • Videos • Shorts • Poetry
+
+        <h2>
+            بزمِ صائم
+        </h2>
+
+
+        <p class="hero-urdu">
+            بزمِ صائم کی جانب سے آپ کو خوش آمدید
         </p>
 
-        <p>
-            صائم کی ادبی اور روحانی دنیا
+
+        <p class="hero-description">
+            A beautiful collection of Books, Videos,
+            Shorts, Naat and Poetry.
         </p>
 
 
@@ -158,14 +176,14 @@
 
             <a
                 href="#books"
-                class="btn"
+                class="gold-btn"
             >
                 📚 Read Books
             </a>
 
             <a
                 href="#videos"
-                class="secondary-btn"
+                class="dark-btn"
             >
                 ▶ Watch Videos
             </a>
@@ -177,126 +195,266 @@
 </section>
 
 
-<!-- =====================================================
+<!-- =========================
      BOOKS
-===================================================== -->
+========================= -->
 
-<section id="books">
+<section
+    id="books"
+    class="content-section"
+>
 
-    <div class="section-title">
+    <div class="section-heading">
+
+        <span class="section-kicker">
+            OUR COLLECTION
+        </span>
 
         <h2>
             Books
+            <span>
+                کتابیں
+            </span>
         </h2>
 
         <p>
-            Read our books online
+            Read the books of Hazrat Allama Saim Chishti
+        </p>
+
+        <p class="urdu-line">
+            حضرت علامہ صائم چشتی کی کتب کا مطالعہ کریں
         </p>
 
     </div>
 
 
-    <!-- JS WILL PUT BOOKS HERE -->
+    <div class="slider-wrapper">
 
-    <div
-        id="books-container"
-        class="books-container"
-    >
+        <button
+            class="slider-arrow slider-prev"
+            data-slider="books"
+        >
+            ‹
+        </button>
 
-        <div class="loading">
-            Loading books...
+
+        <div
+            class="slider-window"
+            id="books-slider-window"
+        >
+
+            <div
+                class="slider-track"
+                id="books-container"
+            >
+
+                <div class="loading-card">
+                    Loading Books...
+                </div>
+
+            </div>
+
         </div>
+
+
+        <button
+            class="slider-arrow slider-next"
+            data-slider="books"
+        >
+            ›
+        </button>
 
     </div>
 
 </section>
 
 
-<!-- =====================================================
+<!-- =========================
      VIDEOS
-===================================================== -->
+========================= -->
 
-<section id="videos">
+<section
+    id="videos"
+    class="content-section"
+>
 
-    <div class="section-title">
+    <div class="section-heading">
+
+        <span class="section-kicker">
+            WATCH
+        </span>
 
         <h2>
             Videos
+            <span>
+                ویڈیوز
+            </span>
         </h2>
 
         <p>
-            Watch Bazam-E-Saim videos
+            Watch beautiful videos from Bazam-E-Saim
+        </p>
+
+        <p class="urdu-line">
+            بزمِ صائم کی خوبصورت ویڈیوز دیکھیں
         </p>
 
     </div>
 
 
-    <!-- JS WILL PUT VIDEOS HERE -->
+    <div class="slider-wrapper">
 
-    <div
-        id="videos-container"
-        class="videos-container"
-    >
+        <button
+            class="slider-arrow slider-prev"
+            data-slider="videos"
+        >
+            ‹
+        </button>
 
-        <div class="loading">
-            Loading videos...
+
+        <div
+            class="slider-window"
+            id="videos-slider-window"
+        >
+
+            <div
+                class="slider-track"
+                id="videos-container"
+            >
+
+                <div class="loading-card">
+                    Loading Videos...
+                </div>
+
+            </div>
+
         </div>
+
+
+        <button
+            class="slider-arrow slider-next"
+            data-slider="videos"
+        >
+            ›
+        </button>
 
     </div>
 
 </section>
 
 
-<!-- =====================================================
+<!-- =========================
      SHORTS
-===================================================== -->
+========================= -->
 
-<section id="shorts">
+<section
+    id="shorts"
+    class="content-section"
+>
 
-    <div class="section-title">
+    <div class="section-heading">
+
+        <span class="section-kicker">
+            SHORT VIDEOS
+        </span>
 
         <h2>
             Shorts
+            <span>
+                شارٹس
+            </span>
         </h2>
 
         <p>
-            Short videos and poetry
+            Short videos, Naat and beautiful moments
+        </p>
+
+        <p class="urdu-line">
+            مختصر ویڈیوز، نعت اور خوبصورت لمحات
         </p>
 
     </div>
 
 
-    <!-- JS WILL PUT SHORTS HERE -->
+    <div class="slider-wrapper">
 
-    <div
-        id="shorts-container"
-        class="shorts-container"
-    >
+        <button
+            class="slider-arrow slider-prev"
+            data-slider="shorts"
+        >
+            ‹
+        </button>
 
-        <div class="loading">
-            Loading shorts...
+
+        <div
+            class="slider-window"
+            id="shorts-slider-window"
+        >
+
+            <div
+                class="slider-track"
+                id="shorts-container"
+            >
+
+                <div class="loading-card">
+                    Loading Shorts...
+                </div>
+
+            </div>
+
         </div>
+
+
+        <button
+            class="slider-arrow slider-next"
+            data-slider="shorts"
+        >
+            ›
+        </button>
 
     </div>
 
 </section>
 
 
-<!-- =====================================================
+<!-- =========================
      ABOUT
-===================================================== -->
+========================= -->
 
-<section id="about">
+<section
+    id="about"
+    class="about-section"
+>
 
-    <div class="section-title">
+    <div class="section-heading">
+
+        <span class="section-kicker">
+            ABOUT US
+        </span>
 
         <h2>
             About Bazam-E-Saim
         </h2>
 
+        <p class="urdu-line">
+            بزمِ صائم
+        </p>
+
+    </div>
+
+
+    <div class="about-box">
+
         <p>
-            Bazam-E-Saim is a platform for books,
-            poetry, videos and short content.
+            Bazam-E-Saim is a platform dedicated to
+            sharing books, videos, shorts, Naat,
+            poetry and other beautiful content.
+        </p>
+
+
+        <p class="urdu-text">
+            بزمِ صائم ایک ایسا پلیٹ فارم ہے جہاں کتب،
+            ویڈیوز، شارٹس، نعت اور شاعری پیش کی جاتی ہے۔
         </p>
 
     </div>
@@ -304,83 +462,177 @@
 </section>
 
 
-<!-- =====================================================
-     SOCIAL / CONTACT
-===================================================== -->
+<!-- =========================
+     CONTACT / LINKS
+========================= -->
 
-<section id="contact">
+<section
+    id="contact"
+    class="contact-section"
+>
 
-    <div class="section-title">
+    <div class="section-heading">
+
+        <span class="section-kicker">
+            CONNECT WITH US
+        </span>
 
         <h2>
-            Connect With Us
+            Our Links
+            <span>
+                ہمارے لنکس
+            </span>
         </h2>
-
-        <p>
-            Follow Bazam-E-Saim on social media
-        </p>
 
     </div>
 
 
-    <div
-        class="social-links"
-        style="
-            display:flex;
-            justify-content:center;
-            align-items:center;
-            flex-wrap:wrap;
-            gap:12px;
-            margin-top:25px;
-        "
-    >
+    <div class="social-grid">
 
-        <!-- FACEBOOK -->
 
         <a
-            href="https://www.facebook.com/"
+            href="https://web.facebook.com/Bazm.Saim"
             target="_blank"
             rel="noopener noreferrer"
-            class="btn"
+            class="social-card facebook"
         >
-            Facebook
+
+            <span class="social-icon">
+                f
+            </span>
+
+            <div>
+                <strong>
+                    Facebook
+                </strong>
+
+                <small>
+                    Bazm.Saim
+                </small>
+            </div>
+
         </a>
 
 
-        <!-- YOUTUBE -->
-
         <a
-            href="https://www.youtube.com/"
+            href="https://www.youtube.com/@Saimtv5"
             target="_blank"
             rel="noopener noreferrer"
-            class="btn"
+            class="social-card youtube"
         >
-            YouTube
+
+            <span class="social-icon">
+                ▶
+            </span>
+
+            <div>
+                <strong>
+                    YouTube
+                </strong>
+
+                <small>
+                    Saim TV 5
+                </small>
+            </div>
+
         </a>
 
 
-        <!-- INSTAGRAM -->
-
         <a
-            href="https://www.instagram.com/"
+            href="https://www.facebook.com/saimchishtiofficial"
             target="_blank"
             rel="noopener noreferrer"
-            class="btn"
+            class="social-card facebook"
         >
-            Instagram
+
+            <span class="social-icon">
+                f
+            </span>
+
+            <div>
+                <strong>
+                    Saim Chishti Official
+                </strong>
+
+                <small>
+                    Facebook Page
+                </small>
+            </div>
+
         </a>
 
 
-        <!-- TIKTOK -->
-
         <a
-            href="https://www.tiktok.com/"
+            href="https://www.facebook.com/profile.php?id=100063724950961"
             target="_blank"
             rel="noopener noreferrer"
-            class="btn"
+            class="social-card facebook"
         >
-            TikTok
+
+            <span class="social-icon">
+                f
+            </span>
+
+            <div>
+                <strong>
+                    Facebook Profile
+                </strong>
+
+                <small>
+                    Saim Chishti
+                </small>
+            </div>
+
         </a>
+
+
+        <a
+            href="https://www.tiktok.com/@saimtv5"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="social-card tiktok"
+        >
+
+            <span class="social-icon">
+                ♪
+            </span>
+
+            <div>
+                <strong>
+                    TikTok
+                </strong>
+
+                <small>
+                    @saimtv5
+                </small>
+            </div>
+
+        </a>
+
+
+        <a
+            href="https://hassanbhai5559-lgtm.github.io/chishti-library/"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="social-card library"
+        >
+
+            <span class="social-icon">
+                📚
+            </span>
+
+            <div>
+                <strong>
+                    Chishti Library
+                </strong>
+
+                <small>
+                    Open Library
+                </small>
+            </div>
+
+        </a>
+
 
     </div>
 
@@ -390,52 +642,67 @@
 </main>
 
 
-<!-- =====================================================
+<!-- =========================
      FOOTER
-===================================================== -->
+========================= -->
 
-<footer>
+<footer class="site-footer">
 
-    <strong>
-        Bazam-E-Saim
-    </strong>
+    <div class="footer-inner">
 
-    <p>
-        © 2026 Bazam-E-Saim. All Rights Reserved.
-    </p>
+        <div>
 
-    <p>
+            <h3>
+                Bazam-E-Saim
+            </h3>
 
-        <a href="#home">
-            Home
-        </a>
+            <p>
+                بزمِ صائم
+            </p>
 
-        |
+        </div>
 
-        <a href="#books">
-            Books
-        </a>
 
-        |
+        <div class="footer-links">
 
-        <a href="#videos">
-            Videos
-        </a>
+            <a href="#home">
+                Home
+            </a>
 
-        |
+            <a href="#books">
+                Books
+            </a>
 
-        <a href="#shorts">
-            Shorts
-        </a>
+            <a href="#videos">
+                Videos
+            </a>
 
-    </p>
+            <a href="#shorts">
+                Shorts
+            </a>
+
+            <a href="./login.html">
+                Sign In
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <div class="footer-bottom">
+
+        © 2026 Bazam-E-Saim.
+        All Rights Reserved.
+
+    </div>
 
 </footer>
 
 
-<!-- =====================================================
+<!-- =========================
      JAVASCRIPT
-===================================================== -->
+========================= -->
 
 <script
     type="module"
