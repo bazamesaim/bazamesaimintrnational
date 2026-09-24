@@ -1,291 +1,1323 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+    <meta charset="UTF-8">
 
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Bazam-E-Saim Admin</title>
+    <meta name="theme-color" content="#050505">
 
-  <link rel="icon" href="logo.png">
+    <meta
+        name="description"
+        content="Bazam-E-Saim Admin Panel"
+    >
 
-  <link rel="stylesheet" href="admin.css">
+    <title>Bazam-E-Saim - Admin Panel</title>
+
+    <link rel="icon" type="image/png" href="logo.png">
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Noto+Naskh+Arabic:wght@400;500;600;700&display=swap"
+        rel="stylesheet"
+    >
+
+    <style>
+        :root {
+            --black: #050505;
+            --black2: #0a0a0a;
+            --black3: #111111;
+
+            --gold: #d4af37;
+            --gold-light: #f3d77a;
+            --gold-soft: #e6c65c;
+
+            --white: #ffffff;
+            --text: #eeeeee;
+            --muted: #999999;
+
+            --border: rgba(212,175,55,.25);
+
+            --danger: #e05555;
+            --success: #79c98a;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            min-height: 100vh;
+
+            color: var(--text);
+
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+
+            background:
+                radial-gradient(
+                    circle at 10% 10%,
+                    rgba(212,175,55,.10),
+                    transparent 30%
+                ),
+                radial-gradient(
+                    circle at 90% 90%,
+                    rgba(212,175,55,.08),
+                    transparent 30%
+                ),
+                #050505;
+        }
+
+        body::before {
+            content: "";
+
+            position: fixed;
+
+            width: 420px;
+            height: 420px;
+
+            top: -220px;
+            left: -220px;
+
+            border-radius: 50%;
+
+            background: var(--gold);
+
+            opacity: .07;
+
+            filter: blur(100px);
+
+            pointer-events: none;
+
+            animation: glowMove 10s ease-in-out infinite alternate;
+        }
+
+        @keyframes glowMove {
+            0% {
+                transform: translate(0,0);
+            }
+
+            100% {
+                transform: translate(280px,220px);
+            }
+        }
+
+        /* =========================
+           HEADER
+        ========================= */
+
+        .admin-header {
+            position: sticky;
+            top: 0;
+
+            z-index: 50;
+
+            min-height: 72px;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            padding: 12px 28px;
+
+            background:
+                rgba(5,5,5,.94);
+
+            backdrop-filter: blur(15px);
+
+            border-bottom:
+                1px solid var(--border);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-logo {
+            width: 48px;
+            height: 48px;
+
+            border-radius: 50%;
+
+            object-fit: contain;
+
+            border:
+                1px solid rgba(212,175,55,.45);
+
+            background: #080808;
+        }
+
+        .brand-text h1 {
+            color: var(--gold-light);
+
+            font-family: "Cinzel", serif;
+
+            font-size: 19px;
+        }
+
+        .brand-text span {
+            color: var(--muted);
+
+            font-size: 11px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 9px;
+        }
+
+        button,
+        a {
+            font-family: inherit;
+        }
+
+        .header-btn {
+            display: inline-flex;
+
+            align-items: center;
+            justify-content: center;
+
+            min-height: 38px;
+
+            padding: 0 14px;
+
+            border-radius: 8px;
+
+            text-decoration: none;
+
+            cursor: pointer;
+
+            font-size: 12px;
+
+            font-weight: 700;
+
+            transition: .2s ease;
+        }
+
+        .website-btn {
+            color: var(--gold-light);
+
+            border: 1px solid var(--border);
+
+            background: #101010;
+        }
+
+        .website-btn:hover {
+            border-color: var(--gold);
+
+            transform: translateY(-1px);
+        }
+
+        .logout-btn {
+            color: #fff;
+
+            border: 1px solid rgba(224,85,85,.35);
+
+            background:
+                rgba(224,85,85,.08);
+        }
+
+        .logout-btn:hover {
+            background:
+                rgba(224,85,85,.15);
+        }
+
+        /* =========================
+           MAIN
+        ========================= */
+
+        .admin-container {
+            width: min(1400px, 100%);
+
+            margin: 0 auto;
+
+            padding: 32px 22px 60px;
+
+            position: relative;
+
+            z-index: 2;
+        }
+
+        .page-heading {
+            margin-bottom: 26px;
+        }
+
+        .page-heading h2 {
+            color: var(--gold-light);
+
+            font-family: "Cinzel", serif;
+
+            font-size: 29px;
+
+            margin-bottom: 6px;
+        }
+
+        .page-heading p {
+            color: var(--muted);
+
+            font-size: 13px;
+        }
+
+        .urdu {
+            direction: rtl;
+
+            font-family:
+                "Noto Naskh Arabic",
+                serif;
+        }
+
+        .page-heading .urdu {
+            color: var(--gold-soft);
+
+            font-size: 18px;
+
+            margin-top: 4px;
+        }
+
+        /* =========================
+           STATS
+        ========================= */
+
+        .stats-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(4, 1fr);
+
+            gap: 15px;
+
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            padding: 19px;
+
+            border:
+                1px solid var(--border);
+
+            border-radius: 13px;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(20,20,20,.95),
+                    rgba(8,8,8,.95)
+                );
+
+            box-shadow:
+                0 10px 30px rgba(0,0,0,.25);
+        }
+
+        .stat-card span {
+            color: var(--muted);
+
+            font-size: 12px;
+        }
+
+        .stat-card strong {
+            display: block;
+
+            margin-top: 8px;
+
+            color: var(--gold-light);
+
+            font-size: 27px;
+        }
+
+        /* =========================
+           GRID
+        ========================= */
+
+        .admin-grid {
+            display: grid;
+
+            grid-template-columns:
+                380px 1fr;
+
+            gap: 20px;
+
+            align-items: start;
+        }
+
+        .panel {
+            border:
+                1px solid var(--border);
+
+            border-radius: 15px;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(17,17,17,.97),
+                    rgba(7,7,7,.97)
+                );
+
+            overflow: hidden;
+
+            box-shadow:
+                0 15px 40px rgba(0,0,0,.25);
+        }
+
+        .panel-header {
+            padding: 17px 19px;
+
+            border-bottom:
+                1px solid rgba(212,175,55,.14);
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+        }
+
+        .panel-header h3 {
+            color: #fff;
+
+            font-size: 16px;
+        }
+
+        .panel-header span {
+            color: var(--gold-soft);
+
+            font-size: 12px;
+        }
+
+        .panel-body {
+            padding: 20px;
+        }
+
+        /* =========================
+           FORM
+        ========================= */
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+
+            margin-bottom: 7px;
+
+            color: #ddd;
+
+            font-size: 12px;
+
+            font-weight: 700;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+
+            border:
+                1px solid #303030;
+
+            border-radius: 8px;
+
+            background: #0a0a0a;
+
+            color: #fff;
+
+            outline: none;
+
+            padding: 11px 12px;
+
+            font-size: 13px;
+
+            transition: .2s ease;
+        }
+
+        textarea {
+            min-height: 95px;
+
+            resize: vertical;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            border-color: var(--gold);
+
+            box-shadow:
+                0 0 0 3px
+                rgba(212,175,55,.07);
+        }
+
+        input[type="file"] {
+            padding: 9px;
+
+            cursor: pointer;
+        }
+
+        .gold-btn {
+            width: 100%;
+
+            min-height: 45px;
+
+            border: 1px solid var(--gold);
+
+            border-radius: 8px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    var(--gold),
+                    var(--gold-light)
+                );
+
+            color: #080808;
+
+            font-size: 13px;
+
+            font-weight: 800;
+
+            cursor: pointer;
+
+            transition: .2s ease;
+        }
+
+        .gold-btn:hover {
+            transform: translateY(-1px);
+
+            box-shadow:
+                0 7px 22px
+                rgba(212,175,55,.18);
+        }
+
+        .gold-btn:disabled {
+            opacity: .55;
+
+            cursor: not-allowed;
+
+            transform: none;
+        }
+
+        /* =========================
+           CONTENT LIST
+        ========================= */
+
+        .content-toolbar {
+            display: flex;
+
+            gap: 10px;
+
+            margin-bottom: 16px;
+        }
+
+        .content-toolbar select {
+            max-width: 190px;
+        }
+
+        .refresh-btn {
+            padding: 0 14px;
+
+            border:
+                1px solid var(--border);
+
+            border-radius: 8px;
+
+            background: #101010;
+
+            color: var(--gold-light);
+
+            cursor: pointer;
+        }
+
+        .items-container {
+            display: grid;
+
+            gap: 12px;
+        }
+
+        .content-item {
+            display: grid;
+
+            grid-template-columns: 78px 1fr auto;
+
+            gap: 14px;
+
+            align-items: center;
+
+            padding: 13px;
+
+            border:
+                1px solid #242424;
+
+            border-radius: 11px;
+
+            background: #0c0c0c;
+
+            transition: .2s ease;
+        }
+
+        .content-item:hover {
+            border-color:
+                rgba(212,175,55,.35);
+        }
+
+        .content-thumb {
+            width: 78px;
+            height: 65px;
+
+            border-radius: 8px;
+
+            overflow: hidden;
+
+            background: #050505;
+
+            border:
+                1px solid #252525;
+        }
+
+        .content-thumb img {
+            width: 100%;
+            height: 100%;
+
+            object-fit: cover;
+        }
+
+        .content-info h4 {
+            color: #fff;
+
+            font-size: 14px;
+
+            margin-bottom: 5px;
+        }
+
+        .content-info p {
+            color: var(--muted);
+
+            font-size: 11px;
+
+            line-height: 1.5;
+        }
+
+        .content-type {
+            display: inline-block;
+
+            margin-top: 6px;
+
+            padding: 3px 7px;
+
+            border-radius: 20px;
+
+            color: var(--gold-light);
+
+            border:
+                1px solid var(--border);
+
+            font-size: 9px;
+
+            text-transform: uppercase;
+        }
+
+        .item-actions {
+            display: flex;
+
+            gap: 7px;
+        }
+
+        .small-btn {
+            border: 1px solid #303030;
+
+            background: #111;
+
+            color: #ddd;
+
+            padding: 8px 10px;
+
+            border-radius: 7px;
+
+            cursor: pointer;
+
+            font-size: 11px;
+        }
+
+        .small-btn.delete {
+            color: #ff8d8d;
+
+            border-color:
+                rgba(224,85,85,.25);
+        }
+
+        .small-btn:hover {
+            border-color: var(--gold);
+        }
+
+        .empty-state {
+            padding: 40px 15px;
+
+            text-align: center;
+
+            color: #777;
+
+            font-size: 13px;
+        }
+
+        /* =========================
+           MESSAGE
+        ========================= */
+
+        #admin-message {
+            display: none;
+
+            position: fixed;
+
+            right: 20px;
+            bottom: 20px;
+
+            z-index: 100;
+
+            max-width: 360px;
+
+            padding: 13px 16px;
+
+            border-radius: 9px;
+
+            font-size: 13px;
+
+            box-shadow:
+                0 10px 35px rgba(0,0,0,.5);
+        }
+
+        #admin-message.show {
+            display: block;
+        }
+
+        #admin-message.success {
+            color: var(--gold-light);
+
+            background: #111;
+
+            border:
+                1px solid rgba(212,175,55,.35);
+        }
+
+        #admin-message.error {
+            color: #ffb1b1;
+
+            background: #150909;
+
+            border:
+                1px solid rgba(224,85,85,.35);
+        }
+
+        /* =========================
+           ACCESS SCREEN
+        ========================= */
+
+        #loading-screen,
+        #access-denied {
+            position: fixed;
+
+            inset: 0;
+
+            z-index: 200;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            background: #050505;
+        }
+
+        #access-denied {
+            display: none;
+
+            text-align: center;
+
+            padding: 25px;
+        }
+
+        .access-box {
+            max-width: 420px;
+
+            padding: 30px;
+
+            border:
+                1px solid var(--border);
+
+            border-radius: 15px;
+
+            background: #0c0c0c;
+        }
+
+        .access-box h2 {
+            color: var(--gold-light);
+
+            margin-bottom: 10px;
+        }
+
+        .access-box p {
+            color: #999;
+
+            font-size: 13px;
+
+            line-height: 1.6;
+
+            margin-bottom: 20px;
+        }
+
+        .loader {
+            width: 40px;
+            height: 40px;
+
+            border-radius: 50%;
+
+            border:
+                3px solid #222;
+
+            border-top-color:
+                var(--gold);
+
+            animation:
+                spin .8s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* =========================
+           RESPONSIVE
+        ========================= */
+
+        @media (max-width: 1000px) {
+
+            .admin-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns:
+                    repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 650px) {
+
+            .admin-header {
+                padding: 10px 14px;
+            }
+
+            .brand-text span {
+                display: none;
+            }
+
+            .header-btn {
+                padding: 0 9px;
+
+                font-size: 10px;
+            }
+
+            .admin-container {
+                padding: 22px 12px 45px;
+            }
+
+            .page-heading h2 {
+                font-size: 23px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+
+                gap: 9px;
+            }
+
+            .stat-card {
+                padding: 13px;
+            }
+
+            .stat-card strong {
+                font-size: 22px;
+            }
+
+            .content-item {
+                grid-template-columns: 58px 1fr;
+
+                gap: 10px;
+            }
+
+            .content-thumb {
+                width: 58px;
+                height: 58px;
+            }
+
+            .item-actions {
+                grid-column: 2;
+
+                justify-content: flex-start;
+            }
+
+            .content-toolbar {
+                flex-direction: column;
+            }
+
+            .content-toolbar select {
+                max-width: none;
+            }
+        }
+    </style>
 </head>
 
 <body>
 
-  <!-- LOGIN -->
+    <!-- =========================
+         LOADING
+    ========================== -->
 
-  <section id="admin-login" class="login-page">
-
-    <div class="login-card">
-
-      <img
-        src="logo.png"
-        alt="Bazam-E-Saim"
-        class="login-logo"
-      >
-
-      <h1>Bazam-E-Saim</h1>
-
-      <h2>Admin Panel</h2>
-
-      <p class="urdu">
-        ایڈمن پینل میں خوش آمدید
-      </p>
-
-      <button
-        id="google-login"
-        class="google-login"
-      >
-        <span class="google-icon">G</span>
-        Continue with Google
-      </button>
-
-      <p id="login-message" class="login-message"></p>
-
-      <a href="index.html" class="back-home">
-        ← Back to Website
-      </a>
-
+    <div id="loading-screen">
+        <div class="loader"></div>
     </div>
 
-  </section>
 
+    <!-- =========================
+         ACCESS DENIED
+    ========================== -->
 
-  <!-- ADMIN DASHBOARD -->
+    <div id="access-denied">
 
-  <section id="admin-dashboard" class="dashboard" hidden>
+        <div class="access-box">
 
-    <header class="admin-header">
+            <h2>
+                Admin Access Required
+            </h2>
 
-      <div>
+            <p>
+                This area is only available to the
+                authorized Bazam-E-Saim administrator.
+            </p>
 
-        <h1>Bazam-E-Saim Admin</h1>
+            <a
+                href="login.html"
+                class="header-btn website-btn"
+            >
+                Go to Login
+            </a>
 
-        <p>
-          صائم — انتظامی پینل
-        </p>
-
-      </div>
-
-
-      <div class="admin-user">
-
-        <img
-          id="admin-photo"
-          src="logo.png"
-          alt="Admin"
-        >
-
-        <div>
-
-          <strong id="admin-name">
-            Admin
-          </strong>
-
-          <small id="admin-email">
-            admin
-          </small>
+            <a
+                href="index.html"
+                class="header-btn website-btn"
+                style="margin-left:6px;"
+            >
+                Website
+            </a>
 
         </div>
 
-        <button id="logout-btn">
-          Logout
-        </button>
+    </div>
 
-      </div>
+
+    <!-- =========================
+         HEADER
+    ========================== -->
+
+    <header class="admin-header">
+
+        <div class="brand">
+
+            <img
+                src="logo.png"
+                alt="Bazam-E-Saim"
+                class="brand-logo"
+            >
+
+            <div class="brand-text">
+
+                <h1>
+                    Bazam-E-Saim
+                </h1>
+
+                <span>
+                    Admin Dashboard
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <div class="header-actions">
+
+            <a
+                href="index.html"
+                class="header-btn website-btn"
+            >
+                View Website
+            </a>
+
+            <button
+                id="logout-btn"
+                class="header-btn logout-btn"
+                type="button"
+            >
+                Logout
+            </button>
+
+        </div>
 
     </header>
 
 
-    <main class="admin-content">
+    <!-- =========================
+         MAIN
+    ========================== -->
 
-      <!-- STATS -->
+    <main class="admin-container">
 
-      <div class="stats">
+        <section class="page-heading">
 
-        <div class="stat-card">
-
-          <span>📚</span>
-
-          <div>
-            <strong id="book-count">0</strong>
-            <p>Books</p>
-          </div>
-
-        </div>
-
-
-        <div class="stat-card">
-
-          <span>🎥</span>
-
-          <div>
-            <strong id="video-count">0</strong>
-            <p>Videos</p>
-          </div>
-
-        </div>
-
-
-        <div class="stat-card">
-
-          <span>💬</span>
-
-          <div>
-            <strong id="comment-count">0</strong>
-            <p>Comments</p>
-          </div>
-
-        </div>
-
-
-        <div class="stat-card">
-
-          <span>❤️</span>
-
-          <div>
-            <strong id="like-count">0</strong>
-            <p>Likes</p>
-          </div>
-
-        </div>
-
-      </div>
-
-
-      <!-- ADMIN MENU -->
-
-      <div class="admin-grid">
-
-
-        <!-- BOOKS -->
-
-        <div class="admin-card">
-
-          <h2>📚 Books</h2>
-
-          <p>
-            کتابوں کا ڈیٹا دیکھیں
-          </p>
-
-          <button
-            class="admin-action"
-            id="refresh-books"
-          >
-            Refresh Books
-          </button>
-
-        </div>
-
-
-        <!-- VIDEOS -->
-
-        <div class="admin-card">
-
-          <h2>🎥 Videos</h2>
-
-          <p>
-            ویڈیوز کا ڈیٹا دیکھیں
-          </p>
-
-          <button
-            class="admin-action"
-            id="refresh-videos"
-          >
-            Refresh Videos
-          </button>
-
-        </div>
-
-
-        <!-- COMMENTS -->
-
-        <div class="admin-card">
-
-          <h2>💬 Comments</h2>
-
-          <p>
-            صارفین کے تبصرے
-          </p>
-
-          <button
-            class="admin-action"
-            id="load-comments"
-          >
-            Load Comments
-          </button>
-
-        </div>
-
-
-        <!-- LIKES -->
-
-        <div class="admin-card">
-
-          <h2>❤️ Likes</h2>
-
-          <p>
-            Likes کا ریکارڈ
-          </p>
-
-          <button
-            class="admin-action"
-            id="load-likes"
-          >
-            Load Likes
-          </button>
-
-        </div>
-
-      </div>
-
-
-      <!-- DATA AREA -->
-
-      <div class="data-panel">
-
-        <div class="panel-header">
-
-          <h2 id="panel-title">
-            Dashboard
-          </h2>
-
-          <button
-            id="clear-data"
-            class="clear-btn"
-          >
-            Clear
-          </button>
-
-        </div>
-
-
-        <div id="admin-data">
-
-          <div class="empty-data">
-
-            <div>🔐</div>
-
-            <h3>Admin Dashboard</h3>
+            <h2>
+                Admin Panel
+            </h2>
 
             <p>
-              اوپر سے کوئی option select کریں۔
+                Manage your Bazam-E-Saim books,
+                videos and shorts from Firebase.
             </p>
 
-          </div>
+            <div class="urdu">
+                بزمِ صائم ایڈمن پینل
+            </div>
 
-        </div>
+        </section>
 
-      </div>
+
+        <!-- =========================
+             STATS
+        ========================== -->
+
+        <section class="stats-grid">
+
+            <div class="stat-card">
+
+                <span>
+                    Books
+                </span>
+
+                <strong id="stat-books">
+                    0
+                </strong>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <span>
+                    Videos
+                </span>
+
+                <strong id="stat-videos">
+                    0
+                </strong>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <span>
+                    Shorts
+                </span>
+
+                <strong id="stat-shorts">
+                    0
+                </strong>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <span>
+                    Total Content
+                </span>
+
+                <strong id="stat-total">
+                    0
+                </strong>
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================
+             ADMIN GRID
+        ========================== -->
+
+        <section class="admin-grid">
+
+
+            <!-- =========================
+                 ADD CONTENT
+            ========================== -->
+
+            <div class="panel">
+
+                <div class="panel-header">
+
+                    <h3>
+                        Add Content
+                    </h3>
+
+                    <span>
+                        Firebase
+                    </span>
+
+                </div>
+
+
+                <div class="panel-body">
+
+                    <form id="content-form">
+
+
+                        <div class="form-group">
+
+                            <label for="content-type">
+                                Content Type
+                            </label>
+
+                            <select
+                                id="content-type"
+                                required
+                            >
+
+                                <option value="">
+                                    Select Type
+                                </option>
+
+                                <option value="books">
+                                    Book
+                                </option>
+
+                                <option value="videos">
+                                    Video
+                                </option>
+
+                                <option value="shorts">
+                                    Short
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="content-title">
+                                Title
+                            </label>
+
+                            <input
+                                type="text"
+                                id="content-title"
+                                placeholder="Enter title"
+                                required
+                            >
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="content-title-urdu">
+                                Urdu Title
+                            </label>
+
+                            <input
+                                type="text"
+                                id="content-title-urdu"
+                                class="urdu"
+                                placeholder="اردو عنوان"
+                            >
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="content-description">
+                                Description
+                            </label>
+
+                            <textarea
+                                id="content-description"
+                                placeholder="Enter description"
+                            ></textarea>
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="content-author">
+                                Author
+                            </label>
+
+                            <input
+                                type="text"
+                                id="content-author"
+                                placeholder="Hazrat Allama Saim Chishti"
+                            >
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="content-file">
+                                Media / PDF File
+                            </label>
+
+                            <input
+                                type="file"
+                                id="content-file"
+                            >
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="content-cover">
+                                Cover / Thumbnail
+                            </label>
+
+                            <input
+                                type="file"
+                                id="content-cover"
+                                accept="image/*"
+                            >
+
+                        </div>
+
+
+                        <button
+                            type="submit"
+                            id="upload-btn"
+                            class="gold-btn"
+                        >
+                            Upload to Firebase
+                        </button>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+
+            <!-- =========================
+                 CONTENT MANAGER
+            ========================== -->
+
+            <div class="panel">
+
+                <div class="panel-header">
+
+                    <h3>
+                        Manage Content
+                    </h3>
+
+                    <span id="admin-user">
+                        Admin
+                    </span>
+
+                </div>
+
+
+                <div class="panel-body">
+
+
+                    <div class="content-toolbar">
+
+                        <select id="filter-type">
+
+                            <option value="all">
+                                All Content
+                            </option>
+
+                            <option value="books">
+                                Books
+                            </option>
+
+                            <option value="videos">
+                                Videos
+                            </option>
+
+                            <option value="shorts">
+                                Shorts
+                            </option>
+
+                        </select>
+
+
+                        <button
+                            id="refresh-btn"
+                            class="refresh-btn"
+                            type="button"
+                        >
+                            Refresh
+                        </button>
+
+                    </div>
+
+
+                    <div
+                        id="dashboard-items-container"
+                        class="items-container"
+                    >
+
+                        <div class="empty-state">
+                            Loading content...
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
 
     </main>
 
-  </section>
+
+    <!-- =========================
+         MESSAGE
+    ========================== -->
+
+    <div
+        id="admin-message"
+        role="alert"
+        aria-live="polite"
+    ></div>
 
 
-  <script type="module" src="admin.js"></script>
+    <!-- =========================
+         ADMIN JAVASCRIPT
+    ========================== -->
+
+    <script
+        type="module"
+        src="admin.js"
+    ></script>
 
 </body>
 </html>
