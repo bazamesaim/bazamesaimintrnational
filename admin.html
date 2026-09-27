@@ -2,7 +2,11 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
 
   <title>Admin Panel | Bazam-E-Saim</title>
 
@@ -15,212 +19,224 @@
       padding: 0;
     }
 
+    html,
     body {
-      min-height: 100vh;
+      width: 100%;
+      min-height: 100%;
+    }
+
+    body {
       font-family: Arial, Helvetica, sans-serif;
-      color: #fff;
-      background:
-        radial-gradient(circle at 15% 25%, rgba(212,168,55,.18), transparent 25%),
-        radial-gradient(circle at 85% 75%, rgba(212,168,55,.13), transparent 25%),
-        #030303;
-      display: flex;
-      justify-content: center;
-      align-items: center;
+      background: #050505;
+      color: #f5d76e;
       overflow-x: hidden;
     }
 
-    body::before {
-      content: "";
-      position: fixed;
-      width: 450px;
-      height: 450px;
-      background: rgba(218, 170, 45, .07);
-      filter: blur(100px);
-      border-radius: 50%;
-      top: 5%;
-      left: 5%;
-      animation: glowMove 8s infinite alternate ease-in-out;
-      pointer-events: none;
-    }
-
+    body::before,
     body::after {
       content: "";
       position: fixed;
-      width: 400px;
-      height: 400px;
-      background: rgba(218, 170, 45, .06);
-      filter: blur(100px);
+      width: 420px;
+      height: 420px;
       border-radius: 50%;
+      background: rgba(212, 165, 45, 0.13);
+      filter: blur(100px);
+      z-index: -1;
+      pointer-events: none;
+      animation: glowMove 10s ease-in-out infinite alternate;
+    }
+
+    body::before {
+      top: 5%;
+      left: 5%;
+    }
+
+    body::after {
       right: 5%;
       bottom: 5%;
-      animation: glowMove2 10s infinite alternate ease-in-out;
-      pointer-events: none;
+      animation-delay: 3s;
     }
 
     @keyframes glowMove {
       from {
         transform: translate(0, 0);
       }
+
       to {
-        transform: translate(150px, 80px);
+        transform: translate(100px, 50px);
       }
     }
 
-    @keyframes glowMove2 {
-      from {
-        transform: translate(0, 0);
-      }
-      to {
-        transform: translate(-120px, -100px);
-      }
+    .page {
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 30px 15px;
     }
 
-    .admin-login {
-      width: min(440px, 92%);
-      padding: 40px 32px;
-      background: rgba(13, 13, 13, .94);
-      border: 1px solid rgba(225, 183, 61, .5);
-      border-radius: 22px;
-      box-shadow:
-        0 0 35px rgba(225, 183, 61, .08),
-        inset 0 0 30px rgba(225, 183, 61, .025);
+    .login-card {
+      width: min(430px, 100%);
+      background: rgba(15, 15, 15, 0.96);
+      border: 1px solid rgba(218, 175, 55, 0.55);
+      border-radius: 20px;
+      padding: 40px 30px;
       text-align: center;
-      position: relative;
-      z-index: 2;
+      box-shadow:
+        0 0 25px rgba(218, 175, 55, 0.12),
+        inset 0 0 30px rgba(218, 175, 55, 0.025);
     }
 
     .logo {
       width: 90px;
       height: 90px;
       object-fit: contain;
-      margin-bottom: 14px;
-      filter: drop-shadow(0 0 12px rgba(231, 191, 70, .45));
+      margin-bottom: 15px;
+      filter: drop-shadow(0 0 10px rgba(255, 205, 60, 0.4));
     }
 
     .brand {
-      color: #e7c65a;
-      letter-spacing: 4px;
       font-size: 13px;
+      letter-spacing: 5px;
+      color: #d9b83f;
       margin-bottom: 8px;
     }
 
     h1 {
-      color: #f0cf65;
       font-size: 32px;
+      color: #f2d064;
       margin-bottom: 5px;
     }
 
     .urdu {
-      color: #d9b64f;
       direction: rtl;
       font-size: 18px;
       margin-bottom: 20px;
+      color: #d4af37;
     }
 
     .description {
       color: #aaa;
       line-height: 1.6;
-      margin-bottom: 28px;
+      margin-bottom: 25px;
     }
 
     .google-btn {
       width: 100%;
-      border: none;
-      padding: 15px 18px;
+      border: 1px solid #d6ae3d;
       border-radius: 10px;
-      background: linear-gradient(135deg, #f8dd82, #c89d36);
-      color: #080808;
+      background: linear-gradient(
+        135deg,
+        #ffe28a,
+        #c99724
+      );
+      color: #111;
       font-size: 16px;
       font-weight: bold;
+      padding: 15px;
       cursor: pointer;
-      transition: .25s ease;
+      transition: 0.25s;
     }
 
     .google-btn:hover {
       transform: translateY(-2px);
-      box-shadow: 0 8px 25px rgba(225, 183, 61, .22);
+      box-shadow: 0 0 20px rgba(238, 195, 71, 0.35);
     }
 
-    .google-icon {
-      background: #fff;
-      color: #4285f4;
-      width: 25px;
-      height: 25px;
-      border-radius: 50%;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      margin-right: 8px;
-      font-weight: bold;
+    .google-btn:disabled {
+      opacity: 0.6;
+      cursor: wait;
     }
 
-    #message {
-      min-height: 24px;
+    .message {
+      min-height: 25px;
       margin-top: 18px;
-      color: #e5c55b;
       font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .error {
+      color: #ff6565;
+    }
+
+    .success {
+      color: #8ee58e;
     }
 
     .back {
       display: inline-block;
       margin-top: 22px;
-      color: #d9b64f;
+      color: #d9b83f;
       text-decoration: none;
       font-size: 14px;
     }
 
     .back:hover {
-      color: #fff;
+      text-decoration: underline;
     }
 
-    .copyright {
+    footer {
+      margin-top: 28px;
+      padding-top: 20px;
+      border-top: 1px solid rgba(255,255,255,0.08);
       color: #666;
       font-size: 12px;
-      margin-top: 28px;
-    }
-
-    @media (max-width: 500px) {
-      .admin-login {
-        padding: 32px 22px;
-      }
-
-      h1 {
-        font-size: 27px;
-      }
     }
   </style>
 </head>
 
 <body>
 
-  <main class="admin-login">
+  <main class="page">
 
-    <img src="logo.png" class="logo" alt="Bazam-E-Saim Logo">
+    <section class="login-card">
 
-    <div class="brand">BAZAM-E-SAIM</div>
+      <img
+        src="logo.png"
+        alt="Bazam-E-Saim Logo"
+        class="logo"
+      >
 
-    <h1>Admin Panel</h1>
+      <div class="brand">
+        BAZAM-E-SAIM
+      </div>
 
-    <div class="urdu">ایڈمن پینل</div>
+      <h1>Admin Panel</h1>
 
-    <p class="description">
-      Sign in with your authorized Firebase account.
-    </p>
+      <div class="urdu">
+        ایڈمن پینل
+      </div>
 
-    <button id="googleLoginBtn" class="google-btn">
-      <span class="google-icon">G</span>
-      Continue with Google
-    </button>
+      <p class="description">
+        Sign in with your authorized Google account
+        to manage Bazam-E-Saim content.
+      </p>
 
-    <div id="message"></div>
+      <button
+        id="googleLoginBtn"
+        class="google-btn"
+        type="button"
+      >
+        Continue with Google
+      </button>
 
-    <a href="index.html" class="back">
-      ← Back to Website
-    </a>
+      <div
+        id="message"
+        class="message"
+      ></div>
 
-    <div class="copyright">
-      © 2026 Bazam-E-Saim — All Rights Reserved.
-    </div>
+      <a
+        href="index.html"
+        class="back"
+      >
+        ← Back to Website
+      </a>
+
+      <footer>
+        © 2026 Bazam-E-Saim — All Rights Reserved.
+      </footer>
+
+    </section>
 
   </main>
 
