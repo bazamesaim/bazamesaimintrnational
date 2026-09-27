@@ -19,397 +19,179 @@ import {
   runTransaction
 } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
 
-import {
-  firebaseConfig
-} from "./firebase-config.js";
+
+/* =====================================================
+   FIREBASE CONFIG
+===================================================== */
+
+const firebaseConfig = {
+
+  apiKey:
+    "AIzaSyBFzwp8jL3J1oUxAeDDq23T2CmydtgTa1k",
+
+  authDomain:
+    "bazamesaiminternational.firebaseapp.com",
+
+  projectId:
+    "bazamesaiminternational",
+
+  storageBucket:
+    "bazamesaiminternational.firebasestorage.app",
+
+  messagingSenderId:
+    "879282438130",
+
+  appId:
+    "1:879282438130:web:a285d48f427e6659e3f56b",
+
+  measurementId:
+    "G-S79YY7WPWX"
+
+};
 
 
-const app = initializeApp(firebaseConfig);
+/* =====================================================
+   FIREBASE START
+===================================================== */
 
-const auth = getAuth(app);
+const app =
+  initializeApp(
+    firebaseConfig
+  );
 
-const db = getFirestore(app);
 
-let user = null;
+const auth =
+  getAuth(app);
 
 
-/* =========================
+const db =
+  getFirestore(app);
+
+
+let currentUser =
+  null;
+
+
+console.log(
+  "Bazam-E-Saim Firebase connected to:",
+  firebaseConfig.projectId
+);
+
+
+/* =====================================================
+   AUTH
+===================================================== */
+
+onAuthStateChanged(
+  auth,
+  user => {
+
+    currentUser =
+      user;
+
+    console.log(
+      "Current user:",
+      user
+        ? user.email
+        : "Not logged in"
+    );
+
+  }
+);
+
+
+/* =====================================================
    HELPERS
-========================= */
+===================================================== */
 
-function esc(value) {
+function escapeHTML(value) {
 
-  return String(value ?? "")
-    .replace(/[&<>"']/g, char => ({
-      "&": "&amp;",
-      "<": "&lt;",
-      ">": "&gt;",
-      '"': "&quot;",
-      "'": "&#039;"
-    }[char]));
+  return String(
+    value ?? ""
+  )
+  .replace(
+    /[&<>"']/g,
+    char => {
+
+      const map = {
+
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;"
+
+      };
+
+      return map[char];
+
+    }
+  );
 
 }
 
 
-async function loadJSON(path) {
+async function loadJSON(
+  file
+) {
 
-  const response = await fetch(
-    path,
-    { cache: "no-store" }
-  );
+  const response =
+    await fetch(
+      file + "?v=" + Date.now()
+    );
+
 
   if (!response.ok) {
 
     throw new Error(
-      `${path} could not be loaded`
+      `${file} not found`
     );
 
   }
 
-  return response.json();
+
+  return await response.json();
 
 }
 
 
-function getItems(data) {
-
-  return Array.isArray(data)
-    ? data
-    : data.items || [];
-
-}
-
-
-/* =========================
-   ACTION BUTTONS
-========================= */
-
-function actions(type, id) {
-
-  return `
-
-    <div class="card-actions">
-
-      <button
-        data-action="like"
-        data-type="${type}"
-        data-id="${id}">
-
-        ❤️ Like
-        <b class="likes">0</b>
-
-      </button>
-
-
-      <button
-        data-action="comment"
-        data-type="${type}"
-        data-id="${id}">
-
-        💬 Comment
-
-      </button>
-
-
-      <button
-        data-action="share"
-        data-type="${type}"
-        data-id="${id}">
-
-        ↗ Share
-
-      </button>
-
-    </div>
-
-
-    <div class="views">
-
-      👁
-      <b class="views-number">0</b>
-      Views
-
-    </div>
-
-
-    <div
-      class="comment-box"
-      hidden>
-
-      <input
-        class="comment-input"
-        placeholder="Write a comment...">
-
-      <button
-        data-action="post-comment"
-        data-type="${type}"
-        data-id="${id}">
-
-        Post
-
-      </button>
-
-    </div>
-
-  `;
-
-}
-
-
-/* =========================
-   BOOK CARD
-========================= */
-
-function bookCard(book, index) {
-
-  const id =
-    book.id ||
-    `book-${index + 1}`;
-
-
-  return `
-
-    <article
-      class="card"
-      data-type="books"
-      data-id="${esc(id)}">
-
-
-      <div class="cover">
-
-        <img
-          src="${esc(
-            book.cover ||
-            "assets/logo.png"
-          )}"
-          alt="${esc(book.title)}"
-          onerror="this.src='assets/logo.png'">
-
-      </div>
-
-
-      <div class="body">
-
-        <h3>
-          ${esc(book.title || "Book")}
-        </h3>
-
-
-        <p class="urdu">
-          ${esc(book.urduTitle || "")}
-        </p>
-
-
-        <p>
-          ${esc(
-            book.author ||
-            "Hazrat Allama Saim Chishti"
-          )}
-        </p>
-
-
-        <a
-          class="read"
-          target="_blank"
-          href="${esc(
-            book.link ||
-            "https://hassanbhai5559-lgtm.github.io/chishti-library/"
-          )}">
-
-          📖 Read Book
-
-        </a>
-
-
-        ${actions("books", id)}
-
-      </div>
-
-    </article>
-
-  `;
-
-}
-
-
-/* =========================
-   VIDEO / SHORT CARD
-========================= */
-
-function mediaCard(item, index, type) {
-
-  const id =
-    item.id ||
-    `${type}-${index + 1}`;
-
-
-  return `
-
-    <article
-      class="card ${type}"
-      data-type="${type}"
-      data-id="${esc(id)}">
-
-
-      <div class="video">
-
-        <video
-          controls
-          preload="metadata"
-          poster="${esc(
-            item.cover ||
-            "assets/logo.png"
-          )}">
-
-          <source
-            src="${esc(item.media || "")}"
-            type="video/mp4">
-
-          Your browser does not support video.
-
-        </video>
-
-      </div>
-
-
-      <div class="body">
-
-        <h3>
-          ${esc(
-            item.title ||
-            type
-          )}
-        </h3>
-
-
-        <p>
-          ${esc(
-            item.author ||
-            "Bazam-E-Saim"
-          )}
-        </p>
-
-
-        ${actions(type, id)}
-
-      </div>
-
-    </article>
-
-  `;
-
-}
-
-
-/* =========================
-   FIRESTORE STATS
-========================= */
-
-async function getStats(type, id) {
-
-  const reference =
-    doc(
-      db,
-      "contentStats",
-      `${type}_${id}`
-    );
-
-  const snapshot =
-    await getDoc(reference);
-
-
-  if (!snapshot.exists()) {
-
-    return {
-      likes: 0,
-      views: 0
-    };
-
-  }
-
-
-  return snapshot.data();
-
-}
-
-
-/* =========================
-   VIEWS
-========================= */
-
-async function registerView(
-  type,
-  id,
-  element
+function arrayData(
+  data
 ) {
 
-  try {
+  if (
+    Array.isArray(data)
+  ) {
 
-    const key =
-      `view_${type}_${id}`;
-
-
-    if (
-      !sessionStorage.getItem(key)
-    ) {
-
-      await setDoc(
-
-        doc(
-          db,
-          "contentStats",
-          `${type}_${id}`
-        ),
-
-        {
-          type,
-          contentId: id,
-          views: increment(1)
-        },
-
-        {
-          merge: true
-        }
-
-      );
-
-
-      sessionStorage.setItem(
-        key,
-        "1"
-      );
-
-    }
-
-
-    const stats =
-      await getStats(type, id);
-
-
-    element.textContent =
-      stats.views || 0;
+    return data;
 
   }
 
-  catch (error) {
 
-    console.error(
-      "View error:",
-      error
-    );
+  if (
+    data &&
+    Array.isArray(
+      data.items
+    )
+  ) {
+
+    return data.items;
 
   }
+
+
+  return [];
 
 }
 
 
-/* =========================
+/* =====================================================
    LOGIN CHECK
-========================= */
+===================================================== */
 
-async function requireLogin() {
+function requireLogin() {
 
-  if (user) {
+  if (currentUser) {
 
     return true;
 
@@ -417,11 +199,12 @@ async function requireLogin() {
 
 
   alert(
-    "Please sign in first.\nپہلے سائن اِن کریں۔"
+    "Please Sign In first.\n\n" +
+    "لائک اور کمنٹ کے لیے پہلے سائن اِن کریں۔"
   );
 
 
-  location.href =
+  window.location.href =
     "login.html";
 
 
@@ -430,14 +213,140 @@ async function requireLogin() {
 }
 
 
-/* =========================
-   HYDRATE CARDS
-========================= */
+/* =====================================================
+   STATS
+===================================================== */
 
-async function hydrateCard(card) {
+async function getStats(
+  type,
+  id
+) {
+
+  try {
+
+    const reference =
+      doc(
+        db,
+        "contentStats",
+        `${type}_${id}`
+      );
+
+
+    const snapshot =
+      await getDoc(
+        reference
+      );
+
+
+    if (
+      !snapshot.exists()
+    ) {
+
+      return {
+        likes: 0,
+        views: 0
+      };
+
+    }
+
+
+    const data =
+      snapshot.data();
+
+
+    return {
+
+      likes:
+        Number(
+          data.likes || 0
+        ),
+
+      views:
+        Number(
+          data.views || 0
+        )
+
+    };
+
+  }
+
+  catch(error) {
+
+    console.error(
+      "Stats error:",
+      error
+    );
+
+
+    return {
+      likes: 0,
+      views: 0
+    };
+
+  }
+
+}
+
+
+/* =====================================================
+   LIKE CHECK
+===================================================== */
+
+async function userLiked(
+  type,
+  id
+) {
+
+  if (!currentUser) {
+
+    return false;
+
+  }
+
+
+  try {
+
+    const reference =
+      doc(
+        db,
+        "likes",
+        `${type}_${id}_${currentUser.uid}`
+      );
+
+
+    const snapshot =
+      await getDoc(
+        reference
+      );
+
+
+    return (
+      snapshot.exists() &&
+      snapshot.data().active === true
+    );
+
+  }
+
+  catch {
+
+    return false;
+
+  }
+
+}
+
+
+/* =====================================================
+   UPDATE STATS
+===================================================== */
+
+async function updateStats(
+  card
+) {
 
   const type =
     card.dataset.type;
+
 
   const id =
     card.dataset.id;
@@ -452,19 +361,20 @@ async function hydrateCard(card) {
 
   const likes =
     card.querySelector(
-      ".likes"
+      ".like-count"
     );
+
 
   const views =
     card.querySelector(
-      ".views-number"
+      ".view-count"
     );
 
 
   if (likes) {
 
     likes.textContent =
-      stats.likes || 0;
+      stats.likes;
 
   }
 
@@ -472,41 +382,29 @@ async function hydrateCard(card) {
   if (views) {
 
     views.textContent =
-      stats.views || 0;
+      stats.views;
 
   }
 
 
-  const video =
-    card.querySelector("video");
-
-
-  if (video) {
-
-    video.addEventListener(
-      "play",
-      () => {
-
-        registerView(
-          type,
-          id,
-          views
-        );
-
-      },
-      {
-        once: true
-      }
+  const likeButton =
+    card.querySelector(
+      '[data-action="like"]'
     );
 
-  }
 
-  else if (views) {
+  if (likeButton) {
 
-    registerView(
-      type,
-      id,
-      views
+    const liked =
+      await userLiked(
+        type,
+        id
+      );
+
+
+    likeButton.classList.toggle(
+      "liked",
+      liked
     );
 
   }
@@ -514,62 +412,35 @@ async function hydrateCard(card) {
 }
 
 
-/* =========================
-   LIKE / COMMENT / SHARE
-========================= */
+/* =====================================================
+   VIEW
+===================================================== */
 
-document.addEventListener(
-  "click",
-  async event => {
+async function addView(
+  card
+) {
 
-    const button =
-      event.target.closest(
-        "[data-action]"
-      );
+  const type =
+    card.dataset.type;
 
 
-    if (!button) {
-
-      return;
-
-    }
+  const id =
+    card.dataset.id;
 
 
-    const action =
-      button.dataset.action;
-
-    const type =
-      button.dataset.type;
-
-    const id =
-      button.dataset.id;
-
-    const card =
-      button.closest(".card");
+  const key =
+    `view_${type}_${id}`;
 
 
-    /* LIKE */
+  try {
 
-    if (action === "like") {
+    if (
+      !sessionStorage.getItem(
+        key
+      )
+    ) {
 
-      if (
-        !(await requireLogin())
-      ) {
-
-        return;
-
-      }
-
-
-      const likeRef =
-        doc(
-          db,
-          "likes",
-          `${type}_${id}_${user.uid}`
-        );
-
-
-      const statsRef =
+      const reference =
         doc(
           db,
           "contentStats",
@@ -577,386 +448,1422 @@ document.addEventListener(
         );
 
 
-      const existing =
-        await getDoc(
-          likeRef
-        );
+      await setDoc(
 
-
-      if (existing.exists()) {
-
-        await setDoc(
-
-          statsRef,
-
-          {
-            likes: increment(-1)
-          },
-
-          {
-            merge: true
-          }
-
-        );
-
-
-        await setDoc(
-
-          likeRef,
-
-          {
-            active: false
-          },
-
-          {
-            merge: true
-          }
-
-        );
-
-
-        button.classList.remove(
-          "active"
-        );
-
-      }
-
-      else {
-
-        await setDoc(
-
-          likeRef,
-
-          {
-            uid: user.uid,
-            type,
-            contentId: id,
-            active: true,
-            createdAt:
-              serverTimestamp()
-          }
-
-        );
-
-
-        await setDoc(
-
-          statsRef,
-
-          {
-            likes: increment(1)
-          },
-
-          {
-            merge: true
-          }
-
-        );
-
-
-        button.classList.add(
-          "active"
-        );
-
-      }
-
-
-      const stats =
-        await getStats(
-          type,
-          id
-        );
-
-
-      button.querySelector(
-        ".likes"
-      ).textContent =
-        stats.likes || 0;
-
-    }
-
-
-    /* COMMENT BOX */
-
-    if (
-      action === "comment"
-    ) {
-
-      const box =
-        card.querySelector(
-          ".comment-box"
-        );
-
-
-      box.hidden =
-        !box.hidden;
-
-    }
-
-
-    /* POST COMMENT */
-
-    if (
-      action === "post-comment"
-    ) {
-
-      if (
-        !(await requireLogin())
-      ) {
-
-        return;
-
-      }
-
-
-      const input =
-        card.querySelector(
-          ".comment-input"
-        );
-
-
-      const text =
-        input.value.trim();
-
-
-      if (!text) {
-
-        return;
-
-      }
-
-
-      await addDoc(
-
-        collection(
-          db,
-          "comments"
-        ),
+        reference,
 
         {
-          uid: user.uid,
-          email:
-            user.email || "",
+
           type,
+
           contentId: id,
-          text,
-          createdAt:
-            serverTimestamp()
+
+          views:
+            increment(1)
+
+        },
+
+        {
+          merge: true
         }
 
       );
 
 
-      input.value = "";
-
-
-      alert(
-        "Comment posted successfully."
+      sessionStorage.setItem(
+        key,
+        "true"
       );
 
     }
 
 
-    /* SHARE */
+    await updateStats(
+      card
+    );
 
-    if (
-      action === "share"
-    ) {
+  }
 
-      const shareURL =
-        location.origin +
-        location.pathname +
-        `#${type}-${id}`;
+  catch(error) {
 
+    console.error(
+      "View error:",
+      error
+    );
 
-      try {
+  }
 
-        await navigator.clipboard.writeText(
-          shareURL
-        );
+}
 
 
-        alert(
-          "Link copied successfully."
-        );
+/* =====================================================
+   LIKE
+===================================================== */
 
-      }
+async function toggleLike(
+  button
+) {
 
-      catch {
+  if (
+    !requireLogin()
+  ) {
 
-        window.open(
-          "https://web.facebook.com/share/r/1J4ao7KGEY/",
-          "_blank"
-        );
+    return;
 
-      }
+  }
+
+
+  const card =
+    button.closest(
+      ".content-card"
+    );
+
+
+  if (!card) {
+
+    return;
+
+  }
+
+
+  const type =
+    card.dataset.type;
+
+
+  const id =
+    card.dataset.id;
+
+
+  try {
+
+    button.disabled =
+      true;
+
+
+    const likeRef =
+      doc(
+        db,
+        "likes",
+        `${type}_${id}_${currentUser.uid}`
+      );
+
+
+    const statsRef =
+      doc(
+        db,
+        "contentStats",
+        `${type}_${id}`
+      );
+
+
+    const snapshot =
+      await getDoc(
+        likeRef
+      );
+
+
+    const liked =
+      snapshot.exists() &&
+      snapshot.data().active === true;
+
+
+    if (liked) {
+
+      await setDoc(
+
+        likeRef,
+
+        {
+
+          uid:
+            currentUser.uid,
+
+          type,
+
+          contentId:
+            id,
+
+          active:
+            false,
+
+          updatedAt:
+            serverTimestamp()
+
+        },
+
+        {
+          merge: true
+        }
+
+      );
+
+
+      await setDoc(
+
+        statsRef,
+
+        {
+
+          likes:
+            increment(-1)
+
+        },
+
+        {
+          merge: true
+        }
+
+      );
+
+    }
+
+    else {
+
+      await setDoc(
+
+        likeRef,
+
+        {
+
+          uid:
+            currentUser.uid,
+
+          type,
+
+          contentId:
+            id,
+
+          active:
+            true,
+
+          createdAt:
+            serverTimestamp()
+
+        },
+
+        {
+          merge: true
+        }
+
+      );
+
+
+      await setDoc(
+
+        statsRef,
+
+        {
+
+          likes:
+            increment(1)
+
+        },
+
+        {
+          merge: true
+        }
+
+      );
+
+    }
+
+
+    await updateStats(
+      card
+    );
+
+  }
+
+  catch(error) {
+
+    console.error(
+      "Like error:",
+      error
+    );
+
+
+    alert(
+      "Like error. Firebase rules check karo."
+    );
+
+  }
+
+  finally {
+
+    button.disabled =
+      false;
+
+  }
+
+}
+
+
+/* =====================================================
+   COMMENT OPEN
+===================================================== */
+
+function openComment(
+  button
+) {
+
+  const card =
+    button.closest(
+      ".content-card"
+    );
+
+
+  if (!card) {
+
+    return;
+
+  }
+
+
+  const box =
+    card.querySelector(
+      ".comment-box"
+    );
+
+
+  if (!box) {
+
+    return;
+
+  }
+
+
+  box.hidden =
+    !box.hidden;
+
+
+  if (!box.hidden) {
+
+    const input =
+      box.querySelector(
+        "textarea"
+      );
+
+
+    if (input) {
+
+      setTimeout(
+        () => input.focus(),
+        100
+      );
 
     }
 
   }
 
-);
+}
 
 
-/* =========================
-   MOBILE NAV
-========================= */
+/* =====================================================
+   POST COMMENT
+===================================================== */
 
-const navToggle =
-  document.getElementById(
-    "navToggle"
-  );
+async function postComment(
+  button
+) {
 
-const nav =
-  document.getElementById(
-    "nav"
-  );
+  if (
+    !requireLogin()
+  ) {
+
+    return;
+
+  }
 
 
-if (navToggle) {
-
-  navToggle.onclick = () => {
-
-    nav.classList.toggle(
-      "open"
+  const card =
+    button.closest(
+      ".content-card"
     );
 
-  };
+
+  if (!card) {
+
+    return;
+
+  }
+
+
+  const input =
+    card.querySelector(
+      "textarea"
+    );
+
+
+  if (!input) {
+
+    return;
+
+  }
+
+
+  const text =
+    input.value.trim();
+
+
+  if (!text) {
+
+    alert(
+      "Please write a comment."
+    );
+
+    return;
+
+  }
+
+
+  try {
+
+    button.disabled =
+      true;
+
+
+    await addDoc(
+
+      collection(
+        db,
+        "comments"
+      ),
+
+      {
+
+        uid:
+          currentUser.uid,
+
+        email:
+          currentUser.email || "",
+
+        type:
+          card.dataset.type,
+
+        contentId:
+          card.dataset.id,
+
+        text,
+
+        createdAt:
+          serverTimestamp()
+
+      }
+
+    );
+
+
+    input.value =
+      "";
+
+
+    alert(
+      "Comment posted."
+    );
+
+  }
+
+  catch(error) {
+
+    console.error(
+      "Comment error:",
+      error
+    );
+
+
+    alert(
+      "Comment error. Firebase rules check karo."
+    );
+
+  }
+
+  finally {
+
+    button.disabled =
+      false;
+
+  }
 
 }
 
 
-/* =========================
-   CARD SLIDERS
-========================= */
+/* =====================================================
+   SHARE
+===================================================== */
 
-function startSliders() {
+async function shareCard(
+  button
+) {
 
-  document
-    .querySelectorAll(".track")
-    .forEach(track => {
-
-      const viewport =
-        track.parentElement;
-
-
-      let timer =
-        setInterval(() => {
-
-          const card =
-            track.querySelector(
-              ".card"
-            );
+  const card =
+    button.closest(
+      ".content-card"
+    );
 
 
-          if (!card) {
+  if (!card) {
 
-            return;
+    return;
 
-          }
-
-
-          const distance =
-            card.getBoundingClientRect()
-              .width + 18;
+  }
 
 
-          if (
-            viewport.scrollLeft +
-            viewport.clientWidth >=
-            viewport.scrollWidth -
-            distance
-          ) {
+  const title =
+    card.querySelector(
+      "h3"
+    )?.textContent ||
+    "Bazam-E-Saim";
 
-            viewport.scrollTo({
-              left: 0,
-              behavior: "smooth"
-            });
 
-          }
+  const url =
+    `${location.origin}${location.pathname}#${card.dataset.type}-${card.dataset.id}`;
 
-          else {
 
-            viewport.scrollBy({
-              left: distance,
-              behavior: "smooth"
-            });
+  try {
 
-          }
+    if (
+      navigator.share
+    ) {
 
-        }, 4200);
+      await navigator.share({
+
+        title,
+
+        text:
+          "Bazam-E-Saim",
+
+        url
+
+      });
+
+    }
+
+    else {
+
+      await navigator.clipboard.writeText(
+        url
+      );
+
+
+      alert(
+        "Link copied."
+      );
+
+    }
+
+  }
+
+  catch(error) {
+
+    if (
+      error.name !==
+      "AbortError"
+    ) {
+
+      console.error(
+        error
+      );
+
+    }
+
+  }
+
+}
+
+
+/* =====================================================
+   BOOK CARD
+===================================================== */
+
+function bookCard(
+  book,
+  index
+) {
+
+  const id =
+    book.id ||
+    `book-${index + 1}`;
+
+
+  const title =
+    book.title ||
+    `Book ${index + 1}`;
+
+
+  const urdu =
+    book.urduTitle ||
+    "";
+
+
+  const author =
+    book.author ||
+    "Hazrat Allama Saim Chishti";
+
+
+  const cover =
+    book.cover ||
+    "cover.png";
+
+
+  const link =
+    book.link ||
+    book.pdf ||
+    "https://hassanbhai5559-lgtm.github.io/chishti-library/";
+
+
+  return `
+
+<article
+  class="content-card"
+  data-type="books"
+  data-id="${escapeHTML(id)}"
+>
+
+  <img
+    class="card-image"
+    src="${escapeHTML(cover)}"
+    alt="${escapeHTML(title)}"
+    loading="lazy"
+    onerror="this.src='logo.png'"
+  >
+
+
+  <div class="card-body">
+
+    <h3>
+      ${escapeHTML(title)}
+    </h3>
+
+
+    <div class="urdu-title">
+      ${escapeHTML(urdu)}
+    </div>
+
+
+    <div class="card-author">
+      ${escapeHTML(author)}
+    </div>
+
+
+    <a
+      href="${escapeHTML(link)}"
+      target="_blank"
+      class="read-btn"
+    >
+      📖 Read Book
+    </a>
+
+
+    ${actionsHTML()}
+
+  </div>
+
+</article>
+
+`;
+
+}
+
+
+/* =====================================================
+   VIDEO / SHORT CARD
+===================================================== */
+
+function mediaCard(
+  item,
+  index,
+  type
+) {
+
+  const id =
+    item.id ||
+    `${type}-${index + 1}`;
+
+
+  const title =
+    item.title ||
+    `${type === "videos" ? "Video" : "Short"} ${index + 1}`;
+
+
+  const media =
+    item.video ||
+    item.media ||
+    item.src ||
+    "";
+
+
+  const author =
+    item.author ||
+    "Hazrat Allama Saim Chishti";
+
+
+  return `
+
+<article
+  class="content-card"
+  data-type="${escapeHTML(type)}"
+  data-id="${escapeHTML(id)}"
+>
+
+  <div class="video-container">
+
+    <video
+      controls
+      playsinline
+      preload="metadata"
+    >
+
+      <source
+        src="${escapeHTML(media)}"
+        type="video/mp4"
+      >
+
+      Your browser does not support video.
+
+    </video>
+
+  </div>
+
+
+  <div class="card-body">
+
+    <h3>
+      ${escapeHTML(title)}
+    </h3>
+
+
+    <div class="card-author">
+      ${escapeHTML(author)}
+    </div>
+
+
+    <div class="card-stats">
+
+      <span>
+        👁
+        <strong class="view-count">
+          0
+        </strong>
+        Views
+      </span>
+
+      <span>
+        ❤️
+        <strong class="like-count">
+          0
+        </strong>
+      </span>
+
+    </div>
+
+
+    ${actionsHTML()}
+
+  </div>
+
+</article>
+
+`;
+
+}
+
+
+/* =====================================================
+   ACTION HTML
+===================================================== */
+
+function actionsHTML() {
+
+  return `
+
+<div class="card-actions">
+
+  <button
+    type="button"
+    class="action-btn"
+    data-action="like"
+  >
+    ❤️
+    Like
+    <span class="like-count">
+      0
+    </span>
+  </button>
+
+
+  <button
+    type="button"
+    class="action-btn"
+    data-action="comment"
+  >
+    💬
+    Comment
+  </button>
+
+
+  <button
+    type="button"
+    class="action-btn"
+    data-action="share"
+  >
+    ↗
+    Share
+  </button>
+
+</div>
+
+
+<div
+  class="comment-box"
+  hidden
+>
+
+  <textarea
+    placeholder="Write your comment..."
+  ></textarea>
+
+
+  <button
+    type="button"
+    class="comment-submit"
+    data-action="post-comment"
+  >
+    Post Comment
+  </button>
+
+</div>
+
+`;
+
+}
+
+
+/* =====================================================
+   CARD SETUP
+===================================================== */
+
+async function setupCard(
+  card
+) {
+
+  await updateStats(
+    card
+  );
+
+
+  const video =
+    card.querySelector(
+      "video"
+    );
+
+
+  if (video) {
+
+    let counted =
+      false;
+
+
+    video.addEventListener(
+      "play",
+      async () => {
+
+        if (counted) {
+
+          return;
+
+        }
+
+
+        counted =
+          true;
+
+
+        await addView(
+          card
+        );
+
+      }
+    );
+
+  }
+
+  else {
+
+    await addView(
+      card
+    );
+
+  }
+
+}
+
+
+/* =====================================================
+   LOAD ALL CONTENT
+===================================================== */
+
+async function loadContent() {
+
+  const booksTrack =
+    document.getElementById(
+      "booksTrack"
+    );
+
+
+  const videosTrack =
+    document.getElementById(
+      "videosTrack"
+    );
+
+
+  const shortsTrack =
+    document.getElementById(
+      "shortsTrack"
+    );
+
+
+  try {
+
+    const [
+      booksData,
+      videosData,
+      shortsData
+    ] =
+      await Promise.all([
+
+        loadJSON(
+          "books.json"
+        ),
+
+        loadJSON(
+          "videos.json"
+        ),
+
+        loadJSON(
+          "shorts.json"
+        )
+
+      ]);
+
+
+    const books =
+      arrayData(
+        booksData
+      );
+
+
+    const videos =
+      arrayData(
+        videosData
+      );
+
+
+    const shorts =
+      arrayData(
+        shortsData
+      );
+
+
+    /* BOOKS */
+
+    booksTrack.innerHTML =
+      books
+        .map(
+          bookCard
+        )
+        .join("");
+
+
+    /* VIDEOS */
+
+    videosTrack.innerHTML =
+      videos
+        .map(
+          (item,index) =>
+            mediaCard(
+              item,
+              index,
+              "videos"
+            )
+        )
+        .join("");
+
+
+    /* SHORTS */
+
+    shortsTrack.innerHTML =
+      shorts
+        .map(
+          (item,index) =>
+            mediaCard(
+              item,
+              index,
+              "shorts"
+            )
+        )
+        .join("");
+
+
+    document
+      .querySelectorAll(
+        ".content-card"
+      )
+      .forEach(
+        setupCard
+      );
+
+
+    startAutoSliders();
+
+  }
+
+  catch(error) {
+
+    console.error(
+      "Content error:",
+      error
+    );
+
+
+    const message = `
+
+      <div class="loading">
+
+        Content load nahi hua.
+
+        <br><br>
+
+        ${escapeHTML(error.message)}
+
+        <br><br>
+
+        JSON files check karo.
+
+      </div>
+
+    `;
+
+
+    booksTrack.innerHTML =
+      message;
+
+
+    videosTrack.innerHTML =
+      message;
+
+
+    shortsTrack.innerHTML =
+      message;
+
+  }
+
+}
+
+
+/* =====================================================
+   AUTO SLIDER
+===================================================== */
+
+function startAutoSliders() {
+
+  const viewports =
+    document.querySelectorAll(
+      ".slider-viewport"
+    );
+
+
+  viewports.forEach(
+    viewport => {
+
+      let paused =
+        false;
+
+
+      const track =
+        viewport.querySelector(
+          ".slider-track"
+        );
+
+
+      if (!track) {
+
+        return;
+
+      }
+
+
+      function cardWidth() {
+
+        const card =
+          track.querySelector(
+            ".content-card"
+          );
+
+
+        if (!card) {
+
+          return 320;
+
+        }
+
+
+        const style =
+          getComputedStyle(
+            track
+          );
+
+
+        const gap =
+          parseFloat(
+            style.gap
+          ) || 18;
+
+
+        return (
+          card.offsetWidth +
+          gap
+        );
+
+      }
+
+
+      function move() {
+
+        if (paused) {
+
+          return;
+
+        }
+
+
+        const max =
+          viewport.scrollWidth -
+          viewport.clientWidth;
+
+
+        if (
+          viewport.scrollLeft >=
+          max - 5
+        ) {
+
+          /*
+            Important:
+
+            1 2 3 4 5
+            ↓
+            1 2 3 4 5
+            ↓
+            cycle again
+
+          */
+
+          viewport.scrollTo({
+
+            left: 0,
+
+            behavior: "smooth"
+
+          });
+
+        }
+
+        else {
+
+          viewport.scrollBy({
+
+            left:
+              cardWidth(),
+
+            behavior:
+              "smooth"
+
+          });
+
+        }
+
+      }
+
+
+      setInterval(
+        move,
+        4500
+      );
 
 
       viewport.addEventListener(
         "mouseenter",
-        () => clearInterval(timer)
+        () => {
+          paused = true;
+        }
       );
 
-    });
+
+      viewport.addEventListener(
+        "mouseleave",
+        () => {
+          paused = false;
+        }
+      );
+
+
+      viewport.addEventListener(
+        "touchstart",
+        () => {
+          paused = true;
+        },
+        {
+          passive: true
+        }
+      );
+
+
+      viewport.addEventListener(
+        "touchend",
+        () => {
+
+          setTimeout(
+            () => {
+              paused = false;
+            },
+            1500
+          );
+
+        },
+        {
+          passive: true
+        }
+      );
+
+    }
+  );
 
 }
 
 
-/* MANUAL ARROWS */
+/* =====================================================
+   ARROWS
+===================================================== */
 
-document
-  .querySelectorAll(".arrow")
-  .forEach(button => {
+function setupArrows() {
 
-    button.onclick = () => {
+  document
+    .querySelectorAll(
+      ".slider-btn"
+    )
+    .forEach(
+      button => {
 
-      const viewport =
-        document.getElementById(
-          button.dataset.track
-        ).parentElement;
+        button.addEventListener(
+          "click",
+          () => {
+
+            const target =
+              document.getElementById(
+                button.dataset.target
+              );
 
 
-      const card =
-        viewport.querySelector(
-          ".card"
+            if (!target) {
+
+              return;
+
+            }
+
+
+            const card =
+              target.querySelector(
+                ".content-card"
+              );
+
+
+            if (!card) {
+
+              return;
+
+            }
+
+
+            const gap =
+              18;
+
+
+            const amount =
+              card.offsetWidth +
+              gap;
+
+
+            if (
+              button.classList.contains(
+                "next-btn"
+              )
+            ) {
+
+              const max =
+                target.scrollWidth -
+                target.clientWidth;
+
+
+              if (
+                target.scrollLeft >=
+                max - 5
+              ) {
+
+                target.scrollTo({
+
+                  left: 0,
+
+                  behavior: "smooth"
+
+                });
+
+              }
+
+              else {
+
+                target.scrollBy({
+
+                  left: amount,
+
+                  behavior: "smooth"
+
+                });
+
+              }
+
+            }
+
+            else {
+
+              if (
+                target.scrollLeft <= 5
+              ) {
+
+                target.scrollTo({
+
+                  left:
+                    target.scrollWidth,
+
+                  behavior:
+                    "smooth"
+
+                });
+
+              }
+
+              else {
+
+                target.scrollBy({
+
+                  left:
+                    -amount,
+
+                  behavior:
+                    "smooth"
+
+                });
+
+              }
+
+            }
+
+          }
         );
 
+      }
+    );
 
-      if (!card) return;
-
-
-      const distance =
-        card.getBoundingClientRect()
-          .width + 18;
+}
 
 
-      viewport.scrollBy({
+/* =====================================================
+   MENU
+===================================================== */
 
-        left:
-          distance *
-          Number(
-            button.dataset.dir
-          ),
+function setupMenu() {
 
-        behavior: "smooth"
-
-      });
-
-    };
-
-  });
+  const menu =
+    document.getElementById(
+      "menuBtn"
+    );
 
 
-/* =========================
+  const nav =
+    document.getElementById(
+      "mainNav"
+    );
+
+
+  if (!menu || !nav) {
+
+    return;
+
+  }
+
+
+  menu.addEventListener(
+    "click",
+    () => {
+
+      nav.classList.toggle(
+        "open"
+      );
+
+    }
+  );
+
+
+  nav
+    .querySelectorAll(
+      "a"
+    )
+    .forEach(
+      link => {
+
+        link.addEventListener(
+          "click",
+          () => {
+
+            nav.classList.remove(
+              "open"
+            );
+
+          }
+        );
+
+      }
+    );
+
+}
+
+
+/* =====================================================
    VISITOR COUNTER
-========================= */
+===================================================== */
 
 async function visitorCounter() {
 
+  const element =
+    document.getElementById(
+      "visitorCount"
+    );
+
+
+  if (!element) {
+
+    return;
+
+  }
+
+
+  const reference =
+    doc(
+      db,
+      "siteStats",
+      "visitors"
+    );
+
+
   try {
-
-    const reference =
-      doc(
-        db,
-        "siteStats",
-        "visitors"
-      );
-
 
     if (
       !sessionStorage.getItem(
@@ -974,9 +1881,12 @@ async function visitorCounter() {
             );
 
 
-          const current =
+          const oldCount =
             snapshot.exists()
-              ? snapshot.data().count || 0
+              ? Number(
+                  snapshot.data()
+                    .count || 0
+                )
               : 0;
 
 
@@ -985,7 +1895,8 @@ async function visitorCounter() {
             reference,
 
             {
-              count: current + 1
+              count:
+                oldCount + 1
             },
 
             {
@@ -1000,7 +1911,7 @@ async function visitorCounter() {
 
       sessionStorage.setItem(
         "bazamVisitor",
-        "1"
+        "true"
       );
 
     }
@@ -1012,133 +1923,149 @@ async function visitorCounter() {
       );
 
 
-    document.getElementById(
-      "visitorCount"
-    ).textContent =
-      (
-        snapshot.data()?.count || 0
-      ).toLocaleString();
+    const count =
+      snapshot.exists()
+        ? Number(
+            snapshot.data()
+              .count || 0
+          )
+        : 0;
+
+
+    element.textContent =
+      count.toLocaleString();
 
   }
 
-  catch (error) {
+  catch(error) {
 
     console.error(
-      "Visitor counter error:",
+      "Visitor error:",
       error
     );
+
+
+    element.textContent =
+      "0";
 
   }
 
 }
 
 
-/* =========================
-   AUTH
-========================= */
+/* =====================================================
+   ACTION EVENTS
+===================================================== */
 
-onAuthStateChanged(
-  auth,
-  currentUser => {
+document.addEventListener(
+  "click",
+  event => {
 
-    user =
-      currentUser;
+    const button =
+      event.target.closest(
+        "[data-action]"
+      );
+
+
+    if (!button) {
+
+      return;
+
+    }
+
+
+    const action =
+      button.dataset.action;
+
+
+    if (
+      action === "like"
+    ) {
+
+      toggleLike(
+        button
+      );
+
+    }
+
+
+    else if (
+      action === "comment"
+    ) {
+
+      openComment(
+        button
+      );
+
+    }
+
+
+    else if (
+      action === "post-comment"
+    ) {
+
+      postComment(
+        button
+      );
+
+    }
+
+
+    else if (
+      action === "share"
+    ) {
+
+      shareCard(
+        button
+      );
+
+    }
 
   }
 );
 
 
-/* =========================
-   LOAD EVERYTHING
-========================= */
+/* =====================================================
+   TOUCH GOLDEN GLOW
+===================================================== */
 
-(async () => {
+document.addEventListener(
+  "pointermove",
+  event => {
 
-  try {
-
-    const [
-      books,
-      videos,
-      shorts
-    ] = await Promise.all([
-
-      loadJSON(
-        "data/books.json"
-      ),
-
-      loadJSON(
-        "data/videos.json"
-      ),
-
-      loadJSON(
-        "data/shorts.json"
-      )
-
-    ]);
+    document.body.style.setProperty(
+      "--mouse-x",
+      `${event.clientX}px`
+    );
 
 
-    document.getElementById(
-      "booksTrack"
-    ).innerHTML =
-      getItems(books)
-        .map(bookCard)
-        .join("");
+    document.body.style.setProperty(
+      "--mouse-y",
+      `${event.clientY}px`
+    );
+
+  },
+  {
+    passive: true
+  }
+);
 
 
-    document.getElementById(
-      "videosTrack"
-    ).innerHTML =
-      getItems(videos)
-        .map(
-          (item, index) =>
-            mediaCard(
-              item,
-              index,
-              "videos"
-            )
-        )
-        .join("");
+/* =====================================================
+   START
+===================================================== */
 
+document.addEventListener(
+  "DOMContentLoaded",
+  () => {
 
-    document.getElementById(
-      "shortsTrack"
-    ).innerHTML =
-      getItems(shorts)
-        .map(
-          (item, index) =>
-            mediaCard(
-              item,
-              index,
-              "shorts"
-            )
-        )
-        .join("");
+    setupMenu();
 
-
-    document
-      .querySelectorAll(".card")
-      .forEach(
-        hydrateCard
-      );
-
-
-    startSliders();
+    setupArrows();
 
     visitorCounter();
 
-  }
-
-  catch (error) {
-
-    console.error(
-      error
-    );
-
-
-    alert(
-      "Content load nahi ho saka. JSON aur file paths check karo."
-    );
+    loadContent();
 
   }
-
-})();
+);
