@@ -1,789 +1,88 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-
-  <meta charset="UTF-8">
-
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
-
-  <title>
-    Bazam-E-Saim | Official Website
-  </title>
-
-  <meta
-    name="description"
-    content="Bazam-E-Saim - Official Website of Hazrat Allama Saim Chishti"
-  >
-
-  <link
-    rel="icon"
-    type="image/png"
-    href="logo.png"
-  >
-
-  <link
-    rel="stylesheet"
-    href="style.css"
-  >
-
-</head>
-
-
-<body>
-
-
-<!-- =====================================================
-     GOLDEN GLOW
-===================================================== -->
-
-<div class="bg-glow glow-one"></div>
-<div class="bg-glow glow-two"></div>
-<div class="bg-glow glow-three"></div>
-
-
-<!-- =====================================================
-     NAVBAR
-===================================================== -->
-
-<header class="navbar">
-
-  <a
-    href="#home"
-    class="logo-area"
-  >
-
-    <img
-      src="logo.png"
-      alt="Bazam-E-Saim Logo"
-    >
-
-    <div>
-
-      <strong>
-        Bazam-E-Saim
-      </strong>
-
-      <span>
-        بزمِ صائم
-      </span>
-
-    </div>
-
-  </a>
-
-
-  <button
-    id="menuBtn"
-    class="menu-btn"
-    type="button"
-  >
-    ☰
-  </button>
-
-
-  <nav id="mainNav">
-
-    <a href="#home">
-      Home
-    </a>
-
-    <a href="#books">
-      Books
-    </a>
-
-    <a href="#videos">
-      Videos
-    </a>
-
-    <a href="#shorts">
-      Shorts
-    </a>
-
-    <a
-      href="https://hassanbhai5559-lgtm.github.io/chishti-library/"
-      target="_blank"
-    >
-      Chishti Library
-    </a>
-
-    <a
-      href="login.html"
-      class="login-link"
-    >
-      Sign In
-    </a>
-
-    <a
-      href="admin.html"
-      class="admin-link"
-    >
-      Admin
-    </a>
-
-  </nav>
-
-</header>
-
-
-<!-- =====================================================
-     HOME
-===================================================== -->
-
-<main>
-
-
-<section
-  id="home"
-  class="hero"
->
-
-  <div class="hero-inner">
-
-    <img
-      src="logo.png"
-      alt="Bazam-E-Saim"
-      class="hero-logo"
-    >
-
-
-    <div class="small-title">
-      OFFICIAL WEBSITE
-    </div>
-
-
-    <h1>
-      Bazam-E-Saim
-    </h1>
-
-
-    <h2>
-      بزمِ صائم
-    </h2>
-
-
-    <p>
-      Welcome to Bazam e Saim
-    </p>
-
-
-    <p class="urdu">
-      بزمِ صائم کی جانب سے آپ کو خوش آمدید
-    </p>
-
-
-    <div class="hero-buttons">
-
-      <a
-        href="#books"
-        class="gold-btn"
-      >
-        Explore Books
-      </a>
-
-
-      <a
-        href="#videos"
-        class="outline-btn"
-      >
-        Watch Videos
-      </a>
-
-    </div>
-
-
-    <div class="visitor-box">
-
-      <span>
-        👁 Visitors
-      </span>
-
-      <strong id="visitorCount">
-        0
-      </strong>
-
-    </div>
-
-  </div>
-
-</section>
-
-
-<!-- =====================================================
-     BOOKS
-===================================================== -->
-
-<section
-  id="books"
-  class="content-section"
->
-
+<!-- BOOKS -->
+<section id="books" class="content-section">
   <div class="section-heading">
-
-    <span>
-      BOOK LIBRARY
-    </span>
-
-    <h2>
-      Books
-    </h2>
-
-    <p class="urdu">
-      کتب
-    </p>
-
-    <p>
-      Explore books by Hazrat Allama Saim Chishti.
-    </p>
-
+    <span>BOOK LIBRARY</span>
+    <h2>Books</h2>
+    <p class="urdu">کتب</p>
+    <p>Explore books by Hazrat Allama Saim Chishti.</p>
   </div>
-
 
   <div class="slider-wrapper">
+    <button class="slider-btn prev-btn"
+            data-target="booksViewport"
+            type="button">‹</button>
 
-    <button
-      class="slider-btn prev-btn"
-      data-target="booksViewport"
-      type="button"
-    >
-      ‹
-    </button>
-
-
-    <div
-      id="booksViewport"
-      class="slider-viewport"
-    >
-
-      <div
-        id="booksTrack"
-        class="slider-track"
-      >
-
-        <div class="loading">
-          Loading Books...
-        </div>
-
+    <div id="booksViewport" class="slider-viewport">
+      <div id="booksTrack" class="slider-track">
+        <div class="loading">Loading Books...</div>
       </div>
-
     </div>
 
-
-    <button
-      class="slider-btn next-btn"
-      data-target="booksViewport"
-      type="button"
-    >
-      ›
-    </button>
-
+    <button class="slider-btn next-btn"
+            data-target="booksViewport"
+            type="button">›</button>
   </div>
-
 
   <div class="library-more">
-
     <a
       href="https://hassanbhai5559-lgtm.github.io/chishti-library/"
       target="_blank"
-      class="gold-btn"
-    >
+      class="gold-btn">
       Open Chishti Library
     </a>
-
   </div>
-
 </section>
 
 
-<!-- =====================================================
-     VIDEOS
-===================================================== -->
-
-<section
-  id="videos"
-  class="content-section dark-section"
->
-
+<!-- VIDEOS -->
+<section id="videos" class="content-section dark-section">
   <div class="section-heading">
-
-    <span>
-      VIDEO COLLECTION
-    </span>
-
-    <h2>
-      Videos
-    </h2>
-
-    <p class="urdu">
-      ویڈیوز
-    </p>
-
-    <p>
-      Watch complete videos and beautiful Islamic content.
-    </p>
-
+    <span>VIDEO COLLECTION</span>
+    <h2>Videos</h2>
+    <p class="urdu">ویڈیوز</p>
+    <p>Watch complete videos and beautiful Islamic content.</p>
   </div>
-
 
   <div class="slider-wrapper">
+    <button class="slider-btn prev-btn"
+            data-target="videosViewport"
+            type="button">‹</button>
 
-    <button
-      class="slider-btn prev-btn"
-      data-target="videosViewport"
-      type="button"
-    >
-      ‹
-    </button>
-
-
-    <div
-      id="videosViewport"
-      class="slider-viewport"
-    >
-
-      <div
-        id="videosTrack"
-        class="slider-track"
-      >
-
-        <div class="loading">
-          Loading Videos...
-        </div>
-
+    <div id="videosViewport" class="slider-viewport">
+      <div id="videosTrack" class="slider-track">
+        <div class="loading">Loading Videos...</div>
       </div>
-
     </div>
 
-
-    <button
-      class="slider-btn next-btn"
-      data-target="videosViewport"
-      type="button"
-    >
-      ›
-    </button>
-
+    <button class="slider-btn next-btn"
+            data-target="videosViewport"
+            type="button">›</button>
   </div>
-
 </section>
 
 
-<!-- =====================================================
-     SHORTS
-===================================================== -->
-
-<section
-  id="shorts"
-  class="content-section"
->
-
+<!-- SHORTS -->
+<section id="shorts" class="content-section">
   <div class="section-heading">
-
-    <span>
-      SHORTS COLLECTION
-    </span>
-
-    <h2>
-      Shorts
-    </h2>
-
-    <p class="urdu">
-      شارٹس
-    </p>
-
-    <p>
-      Watch short clips from Bazam-E-Saim.
-    </p>
-
+    <span>SHORTS COLLECTION</span>
+    <h2>Shorts</h2>
+    <p class="urdu">شارٹس</p>
+    <p>Watch short clips from Bazam-E-Saim.</p>
   </div>
-
 
   <div class="slider-wrapper">
+    <button class="slider-btn prev-btn"
+            data-target="shortsViewport"
+            type="button">‹</button>
 
-    <button
-      class="slider-btn prev-btn"
-      data-target="shortsViewport"
-      type="button"
-    >
-      ‹
-    </button>
-
-
-    <div
-      id="shortsViewport"
-      class="slider-viewport"
-    >
-
-      <div
-        id="shortsTrack"
-        class="slider-track"
-      >
-
-        <div class="loading">
-          Loading Shorts...
-        </div>
-
+    <div id="shortsViewport" class="slider-viewport">
+      <div id="shortsTrack" class="slider-track">
+        <div class="loading">Loading Shorts...</div>
       </div>
-
     </div>
 
-
-    <button
-      class="slider-btn next-btn"
-      data-target="shortsViewport"
-      type="button"
-    >
-      ›
-    </button>
-
+    <button class="slider-btn next-btn"
+            data-target="shortsViewport"
+            type="button">›</button>
   </div>
-
 </section>
-
-
-<!-- =====================================================
-     SOCIAL LINKS
-===================================================== -->
-
-<section
-  class="content-section dark-section"
->
-
-  <div class="section-heading">
-
-    <span>
-      CONNECT WITH US
-    </span>
-
-    <h2>
-      Social Links
-    </h2>
-
-    <p class="urdu">
-      ہمارے سوشل میڈیا لنکس
-    </p>
-
-  </div>
-
-
-  <div class="social-grid">
-
-
-    <a
-      href="https://web.facebook.com/Bazm.Saim"
-      target="_blank"
-      class="social-card"
-    >
-
-      <div class="social-icon">
-        f
-      </div>
-
-      <strong>
-        Facebook
-      </strong>
-
-      <span>
-        Bazm.Saim
-      </span>
-
-    </a>
-
-
-    <a
-      href="https://www.youtube.com/@Saimtv5"
-      target="_blank"
-      class="social-card"
-    >
-
-      <div class="social-icon">
-        ▶
-      </div>
-
-      <strong>
-        YouTube
-      </strong>
-
-      <span>
-        @Saimtv5
-      </span>
-
-    </a>
-
-
-    <a
-      href="https://www.tiktok.com/@saimtv5"
-      target="_blank"
-      class="social-card"
-    >
-
-      <div class="social-icon">
-        ♪
-      </div>
-
-      <strong>
-        TikTok
-      </strong>
-
-      <span>
-        @saimtv5
-      </span>
-
-    </a>
-
-
-    <a
-      href="https://facebook.com/saimchishtiofficial"
-      target="_blank"
-      class="social-card"
-    >
-
-      <div class="social-icon">
-        f
-      </div>
-
-      <strong>
-        Facebook Official
-      </strong>
-
-      <span>
-        Saim Chishti Official
-      </span>
-
-    </a>
-
-
-    <a
-      href="https://facebook.com/profile.php?id=100063724950961"
-      target="_blank"
-      class="social-card"
-    >
-
-      <div class="social-icon">
-        f
-      </div>
-
-      <strong>
-        Facebook Profile
-      </strong>
-
-      <span>
-        Official Profile
-      </span>
-
-    </a>
-
-
-    <a
-      href="https://web.facebook.com/share/r/1J4ao7KGEY/"
-      target="_blank"
-      class="social-card"
-    >
-
-      <div class="social-icon">
-        ↗
-      </div>
-
-      <strong>
-        Facebook Video
-      </strong>
-
-      <span>
-        Watch & Share
-      </span>
-
-    </a>
-
-
-  </div>
-
-</section>
-
-
-<!-- =====================================================
-     ABOUT
-===================================================== -->
-
-<section class="about-section">
-
-  <div class="about-box">
-
-    <h2>
-      Bazam-E-Saim
-    </h2>
-
-    <h3>
-      بزمِ صائم
-    </h3>
-
-    <p>
-      A dedicated platform for books, videos,
-      shorts and Islamic content by
-      Hazrat Allama Saim Chishti.
-    </p>
-
-    <p class="urdu">
-      حضرت علامہ صائم چشتی کی کتب،
-      ویڈیوز، شارٹس اور اسلامی مواد کے لیے
-      ایک خصوصی پلیٹ فارم۔
-    </p>
-
-  </div>
-
-</section>
-
-
-</main>
-
-
-<!-- =====================================================
-     WHATSAPP
-===================================================== -->
-
-<a
-  href="https://wa.me/923067813783"
-  target="_blank"
-  class="whatsapp-button"
-  aria-label="WhatsApp"
->
-
-  <span>
-    ☎
-  </span>
-
-</a>
-
-
-<!-- =====================================================
-     FOOTER
-===================================================== -->
-
-<footer>
-
-  <div class="footer-main">
-
-    <img
-      src="logo.png"
-      alt="Bazam-E-Saim Logo"
-    >
-
-    <div>
-
-      <h3>
-        Bazam-E-Saim
-      </h3>
-
-      <p>
-        Official Website
-      </p>
-
-      <p class="urdu">
-        بزمِ صائم
-      </p>
-
-    </div>
-
-  </div>
-
-
-  <div class="footer-links">
-
-    <h4>
-      WEBSITE
-    </h4>
-
-    <a href="#home">
-      Home
-    </a>
-
-    <a href="#books">
-      Books
-    </a>
-
-    <a href="#videos">
-      Videos
-    </a>
-
-    <a href="#shorts">
-      Shorts
-    </a>
-
-    <a href="login.html">
-      Sign In
-    </a>
-
-    <a href="admin.html">
-      Admin
-    </a>
-
-  </div>
-
-
-  <div class="footer-links">
-
-    <h4>
-      SOCIAL
-    </h4>
-
-    <a
-      href="https://web.facebook.com/Bazm.Saim"
-      target="_blank"
-    >
-      Facebook
-    </a>
-
-    <a
-      href="https://www.youtube.com/@Saimtv5"
-      target="_blank"
-    >
-      YouTube
-    </a>
-
-    <a
-      href="https://www.tiktok.com/@saimtv5"
-      target="_blank"
-    >
-      TikTok
-    </a>
-
-  </div>
-
-
-  <div class="footer-links">
-
-    <h4>
-      LIBRARY
-    </h4>
-
-    <a
-      href="https://hassanbhai5559-lgtm.github.io/chishti-library/"
-      target="_blank"
-    >
-      Chishti Library
-    </a>
-
-  </div>
-
-
-  <div class="footer-bottom">
-
-    © 2026 Bazam-E-Saim.
-    All Rights Reserved.
-
-  </div>
-
-</footer>
-
-
-<script
-  type="module"
-  src="script.js"
-></script>
-
-
-</body>
-
-</html>
