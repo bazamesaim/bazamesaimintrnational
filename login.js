@@ -1,630 +1,392 @@
-// ============================================================
-// BAZAM-E-SAIM - LOGIN.JS
+// ============================================
+// BAZAM-E-SAIM - LOGIN SYSTEM
 // Firebase Authentication
-// ============================================================
+// Email/Password + Google Sign In
+// ============================================
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
 
 import {
-    initializeApp
-} from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
+  getAuth,
+  signInWithEmailAndPassword,
+  GoogleAuthProvider,
+  signInWithPopup,
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
 
 import {
-    getAuth,
-    signInWithEmailAndPassword,
-    GoogleAuthProvider,
-    signInWithPopup,
-    onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
+  getFirestore,
+  doc,
+  setDoc,
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
 
 
-// ============================================================
+// ============================================
 // FIREBASE CONFIG
-// ============================================================
+// ============================================
 
 const firebaseConfig = {
-    apiKey: "YOUR_FIREBASE_API_KEY",
-    authDomain: "bazamesaiminternational.firebaseapp.com",
-    projectId: "bazamesaiminternational",
-    storageBucket: "bazamesaiminternational.firebasestorage.app",
-    messagingSenderId: "879282438130",
-    appId: "YOUR_FIREBASE_APP_ID",
-    measurementId: "G-S79YY7WPWX"
+  apiKey: "AIzaSyBFzwp8jL3J1oUxAeDDq23T2CmydtgTa1k",
+  authDomain: "bazamesaiminternational.firebaseapp.com",
+  projectId: "bazamesaiminternational",
+  storageBucket: "bazamesaiminternational.firebasestorage.app",
+  messagingSenderId: "879282438130",
+  appId: "1:879282438130:web:a285d48f427e6659e3f56b",
+  measurementId: "G-S79YY7WPWX"
 };
 
 
-// ============================================================
+// ============================================
 // INITIALIZE FIREBASE
-// ============================================================
+// ============================================
 
-let app;
-let auth;
+const app = initializeApp(firebaseConfig);
 
-try {
+const auth = getAuth(app);
 
-    app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
-    auth = getAuth(app);
+const googleProvider = new GoogleAuthProvider();
 
-    console.log(
-        "Bazam-E-Saim Firebase connected to:",
-        firebaseConfig.projectId
-    );
-
-} catch (error) {
-
-    console.error(
-        "Firebase initialization error:",
-        error
-    );
-
-}
+googleProvider.setCustomParameters({
+  prompt: "select_account"
+});
 
 
-// ============================================================
+// ============================================
 // GET HTML ELEMENTS
-// ============================================================
+// ============================================
 
-const loginForm =
-    document.getElementById("login-form");
+const loginForm = document.getElementById("login-form");
 
-const emailInput =
-    document.getElementById("login-email");
+const emailInput = document.getElementById("email");
 
-const passwordInput =
-    document.getElementById("login-password");
+const passwordInput = document.getElementById("password");
 
-const loginButton =
-    document.getElementById("login-btn");
+const googleButton = document.getElementById("google-login");
 
-const googleButton =
-    document.getElementById("google-login-btn");
+const messageBox = document.getElementById("login-message");
 
-const messageBox =
-    document.getElementById("login-message");
+const loginButton = document.getElementById("login-button");
 
 
-// ============================================================
-// CHECK ELEMENTS
-// ============================================================
-
-if (!loginForm) {
-    console.error("login-form not found.");
-}
-
-if (!emailInput) {
-    console.error("login-email not found.");
-}
-
-if (!passwordInput) {
-    console.error("login-password not found.");
-}
-
-if (!loginButton) {
-    console.error("login-btn not found.");
-}
-
-if (!googleButton) {
-    console.error("google-login-btn not found.");
-}
-
-if (!messageBox) {
-    console.error("login-message not found.");
-}
-
-
-// ============================================================
+// ============================================
 // SHOW MESSAGE
-// ============================================================
+// ============================================
 
-function showMessage(
-    message,
-    type = "error"
-) {
+function showMessage(message, type = "error") {
 
-    if (!messageBox) return;
+  if (!messageBox) {
+    alert(message);
+    return;
+  }
 
-    messageBox.textContent = message;
+  messageBox.textContent = message;
 
-    messageBox.className =
-        "status-message show " + type;
+  messageBox.style.display = "block";
 
+  if (type === "success") {
+    messageBox.style.color = "#f4d35e";
+    messageBox.style.borderColor = "#d4af37";
+    messageBox.style.background = "rgba(212,175,55,0.08)";
+  } else {
+    messageBox.style.color = "#ff8f8f";
+    messageBox.style.borderColor = "#8b2222";
+    messageBox.style.background = "rgba(120,0,0,0.12)";
+  }
 }
 
 
-// ============================================================
+// ============================================
 // HIDE MESSAGE
-// ============================================================
+// ============================================
 
 function hideMessage() {
 
-    if (!messageBox) return;
+  if (!messageBox) return;
 
-    messageBox.textContent = "";
-
-    messageBox.className =
-        "status-message";
-
+  messageBox.style.display = "none";
+  messageBox.textContent = "";
 }
 
 
-// ============================================================
-// BUTTON LOADING
-// ============================================================
+// ============================================
+// SAVE USER TO FIRESTORE
+// ============================================
 
-function setLoading(
-    loading
-) {
+async function saveUser(user) {
 
-    if (loginButton) {
+  try {
 
-        loginButton.disabled =
-            loading;
+    await setDoc(
+      doc(db, "users", user.uid),
+      {
+        uid: user.uid,
+        name: user.displayName || "",
+        email: user.email || "",
+        photoURL: user.photoURL || "",
+        lastLogin: serverTimestamp()
+      },
+      {
+        merge: true
+      }
+    );
 
-        loginButton.textContent =
-            loading
-                ? "Signing In..."
-                : "Sign In";
+    console.log("User saved:", user.uid);
 
-    }
+  } catch (error) {
 
-    if (googleButton) {
+    console.error("Could not save user:", error);
 
-        googleButton.disabled =
-            loading;
-
-        const span =
-            googleButton.querySelector("span");
-
-        if (span) {
-
-            span.textContent =
-                loading
-                    ? "Signing In..."
-                    : "Continue with Google";
-
-        }
-
-    }
-
+  }
 }
 
 
-// ============================================================
+// ============================================
 // EMAIL / PASSWORD LOGIN
-// ============================================================
+// ============================================
 
 if (loginForm) {
 
-    loginForm.addEventListener(
-        "submit",
-        async function (event) {
+  loginForm.addEventListener("submit", async function (event) {
 
-            event.preventDefault();
+    event.preventDefault();
 
-            hideMessage();
+    hideMessage();
 
-            const email =
-                emailInput.value.trim();
+    const email = emailInput?.value.trim() || "";
 
-            const password =
-                passwordInput.value;
+    const password = passwordInput?.value || "";
 
-            // ------------------------------------------------
-            // VALIDATION
-            // ------------------------------------------------
 
-            if (!email) {
+    // Validation
 
-                showMessage(
-                    "Please enter your email address."
-                );
+    if (!email) {
+      showMessage("Please enter your email address.");
+      return;
+    }
 
-                emailInput.focus();
-
-                return;
-            }
-
-
-            if (!password) {
-
-                showMessage(
-                    "Please enter your password."
-                );
-
-                passwordInput.focus();
-
-                return;
-            }
-
-
-            if (!email.includes("@")) {
-
-                showMessage(
-                    "Please enter a valid email address."
-                );
-
-                emailInput.focus();
-
-                return;
-            }
-
-
-            // ------------------------------------------------
-            // LOGIN
-            // ------------------------------------------------
-
-            try {
-
-                setLoading(true);
-
-                const userCredential =
-                    await signInWithEmailAndPassword(
-                        auth,
-                        email,
-                        password
-                    );
-
-                const user =
-                    userCredential.user;
-
-                console.log(
-                    "Email login successful:",
-                    user.email
-                );
-
-
-                showMessage(
-                    "Login successful. Opening Bazam-E-Saim...",
-                    "success"
-                );
-
-
-                // Small delay so user can see message
-                setTimeout(
-                    () => {
-
-                        window.location.href =
-                            "index.html";
-
-                    },
-                    700
-                );
-
-
-            } catch (error) {
-
-                console.error(
-                    "Email login error:",
-                    error
-                );
-
-                setLoading(false);
-
-                handleFirebaseError(
-                    error
-                );
-
-            }
-
-        }
-    );
-
-}
-
-
-// ============================================================
-// GOOGLE LOGIN
-// ============================================================
-
-if (googleButton) {
-
-    googleButton.addEventListener(
-        "click",
-        async function () {
-
-            hideMessage();
-
-            try {
-
-                setLoading(true);
-
-                const provider =
-                    new GoogleAuthProvider();
-
-
-                // Force account selection
-                provider.setCustomParameters({
-                    prompt: "select_account"
-                });
-
-
-                const result =
-                    await signInWithPopup(
-                        auth,
-                        provider
-                    );
-
-
-                const user =
-                    result.user;
-
-                console.log(
-                    "Google login successful:",
-                    user.email
-                );
-
-
-                showMessage(
-                    "Google login successful. Opening Bazam-E-Saim...",
-                    "success"
-                );
-
-
-                setTimeout(
-                    () => {
-
-                        window.location.href =
-                            "index.html";
-
-                    },
-                    700
-                );
-
-
-            } catch (error) {
-
-                console.error(
-                    "Google login error:",
-                    error
-                );
-
-                setLoading(false);
-
-                handleFirebaseError(
-                    error
-                );
-
-            }
-
-        }
-    );
-
-}
-
-
-// ============================================================
-// FIREBASE ERROR HANDLER
-// ============================================================
-
-function handleFirebaseError(
-    error
-) {
-
-    let message =
-        "Unable to sign in. Please try again.";
-
-
-    switch (error.code) {
-
-        // ---------------------------------------------
-        // EMAIL LOGIN
-        // ---------------------------------------------
-
-        case "auth/invalid-credential":
-
-            message =
-                "Email or password is incorrect.";
-
-            break;
-
-
-        case "auth/invalid-email":
-
-            message =
-                "Please enter a valid email address.";
-
-            break;
-
-
-        case "auth/user-not-found":
-
-            message =
-                "No account was found with this email.";
-
-            break;
-
-
-        case "auth/wrong-password":
-
-            message =
-                "The password is incorrect.";
-
-            break;
-
-
-        case "auth/user-disabled":
-
-            message =
-                "This account has been disabled.";
-
-            break;
-
-
-        case "auth/too-many-requests":
-
-            message =
-                "Too many login attempts. Please try again later.";
-
-            break;
-
-
-        // ---------------------------------------------
-        // GOOGLE
-        // ---------------------------------------------
-
-        case "auth/popup-closed-by-user":
-
-            message =
-                "Google login was cancelled.";
-
-            break;
-
-
-        case "auth/popup-blocked":
-
-            message =
-                "Your browser blocked the Google login popup. Please allow popups for this website.";
-
-            break;
-
-
-        case "auth/cancelled-popup-request":
-
-            message =
-                "Google login was cancelled.";
-
-            break;
-
-
-        case "auth/account-exists-with-different-credential":
-
-            message =
-                "An account already exists with this email using another sign-in method.";
-
-            break;
-
-
-        case "auth/operation-not-allowed":
-
-            message =
-                "This login method is not enabled in Firebase Authentication.";
-
-            break;
-
-
-        case "auth/network-request-failed":
-
-            message =
-                "Network error. Please check your internet connection.";
-
-            break;
-
-
-        // ---------------------------------------------
-        // DEFAULT
-        // ---------------------------------------------
-
-        default:
-
-            if (error.message) {
-
-                console.error(
-                    "Firebase message:",
-                    error.message
-                );
-
-            }
-
-            break;
-
+    if (!password) {
+      showMessage("Please enter your password.");
+      return;
     }
 
 
-    showMessage(
-        message,
-        "error"
-    );
+    try {
 
-}
+      if (loginButton) {
+        loginButton.disabled = true;
+        loginButton.textContent = "Signing In...";
+      }
 
 
-// ============================================================
-// AUTH STATE
-// ============================================================
-
-if (auth) {
-
-    onAuthStateChanged(
+      const result = await signInWithEmailAndPassword(
         auth,
-        function (user) {
+        email,
+        password
+      );
 
-            if (user) {
 
-                console.log(
-                    "Current user:",
-                    user.email
-                );
+      console.log("Signed in:", result.user.email);
 
-            } else {
+      await saveUser(result.user);
 
-                console.log(
-                    "Current user: Not logged in"
-                );
+      showMessage(
+        "Login successful. Redirecting...",
+        "success"
+      );
 
-            }
 
-        }
-    );
+      setTimeout(() => {
+
+        window.location.href = "index.html";
+
+      }, 700);
+
+
+    } catch (error) {
+
+      console.error("Login error:", error);
+
+      let message = "Unable to sign in. Please try again.";
+
+
+      switch (error.code) {
+
+        case "auth/invalid-credential":
+          message = "Invalid email or password.";
+          break;
+
+        case "auth/invalid-email":
+          message = "Please enter a valid email address.";
+          break;
+
+        case "auth/user-not-found":
+          message = "No account found with this email.";
+          break;
+
+        case "auth/wrong-password":
+          message = "Incorrect password.";
+          break;
+
+        case "auth/user-disabled":
+          message = "This account has been disabled.";
+          break;
+
+        case "auth/too-many-requests":
+          message = "Too many attempts. Please try again later.";
+          break;
+
+        case "auth/network-request-failed":
+          message = "Network error. Please check your internet.";
+          break;
+
+        default:
+          message = error.message || message;
+      }
+
+
+      showMessage(message);
+
+
+    } finally {
+
+      if (loginButton) {
+        loginButton.disabled = false;
+        loginButton.textContent = "Sign In";
+      }
+
+    }
+
+  });
 
 }
 
 
-// ============================================================
-// ENTER KEY / INPUT CLEANUP
-// ============================================================
+// ============================================
+// GOOGLE LOGIN
+// ============================================
 
-if (emailInput) {
+if (googleButton) {
 
-    emailInput.addEventListener(
-        "input",
-        function () {
+  googleButton.addEventListener("click", async function () {
 
-            if (messageBox) {
+    hideMessage();
 
-                messageBox.className =
-                    "status-message";
 
-                messageBox.textContent =
-                    "";
+    try {
 
-            }
+      googleButton.disabled = true;
+      googleButton.textContent = "Signing in with Google...";
 
-        }
-    );
+
+      const result = await signInWithPopup(
+        auth,
+        googleProvider
+      );
+
+
+      const user = result.user;
+
+
+      console.log("Google login successful:", user.email);
+
+
+      await saveUser(user);
+
+
+      showMessage(
+        "Google login successful. Redirecting...",
+        "success"
+      );
+
+
+      setTimeout(() => {
+
+        window.location.href = "index.html";
+
+      }, 700);
+
+
+    } catch (error) {
+
+      console.error("Google login error:", error);
+
+
+      let message = "Unable to sign in with Google.";
+
+
+      switch (error.code) {
+
+        case "auth/popup-closed-by-user":
+          message = "Google sign-in was cancelled.";
+          break;
+
+        case "auth/popup-blocked":
+          message = "Your browser blocked the Google sign-in popup.";
+          break;
+
+        case "auth/cancelled-popup-request":
+          message = "Google sign-in was cancelled.";
+          break;
+
+        case "auth/unauthorized-domain":
+          message =
+            "This website domain is not authorized in Firebase.";
+          break;
+
+        case "auth/operation-not-allowed":
+          message =
+            "Google Sign-In is not enabled in Firebase Authentication.";
+          break;
+
+        case "auth/network-request-failed":
+          message =
+            "Network error. Please check your internet connection.";
+          break;
+
+        default:
+          message = error.message || message;
+      }
+
+
+      showMessage(message);
+
+
+    } finally {
+
+      googleButton.disabled = false;
+      googleButton.textContent = "Continue with Google";
+
+    }
+
+  });
 
 }
 
 
-if (passwordInput) {
+// ============================================
+// CHECK CURRENT LOGIN
+// ============================================
 
-    passwordInput.addEventListener(
-        "input",
-        function () {
+onAuthStateChanged(auth, async (user) => {
 
-            if (messageBox) {
+  if (user) {
 
-                messageBox.className =
-                    "status-message";
-
-                messageBox.textContent =
-                    "";
-
-            }
-
-        }
+    console.log(
+      "Current user:",
+      user.email
     );
 
-}
+    await saveUser(user);
 
+  } else {
 
-// ============================================================
-// EXPORT AUTH
-// Useful if another module needs it
-// ============================================================
+    console.log(
+      "Current user: Not logged in"
+    );
 
-export {
-    auth
-};
+  }
 
-console.log(
-    "Bazam-E-Saim login.js loaded successfully."
-);
+});
