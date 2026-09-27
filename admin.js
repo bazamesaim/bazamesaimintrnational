@@ -1,1403 +1,1013 @@
-// ============================================================
-// BAZAM-E-SAIM ADMIN.JS
-// Firebase Admin Dashboard
-// ============================================================
+import {
+  initializeApp
+} from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
 
 import {
-    initializeApp
-} from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
+  getAuth,
+  GoogleAuthProvider,
+  signInWithPopup,
+  onAuthStateChanged,
+  signOut
+} from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
 
 import {
-    getAuth,
-    onAuthStateChanged,
-    signOut
-} from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
-
-import {
-    getFirestore,
-    collection,
-    addDoc,
-    getDocs,
-    deleteDoc,
-    doc,
-    serverTimestamp
-} from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
-
-import {
-    getStorage,
-    ref,
-    uploadBytes,
-    getDownloadURL,
-    deleteObject
-} from "https://www.gstatic.com/firebasejs/12.6.0/firebase-storage.js";
+  getFirestore,
+  collection,
+  addDoc,
+  getDocs,
+  deleteDoc,
+  doc,
+  query,
+  orderBy,
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
 
 
-// ============================================================
-// FIREBASE CONFIG
-// ============================================================
+/* =====================================================
+   FIREBASE
+===================================================== */
 
 const firebaseConfig = {
 
-    apiKey: "YOUR_FIREBASE_API_KEY",
+  apiKey:
+    "AIzaSyBFzwp8jL3J1oUxAeDDq23T2CmydtgTa1k",
 
-    authDomain:
-        "bazamesaiminternational.firebaseapp.com",
+  authDomain:
+    "bazamesaiminternational.firebaseapp.com",
 
-    projectId:
-        "bazamesaiminternational",
+  projectId:
+    "bazamesaiminternational",
 
-    storageBucket:
-        "bazamesaiminternational.firebasestorage.app",
+  storageBucket:
+    "bazamesaiminternational.firebasestorage.app",
 
-    messagingSenderId:
-        "879282438130",
+  messagingSenderId:
+    "879282438130",
 
-    appId:
-        "YOUR_FIREBASE_APP_ID",
+  appId:
+    "1:879282438130:web:a285d48f427e6659e3f56b",
 
-    measurementId:
-        "G-S79YY7WPWX"
+  measurementId:
+    "G-S79YY7WPWX"
+
 };
 
 
-// ============================================================
-// ADMIN EMAILS
-// ============================================================
-//
-// IMPORTANT:
-// Put your Firebase administrator email here.
-//
-// Example:
-// const ADMIN_EMAILS = [
-//     "your@email.com"
-// ];
-//
+const app =
+  initializeApp(
+    firebaseConfig
+  );
+
+
+const auth =
+  getAuth(app);
+
+
+const db =
+  getFirestore(app);
+
+
+const googleProvider =
+  new GoogleAuthProvider();
+
+
+/* =====================================================
+   ELEMENTS
+===================================================== */
+
+const adminLogin =
+  document.getElementById(
+    "adminLogin"
+  );
+
+
+const adminApp =
+  document.getElementById(
+    "adminApp"
+  );
+
+
+const googleButton =
+  document.getElementById(
+    "googleAdminLogin"
+  );
+
+
+const logoutButton =
+  document.getElementById(
+    "logoutButton"
+  );
+
+
+const loginMessage =
+  document.getElementById(
+    "loginMessage"
+  );
+
+
+const adminEmail =
+  document.getElementById(
+    "adminEmail"
+  );
+
+
+const contentForm =
+  document.getElementById(
+    "contentForm"
+  );
+
+
+const contentType =
+  document.getElementById(
+    "contentType"
+  );
+
+
+const contentTitle =
+  document.getElementById(
+    "contentTitle"
+  );
+
+
+const contentUrduTitle =
+  document.getElementById(
+    "contentUrduTitle"
+  );
+
+
+const contentAuthor =
+  document.getElementById(
+    "contentAuthor"
+  );
+
+
+const contentUrl =
+  document.getElementById(
+    "contentUrl"
+  );
+
+
+const contentCover =
+  document.getElementById(
+    "contentCover"
+  );
+
+
+const contentDescription =
+  document.getElementById(
+    "contentDescription"
+  );
+
+
+const contentList =
+  document.getElementById(
+    "contentList"
+  );
+
+
+const filterType =
+  document.getElementById(
+    "filterType"
+  );
+
+
+const formMessage =
+  document.getElementById(
+    "formMessage"
+  );
+
+
+const bookCount =
+  document.getElementById(
+    "bookCount"
+  );
+
+
+const videoCount =
+  document.getElementById(
+    "videoCount"
+  );
+
+
+const shortCount =
+  document.getElementById(
+    "shortCount"
+  );
+
+
+/* =====================================================
+   ADMIN EMAIL
+===================================================== */
+
+/*
+   IMPORTANT:
+
+   Yahan apna REAL Google account email
+   add karna hai.
+
+   Example:
+
+   const ADMIN_EMAILS = [
+     "yourgmail@gmail.com"
+   ];
+
+*/
 
 const ADMIN_EMAILS = [
-    "YOUR_ADMIN_EMAIL@gmail.com"
+
+  // "yourgmail@gmail.com"
+
 ];
 
 
-// ============================================================
-// INITIALIZE
-// ============================================================
+/*
+   Agar ADMIN_EMAILS empty hai to koi bhi
+   Google account admin panel open kar sakta hai.
 
-const app =
-    initializeApp(firebaseConfig);
-
-const auth =
-    getAuth(app);
-
-const db =
-    getFirestore(app);
-
-const storage =
-    getStorage(app);
+   Production mein apna email zaroor add karna.
+*/
 
 
-// ============================================================
-// ELEMENTS
-// ============================================================
-
-const loadingScreen =
-    document.getElementById(
-        "loading-screen"
-    );
-
-const accessDenied =
-    document.getElementById(
-        "access-denied"
-    );
-
-const logoutBtn =
-    document.getElementById(
-        "logout-btn"
-    );
-
-const contentForm =
-    document.getElementById(
-        "content-form"
-    );
-
-const uploadBtn =
-    document.getElementById(
-        "upload-btn"
-    );
-
-const contentType =
-    document.getElementById(
-        "content-type"
-    );
-
-const contentTitle =
-    document.getElementById(
-        "content-title"
-    );
-
-const contentTitleUrdu =
-    document.getElementById(
-        "content-title-urdu"
-    );
-
-const contentDescription =
-    document.getElementById(
-        "content-description"
-    );
-
-const contentAuthor =
-    document.getElementById(
-        "content-author"
-    );
-
-const contentFile =
-    document.getElementById(
-        "content-file"
-    );
-
-const contentCover =
-    document.getElementById(
-        "content-cover"
-    );
-
-const filterType =
-    document.getElementById(
-        "filter-type"
-    );
-
-const refreshBtn =
-    document.getElementById(
-        "refresh-btn"
-    );
-
-const itemsContainer =
-    document.getElementById(
-        "dashboard-items-container"
-    );
-
-const adminUser =
-    document.getElementById(
-        "admin-user"
-    );
-
-const messageBox =
-    document.getElementById(
-        "admin-message"
-    );
-
-
-// ============================================================
-// CONTENT CACHE
-// ============================================================
-
-let allContent = [];
-
-
-// ============================================================
-// MESSAGE
-// ============================================================
-
-function showMessage(
-    message,
-    type = "success"
+function isAdmin(
+  user
 ) {
 
-    if (!messageBox) return;
+  if (!user) {
 
-    messageBox.textContent =
-        message;
+    return false;
 
-    messageBox.className =
-        "show " + type;
-
-    setTimeout(
-        () => {
-
-            messageBox.className = "";
-
-        },
-        4000
-    );
-}
+  }
 
 
-// ============================================================
-// ADMIN CHECK
-// ============================================================
+  if (
+    ADMIN_EMAILS.length === 0
+  ) {
 
-function isAdmin(user) {
+    return true;
 
-    if (!user || !user.email) {
-        return false;
-    }
-
-    const email =
-        user.email.toLowerCase().trim();
-
-    return ADMIN_EMAILS
-        .map(
-            item =>
-                item.toLowerCase().trim()
-        )
-        .includes(email);
-}
+  }
 
 
-// ============================================================
-// AUTH STATE
-// ============================================================
-
-onAuthStateChanged(
-    auth,
-    async (user) => {
-
-        console.log(
-            "Admin auth state:",
-            user
-                ? user.email
-                : "Not logged in"
-        );
-
-
-        if (!user) {
-
-            if (loadingScreen) {
-                loadingScreen.style.display =
-                    "none";
-            }
-
-            if (accessDenied) {
-                accessDenied.style.display =
-                    "flex";
-            }
-
-            return;
-        }
-
-
-        // ----------------------------------------------------
-        // ADMIN CHECK
-        // ----------------------------------------------------
-
-        if (!isAdmin(user)) {
-
-            console.warn(
-                "Unauthorized admin attempt:",
-                user.email
-            );
-
-            if (loadingScreen) {
-                loadingScreen.style.display =
-                    "none";
-            }
-
-            if (accessDenied) {
-                accessDenied.style.display =
-                    "flex";
-            }
-
-            return;
-        }
-
-
-        // ----------------------------------------------------
-        // ADMIN ALLOWED
-        // ----------------------------------------------------
-
-        if (adminUser) {
-
-            adminUser.textContent =
-                user.email;
-
-        }
-
-
-        if (loadingScreen) {
-
-            loadingScreen.style.display =
-                "none";
-
-        }
-
-
-        try {
-
-            await loadContent();
-
-        } catch (error) {
-
-            console.error(
-                "Initial content load failed:",
-                error
-            );
-
-            showMessage(
-                "Could not load Firebase content.",
-                "error"
-            );
-
-        }
-
-    }
-);
-
-
-// ============================================================
-// LOGOUT
-// ============================================================
-
-if (logoutBtn) {
-
-    logoutBtn.addEventListener(
-        "click",
-        async () => {
-
-            try {
-
-                await signOut(auth);
-
-                window.location.href =
-                    "login.html";
-
-            } catch (error) {
-
-                console.error(
-                    "Logout error:",
-                    error
-                );
-
-                showMessage(
-                    "Logout failed.",
-                    "error"
-                );
-
-            }
-
-        }
+  return ADMIN_EMAILS
+    .map(
+      email =>
+        email.toLowerCase()
+    )
+    .includes(
+      (
+        user.email || ""
+      ).toLowerCase()
     );
 
 }
 
 
-// ============================================================
-// UPLOAD CONTENT
-// ============================================================
-
-if (contentForm) {
-
-    contentForm.addEventListener(
-        "submit",
-        async (event) => {
-
-            event.preventDefault();
-
-
-            const user =
-                auth.currentUser;
-
-
-            if (!user || !isAdmin(user)) {
-
-                showMessage(
-                    "Admin authentication required.",
-                    "error"
-                );
-
-                return;
-            }
-
-
-            const type =
-                contentType.value;
-
-            const title =
-                contentTitle.value.trim();
-
-            const titleUrdu =
-                contentTitleUrdu.value.trim();
-
-            const description =
-                contentDescription.value.trim();
-
-            const author =
-                contentAuthor.value.trim();
-
-            const mediaFile =
-                contentFile.files[0];
-
-            const coverFile =
-                contentCover.files[0];
-
-
-            // ------------------------------------------------
-            // VALIDATION
-            // ------------------------------------------------
-
-            if (!type) {
-
-                showMessage(
-                    "Please select content type.",
-                    "error"
-                );
-
-                return;
-            }
-
-
-            if (!title) {
-
-                showMessage(
-                    "Please enter a title.",
-                    "error"
-                );
-
-                return;
-            }
-
-
-            if (!mediaFile) {
-
-                showMessage(
-                    "Please select a media or PDF file.",
-                    "error"
-                );
-
-                return;
-            }
-
-
-            // ------------------------------------------------
-            // SIZE CHECK
-            // ------------------------------------------------
-
-            const maxFileSize =
-                500 * 1024 * 1024;
-
-            if (
-                mediaFile.size >
-                maxFileSize
-            ) {
-
-                showMessage(
-                    "File is larger than 500 MB.",
-                    "error"
-                );
-
-                return;
-            }
-
-
-            try {
-
-                uploadBtn.disabled =
-                    true;
-
-                uploadBtn.textContent =
-                    "Uploading...";
-
-
-                // ------------------------------------------------
-                // UNIQUE ID
-                // ------------------------------------------------
-
-                const timestamp =
-                    Date.now();
-
-
-                const safeMediaName =
-                    mediaFile.name
-                        .replace(
-                            /[^a-zA-Z0-9._-]/g,
-                            "_"
-                        );
-
-
-                const mediaPath =
-                    `admin-content/${type}/${timestamp}_${safeMediaName}`;
-
-
-                // ------------------------------------------------
-                // UPLOAD MEDIA
-                // ------------------------------------------------
-
-                const mediaRef =
-                    ref(
-                        storage,
-                        mediaPath
-                    );
-
-
-                await uploadBytes(
-                    mediaRef,
-                    mediaFile
-                );
-
-
-                const mediaURL =
-                    await getDownloadURL(
-                        mediaRef
-                    );
-
-
-                // ------------------------------------------------
-                // COVER
-                // ------------------------------------------------
-
-                let coverURL = "";
-
-                let coverPath = "";
-
-
-                if (coverFile) {
-
-                    const safeCoverName =
-                        coverFile.name
-                            .replace(
-                                /[^a-zA-Z0-9._-]/g,
-                                "_"
-                            );
-
-
-                    coverPath =
-                        `admin-content/${type}/covers/${timestamp}_${safeCoverName}`;
-
-
-                    const coverRef =
-                        ref(
-                            storage,
-                            coverPath
-                        );
-
-
-                    await uploadBytes(
-                        coverRef,
-                        coverFile
-                    );
-
-
-                    coverURL =
-                        await getDownloadURL(
-                            coverRef
-                        );
-
-                }
-
-
-                // ------------------------------------------------
-                // FIRESTORE DOCUMENT
-                // ------------------------------------------------
-
-                const contentData = {
-
-                    type: type,
-
-                    title: title,
-
-                    titleUrdu:
-                        titleUrdu,
-
-                    description:
-                        description,
-
-                    author:
-                        author ||
-                        "Hazrat Allama Saim Chishti",
-
-                    mediaURL:
-                        mediaURL,
-
-                    mediaPath:
-                        mediaPath,
-
-                    coverURL:
-                        coverURL,
-
-                    coverPath:
-                        coverPath,
-
-                    fileName:
-                        mediaFile.name,
-
-                    originalFileName:
-                        mediaFile.name,
-
-                    fileSize:
-                        mediaFile.size,
-
-                    contentType:
-                        mediaFile.type,
-
-                    likes:
-                        0,
-
-                    comments:
-                        0,
-
-                    views:
-                        0,
-
-                    createdBy:
-                        user.email,
-
-                    createdAt:
-                        serverTimestamp()
-
-                };
-
-
-                await addDoc(
-                    collection(
-                        db,
-                        "content"
-                    ),
-                    contentData
-                );
-
-
-                // ------------------------------------------------
-                // SUCCESS
-                // ------------------------------------------------
-
-                showMessage(
-                    "Content uploaded successfully.",
-                    "success"
-                );
-
-
-                contentForm.reset();
-
-
-                await loadContent();
-
-
-            } catch (error) {
-
-                console.error(
-                    "Upload error:",
-                    error
-                );
-
-
-                showMessage(
-                    getFirebaseErrorMessage(
-                        error
-                    ),
-                    "error"
-                );
-
-
-            } finally {
-
-                uploadBtn.disabled =
-                    false;
-
-                uploadBtn.textContent =
-                    "Upload to Firebase";
-
-            }
-
-        }
-    );
-
-}
-
-
-// ============================================================
-// LOAD CONTENT
-// ============================================================
-
-async function loadContent() {
-
-    if (!itemsContainer) return;
-
-
-    itemsContainer.innerHTML = `
-        <div class="empty-state">
-            Loading Firebase content...
-        </div>
-    `;
-
+/* =====================================================
+   LOGIN
+===================================================== */
+
+googleButton.addEventListener(
+  "click",
+  async () => {
 
     try {
 
-        const snapshot =
-            await getDocs(
-                collection(
-                    db,
-                    "content"
-                )
-            );
+      loginMessage.textContent =
+        "Signing in...";
 
 
-        allContent = [];
+      googleButton.disabled =
+        true;
 
 
-        snapshot.forEach(
-            documentSnapshot => {
-
-                allContent.push({
-
-                    id:
-                        documentSnapshot.id,
-
-                    ...documentSnapshot.data()
-
-                });
-
-            }
+      const result =
+        await signInWithPopup(
+          auth,
+          googleProvider
         );
 
 
-        // newest first
+      const user =
+        result.user;
 
-        allContent.sort(
-            (a, b) => {
 
-                const aTime =
-                    a.createdAt?.seconds ||
-                    0;
+      if (
+        !isAdmin(user)
+      ) {
 
-                const bTime =
-                    b.createdAt?.seconds ||
-                    0;
-
-                return bTime - aTime;
-
-            }
+        await signOut(
+          auth
         );
 
 
-        updateStats();
-
-        renderContent();
-
-
-    } catch (error) {
-
-        console.error(
-            "Load content error:",
-            error
-        );
-
-
-        itemsContainer.innerHTML = `
-            <div class="empty-state">
-                Unable to load Firebase content.
-                <br><br>
-                Check your Firestore rules.
-            </div>
-        `;
-
-
-        throw error;
-
-    }
-
-}
-
-
-// ============================================================
-// UPDATE STATS
-// ============================================================
-
-function updateStats() {
-
-    const books =
-        allContent.filter(
-            item =>
-                item.type === "books"
-        ).length;
-
-
-    const videos =
-        allContent.filter(
-            item =>
-                item.type === "videos"
-        ).length;
-
-
-    const shorts =
-        allContent.filter(
-            item =>
-                item.type === "shorts"
-        ).length;
-
-
-    const total =
-        allContent.length;
-
-
-    const statBooks =
-        document.getElementById(
-            "stat-books"
-        );
-
-    const statVideos =
-        document.getElementById(
-            "stat-videos"
-        );
-
-    const statShorts =
-        document.getElementById(
-            "stat-shorts"
-        );
-
-    const statTotal =
-        document.getElementById(
-            "stat-total"
-        );
-
-
-    if (statBooks)
-        statBooks.textContent =
-            books;
-
-    if (statVideos)
-        statVideos.textContent =
-            videos;
-
-    if (statShorts)
-        statShorts.textContent =
-            shorts;
-
-    if (statTotal)
-        statTotal.textContent =
-            total;
-
-}
-
-
-// ============================================================
-// RENDER CONTENT
-// ============================================================
-
-function renderContent() {
-
-    if (!itemsContainer) return;
-
-
-    const filter =
-        filterType
-            ? filterType.value
-            : "all";
-
-
-    const filtered =
-        filter === "all"
-            ? allContent
-            : allContent.filter(
-                item =>
-                    item.type === filter
-            );
-
-
-    if (!filtered.length) {
-
-        itemsContainer.innerHTML = `
-            <div class="empty-state">
-                No content found.
-            </div>
-        `;
+        loginMessage.textContent =
+          "This Google account is not authorized as admin.";
 
         return;
+
+      }
+
+
+      loginMessage.textContent =
+        "Login successful.";
+
     }
 
+    catch(error) {
 
-    itemsContainer.innerHTML =
-        filtered
-            .map(
-                item =>
-                    createContentHTML(
-                        item
-                    )
-            )
-            .join("");
+      console.error(
+        "Admin login error:",
+        error
+      );
 
 
-    // --------------------------------------------------------
-    // DELETE BUTTONS
-    // --------------------------------------------------------
+      loginMessage.textContent =
+        error.message ||
+        "Unable to sign in.";
 
-    document
-        .querySelectorAll(
-            ".delete-content-btn"
-        )
-        .forEach(
-            button => {
+    }
 
-                button.addEventListener(
-                    "click",
-                    async () => {
+    finally {
 
-                        const id =
-                            button.dataset.id;
+      googleButton.disabled =
+        false;
 
-                        await deleteContent(
-                            id
-                        );
+    }
 
-                    }
-                );
-
-            }
-        );
-
-}
+  }
+);
 
 
-// ============================================================
-// CONTENT HTML
-// ============================================================
+/* =====================================================
+   AUTH STATE
+===================================================== */
 
-function createContentHTML(
-    item
-) {
+onAuthStateChanged(
+  auth,
+  async user => {
 
-    const title =
-        escapeHTML(
-            item.title ||
-            "Untitled"
-        );
+    if (
+      user &&
+      isAdmin(user)
+    ) {
+
+      adminLogin.hidden =
+        true;
 
 
-    const author =
-        escapeHTML(
-            item.author ||
-            ""
-        );
+      adminApp.hidden =
+        false;
+
+
+      adminEmail.textContent =
+        user.email;
+
+
+      await loadAllContent();
+
+    }
+
+    else {
+
+      adminLogin.hidden =
+        false;
+
+
+      adminApp.hidden =
+        true;
+
+    }
+
+  }
+);
+
+
+/* =====================================================
+   LOGOUT
+===================================================== */
+
+logoutButton.addEventListener(
+  "click",
+  async () => {
+
+    try {
+
+      await signOut(
+        auth
+      );
+
+    }
+
+    catch(error) {
+
+      console.error(
+        error
+      );
+
+    }
+
+  }
+);
+
+
+/* =====================================================
+   ADD CONTENT
+===================================================== */
+
+contentForm.addEventListener(
+  "submit",
+  async event => {
+
+    event.preventDefault();
 
 
     const type =
-        escapeHTML(
-            item.type ||
-            ""
-        );
+      contentType.value;
 
 
-    const fileName =
-        escapeHTML(
-            item.fileName ||
-            ""
-        );
+    const title =
+      contentTitle.value.trim();
+
+
+    const urduTitle =
+      contentUrduTitle.value.trim();
+
+
+    const author =
+      contentAuthor.value.trim();
+
+
+    const url =
+      contentUrl.value.trim();
 
 
     const cover =
-        item.coverURL ||
-        "";
+      contentCover.value.trim();
 
 
-    const thumbnailHTML =
-        cover
-            ? `
-                <img
-                    src="${escapeAttribute(cover)}"
-                    alt="${escapeAttribute(title)}"
-                    loading="lazy"
-                >
-              `
-            : `
-                <div
-                    style="
-                        width:100%;
-                        height:100%;
-                        display:flex;
-                        align-items:center;
-                        justify-content:center;
-                        color:#d4af37;
-                        font-size:22px;
-                    "
-                >
-                    ${getTypeIcon(item.type)}
-                </div>
-              `;
+    const description =
+      contentDescription.value.trim();
 
 
-    return `
+    if (!title) {
 
-        <article
-            class="content-item"
-        >
+      formMessage.textContent =
+        "Title is required.";
 
-            <div class="content-thumb">
+      return;
 
-                ${thumbnailHTML}
-
-            </div>
-
-
-            <div class="content-info">
-
-                <h4>
-                    ${title}
-                </h4>
-
-                <p>
-                    ${author}
-                </p>
-
-                <p>
-                    ${fileName}
-                </p>
-
-                <span
-                    class="content-type"
-                >
-                    ${type}
-                </span>
-
-            </div>
-
-
-            <div class="item-actions">
-
-                <button
-                    type="button"
-                    class="small-btn delete delete-content-btn"
-                    data-id="${escapeAttribute(item.id)}"
-                >
-                    Delete
-                </button>
-
-            </div>
-
-        </article>
-
-    `;
-
-}
-
-
-// ============================================================
-// DELETE CONTENT
-// ============================================================
-
-async function deleteContent(
-    id
-) {
-
-    const item =
-        allContent.find(
-            content =>
-                content.id === id
-        );
-
-
-    if (!item) {
-
-        showMessage(
-            "Content not found.",
-            "error"
-        );
-
-        return;
-    }
-
-
-    const confirmed =
-        window.confirm(
-            `Delete "${item.title || "this content"}"?`
-        );
-
-
-    if (!confirmed) {
-        return;
     }
 
 
     try {
 
-        // ----------------------------------------------------
-        // Delete Firestore
-        // ----------------------------------------------------
-
-        await deleteDoc(
-            doc(
-                db,
-                "content",
-                id
-            )
-        );
+      formMessage.textContent =
+        "Saving...";
 
 
-        // ----------------------------------------------------
-        // Delete media file
-        // ----------------------------------------------------
-
-        if (item.mediaPath) {
-
-            try {
-
-                await deleteObject(
-                    ref(
-                        storage,
-                        item.mediaPath
-                    )
-                );
-
-            } catch (storageError) {
-
-                console.warn(
-                    "Media file delete warning:",
-                    storageError
-                );
-
-            }
-
-        }
+      const user =
+        auth.currentUser;
 
 
-        // ----------------------------------------------------
-        // Delete cover
-        // ----------------------------------------------------
+      if (!user) {
 
-        if (item.coverPath) {
+        formMessage.textContent =
+          "Please login first.";
 
-            try {
+        return;
 
-                await deleteObject(
-                    ref(
-                        storage,
-                        item.coverPath
-                    )
-                );
+      }
 
-            } catch (storageError) {
 
-                console.warn(
-                    "Cover delete warning:",
-                    storageError
-                );
+      await addDoc(
 
-            }
+        collection(
+          db,
+          type
+        ),
+
+        {
+
+          title,
+
+          urduTitle,
+
+          author,
+
+          url,
+
+          cover,
+
+          description,
+
+          type,
+
+          createdBy:
+            user.uid,
+
+          createdByEmail:
+            user.email,
+
+          createdAt:
+            serverTimestamp()
 
         }
 
-
-        showMessage(
-            "Content deleted successfully.",
-            "success"
-        );
+      );
 
 
-        await loadContent();
+      formMessage.textContent =
+        "Content added successfully.";
 
 
-    } catch (error) {
-
-        console.error(
-            "Delete error:",
-            error
-        );
+      contentForm.reset();
 
 
-        showMessage(
-            getFirebaseErrorMessage(
-                error
-            ),
-            "error"
-        );
+      contentAuthor.value =
+        "Hazrat Allama Saim Chishti";
+
+
+      await loadAllContent();
 
     }
 
-}
+    catch(error) {
+
+      console.error(
+        "Add content error:",
+        error
+      );
 
 
-// ============================================================
-// FILTER
-// ============================================================
+      formMessage.textContent =
+        error.message ||
+        "Unable to add content.";
 
-if (filterType) {
+    }
 
-    filterType.addEventListener(
-        "change",
-        renderContent
-    );
-
-}
+  }
+);
 
 
-// ============================================================
-// REFRESH
-// ============================================================
+/* =====================================================
+   LOAD COLLECTION
+===================================================== */
 
-if (refreshBtn) {
-
-    refreshBtn.addEventListener(
-        "click",
-        async () => {
-
-            try {
-
-                await loadContent();
-
-                showMessage(
-                    "Content refreshed.",
-                    "success"
-                );
-
-            } catch (error) {
-
-                console.error(
-                    error
-                );
-
-            }
-
-        }
-    );
-
-}
-
-
-// ============================================================
-// TYPE ICON
-// ============================================================
-
-function getTypeIcon(
-    type
+async function getCollection(
+  type
 ) {
 
-    if (type === "books") {
-        return "📖";
-    }
+  try {
 
-    if (type === "videos") {
-        return "▶";
-    }
+    const reference =
+      collection(
+        db,
+        type
+      );
 
-    if (type === "shorts") {
-        return "▣";
-    }
 
-    return "•";
+    const snapshot =
+      await getDocs(
+        reference
+      );
+
+
+    return snapshot.docs.map(
+      item => ({
+
+        id:
+          item.id,
+
+        ...item.data()
+
+      })
+    );
+
+  }
+
+  catch(error) {
+
+    console.error(
+      `${type} loading error:`,
+      error
+    );
+
+
+    return [];
+
+  }
 
 }
 
 
-// ============================================================
-// ESCAPE HTML
-// ============================================================
+/* =====================================================
+   LOAD ALL
+===================================================== */
+
+async function loadAllContent() {
+
+  contentList.innerHTML = `
+
+    <div class="loading">
+      Loading content...
+    </div>
+
+  `;
+
+
+  const [
+    books,
+    videos,
+    shorts
+  ] = await Promise.all([
+
+    getCollection(
+      "books"
+    ),
+
+    getCollection(
+      "videos"
+    ),
+
+    getCollection(
+      "shorts"
+    )
+
+  ]);
+
+
+  bookCount.textContent =
+    books.length;
+
+
+  videoCount.textContent =
+    videos.length;
+
+
+  shortCount.textContent =
+    shorts.length;
+
+
+  const all = [
+
+    ...books.map(
+      item => ({
+        ...item,
+        type: "books"
+      })
+    ),
+
+    ...videos.map(
+      item => ({
+        ...item,
+        type: "videos"
+      })
+    ),
+
+    ...shorts.map(
+      item => ({
+        ...item,
+        type: "shorts"
+      })
+    )
+
+  ];
+
+
+  renderContent(
+    all
+  );
+
+}
+
+
+/* =====================================================
+   RENDER
+===================================================== */
+
+function renderContent(
+  items
+) {
+
+  const filter =
+    filterType.value;
+
+
+  const filtered =
+    filter === "all"
+
+      ? items
+
+      : items.filter(
+          item =>
+            item.type === filter
+        );
+
+
+  if (
+    filtered.length === 0
+  ) {
+
+    contentList.innerHTML = `
+
+      <div class="empty">
+        No content found.
+      </div>
+
+    `;
+
+    return;
+
+  }
+
+
+  contentList.innerHTML =
+    filtered.map(
+      item =>
+        contentItemHTML(
+          item
+        )
+    ).join("");
+
+}
+
+
+/* =====================================================
+   ITEM HTML
+===================================================== */
+
+function contentItemHTML(
+  item
+) {
+
+  const title =
+    escapeHTML(
+      item.title ||
+      "Untitled"
+    );
+
+
+  const type =
+    item.type;
+
+
+  const url =
+    item.url ||
+    item.pdf ||
+    item.video ||
+    "";
+
+
+  const cover =
+    item.cover ||
+    "logo.png";
+
+
+  const safeCover =
+    escapeHTML(
+      cover
+    );
+
+
+  return `
+
+    <div
+      class="content-item"
+      data-id="${escapeHTML(item.id)}"
+      data-type="${escapeHTML(type)}"
+    >
+
+      <img
+        class="content-thumb"
+        src="${safeCover}"
+        alt=""
+        onerror="this.src='logo.png'"
+      >
+
+
+      <div class="content-info">
+
+        <h3>
+          ${title}
+        </h3>
+
+
+        <p>
+          ${escapeHTML(
+            item.author ||
+            "Hazrat Allama Saim Chishti"
+          )}
+        </p>
+
+
+        <span class="type-badge">
+
+          ${
+            type === "books"
+              ? "📚 BOOK"
+              : type === "videos"
+                ? "🎬 VIDEO"
+                : "📱 SHORT"
+          }
+
+        </span>
+
+      </div>
+
+
+      <button
+        type="button"
+        class="delete-button"
+        data-delete-id="${escapeHTML(item.id)}"
+        data-delete-type="${escapeHTML(type)}"
+      >
+        Delete
+      </button>
+
+    </div>
+
+  `;
+
+}
+
+
+/* =====================================================
+   DELETE
+===================================================== */
+
+document.addEventListener(
+  "click",
+  async event => {
+
+    const button =
+      event.target.closest(
+        "[data-delete-id]"
+      );
+
+
+    if (!button) {
+
+      return;
+
+    }
+
+
+    const id =
+      button.dataset.deleteId;
+
+
+    const type =
+      button.dataset.deleteType;
+
+
+    const confirmed =
+      confirm(
+        `Delete this ${type} permanently?`
+      );
+
+
+    if (!confirmed) {
+
+      return;
+
+    }
+
+
+    try {
+
+      button.disabled =
+        true;
+
+
+      await deleteDoc(
+
+        doc(
+          db,
+          type,
+          id
+        )
+
+      );
+
+
+      await loadAllContent();
+
+    }
+
+    catch(error) {
+
+      console.error(
+        "Delete error:",
+        error
+      );
+
+
+      alert(
+        "Unable to delete content.\n\n" +
+        error.message
+      );
+
+
+      button.disabled =
+        false;
+
+    }
+
+  }
+);
+
+
+/* =====================================================
+   FILTER
+===================================================== */
+
+filterType.addEventListener(
+  "change",
+  async () => {
+
+    const [
+      books,
+      videos,
+      shorts
+    ] = await Promise.all([
+
+      getCollection(
+        "books"
+      ),
+
+      getCollection(
+        "videos"
+      ),
+
+      getCollection(
+        "shorts"
+      )
+
+    ]);
+
+
+    const all = [
+
+      ...books.map(
+        item => ({
+          ...item,
+          type: "books"
+        })
+      ),
+
+      ...videos.map(
+        item => ({
+          ...item,
+          type: "videos"
+        })
+      ),
+
+      ...shorts.map(
+        item => ({
+          ...item,
+          type: "shorts"
+        })
+      )
+
+    ];
+
+
+    renderContent(
+      all
+    );
+
+  }
+);
+
+
+/* =====================================================
+   ESCAPE HTML
+===================================================== */
 
 function escapeHTML(
-    value
+  value
 ) {
 
-    return String(value)
-        .replace(
-            /&/g,
-            "&amp;"
-        )
-        .replace(
-            /</g,
-            "&lt;"
-        )
-        .replace(
-            />/g,
-            "&gt;"
-        )
-        .replace(
-            /"/g,
-            "&quot;"
-        )
-        .replace(
-            /'/g,
-            "&#039;"
-        );
+  return String(
+    value ?? ""
+  )
+  .replace(
+    /[&<>"']/g,
+    char => {
 
-}
+      const map = {
 
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;"
 
-// ============================================================
-// ESCAPE ATTRIBUTE
-// ============================================================
+      };
 
-function escapeAttribute(
-    value
-) {
-
-    return escapeHTML(
-        value
-    );
-
-}
-
-
-// ============================================================
-// FIREBASE ERROR
-// ============================================================
-
-function getFirebaseErrorMessage(
-    error
-) {
-
-    if (!error) {
-        return "Something went wrong.";
-    }
-
-
-    switch (error.code) {
-
-        case "permission-denied":
-
-        case "firestore/permission-denied":
-
-            return (
-                "Firebase permission denied. " +
-                "Check your Firestore rules."
-            );
-
-
-        case "storage/unauthorized":
-
-        case "storage/unauthorized":
-
-            return (
-                "Firebase Storage permission denied. " +
-                "Check your Storage rules."
-            );
-
-
-        case "storage/quota-exceeded":
-
-            return (
-                "Firebase Storage quota exceeded."
-            );
-
-
-        case "storage/unknown":
-
-            return (
-                "Firebase Storage returned an unknown error."
-            );
-
-
-        case "storage/canceled":
-
-            return (
-                "Upload was cancelled."
-            );
-
-
-        default:
-
-            return (
-                error.message ||
-                "Firebase operation failed."
-            );
+      return map[char];
 
     }
+  );
 
 }
-
-
-// ============================================================
-// STARTUP LOG
-// ============================================================
-
-console.log(
-    "Bazam-E-Saim Admin JS loaded."
-);
-
-console.log(
-    "Firebase project:",
-    firebaseConfig.projectId
-);
