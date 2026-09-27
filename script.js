@@ -1,3 +1,8 @@
+/* =====================================================
+   BAZAM-E-SAIM
+   COMPLETE SCRIPT.JS
+===================================================== */
+
 import {
   initializeApp
 } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
@@ -25,9 +30,7 @@ import {
 ===================================================== */
 
 const firebaseConfig = {
-
-  apiKey:
-    "AIzaSyBFzwp8jL3J1oUxAeDDq23T2CmydtgTa1k",
+  apiKey: "AIzaSyBFzwp8jL3J1oUxAeDDq23T2CmydtgTa1k",
 
   authDomain:
     "bazamesaiminternational.firebaseapp.com",
@@ -46,72 +49,61 @@ const firebaseConfig = {
 
   measurementId:
     "G-S79YY7WPWX"
-
 };
 
 
 /* =====================================================
-   FIREBASE START
+   FIREBASE INITIALIZE
 ===================================================== */
 
-const app =
-  initializeApp(
-    firebaseConfig
-  );
+const app = initializeApp(firebaseConfig);
 
+const auth = getAuth(app);
 
-const auth =
-  getAuth(app);
+const db = getFirestore(app);
 
-
-const db =
-  getFirestore(app);
-
-
-let currentUser =
-  null;
-
+let currentUser = null;
 
 console.log(
-  "Bazam-E-Saim Firebase connected to:",
+  "Bazam-E-Saim Firebase connected:",
   firebaseConfig.projectId
 );
 
 
 /* =====================================================
-   AUTH
+   AUTH STATE
 ===================================================== */
 
-onAuthStateChanged(
-  auth,
-  user => {
+onAuthStateChanged(auth, (user) => {
 
-    currentUser =
-      user;
+  currentUser = user;
+
+  if (user) {
 
     console.log(
-      "Current user:",
-      user
-        ? user.email
-        : "Not logged in"
+      "Logged in:",
+      user.email
+    );
+
+  } else {
+
+    console.log(
+      "User is not logged in"
     );
 
   }
-);
+
+});
 
 
 /* =====================================================
-   HELPERS
+   HTML ESCAPE
 ===================================================== */
 
 function escapeHTML(value) {
 
-  return String(
-    value ?? ""
-  )
-  .replace(
-    /[&<>"']/g,
-    char => {
+  return String(value ?? "")
+    .replace(/[&<>"']/g, (char) => {
 
       const map = {
 
@@ -125,21 +117,20 @@ function escapeHTML(value) {
 
       return map[char];
 
-    }
-  );
+    });
 
 }
 
 
-async function loadJSON(
-  file
-) {
+/* =====================================================
+   LOAD JSON
+===================================================== */
 
-  const response =
-    await fetch(
-      file + "?v=" + Date.now()
-    );
+async function loadJSON(file) {
 
+  const response = await fetch(
+    `${file}?v=${Date.now()}`
+  );
 
   if (!response.ok) {
 
@@ -149,36 +140,31 @@ async function loadJSON(
 
   }
 
-
   return await response.json();
 
 }
 
 
-function arrayData(
-  data
-) {
+/* =====================================================
+   JSON ARRAY SUPPORT
+===================================================== */
 
-  if (
-    Array.isArray(data)
-  ) {
+function arrayData(data) {
+
+  if (Array.isArray(data)) {
 
     return data;
 
   }
 
-
   if (
     data &&
-    Array.isArray(
-      data.items
-    )
+    Array.isArray(data.items)
   ) {
 
     return data.items;
 
   }
-
 
   return [];
 
@@ -186,7 +172,7 @@ function arrayData(
 
 
 /* =====================================================
-   LOGIN CHECK
+   LOGIN REQUIRED
 ===================================================== */
 
 function requireLogin() {
@@ -197,16 +183,13 @@ function requireLogin() {
 
   }
 
-
   alert(
     "Please Sign In first.\n\n" +
-    "لائک اور کمنٹ کے لیے پہلے سائن اِن کریں۔"
+    "لائک اور کمنٹ کرنے کے لیے پہلے Sign In کریں۔"
   );
-
 
   window.location.href =
     "login.html";
-
 
   return false;
 
@@ -214,33 +197,23 @@ function requireLogin() {
 
 
 /* =====================================================
-   STATS
+   FIRESTORE STATS
 ===================================================== */
 
-async function getStats(
-  type,
-  id
-) {
+async function getStats(type, id) {
 
   try {
 
-    const reference =
-      doc(
-        db,
-        "contentStats",
-        `${type}_${id}`
-      );
-
+    const reference = doc(
+      db,
+      "contentStats",
+      `${type}_${id}`
+    );
 
     const snapshot =
-      await getDoc(
-        reference
-      );
+      await getDoc(reference);
 
-
-    if (
-      !snapshot.exists()
-    ) {
+    if (!snapshot.exists()) {
 
       return {
         likes: 0,
@@ -249,34 +222,25 @@ async function getStats(
 
     }
 
-
     const data =
       snapshot.data();
-
 
     return {
 
       likes:
-        Number(
-          data.likes || 0
-        ),
+        Number(data.likes || 0),
 
       views:
-        Number(
-          data.views || 0
-        )
+        Number(data.views || 0)
 
     };
 
-  }
-
-  catch(error) {
+  } catch (error) {
 
     console.error(
       "Stats error:",
       error
     );
-
 
     return {
       likes: 0,
@@ -289,13 +253,10 @@ async function getStats(
 
 
 /* =====================================================
-   LIKE CHECK
+   CHECK USER LIKE
 ===================================================== */
 
-async function userLiked(
-  type,
-  id
-) {
+async function userLiked(type, id) {
 
   if (!currentUser) {
 
@@ -303,31 +264,23 @@ async function userLiked(
 
   }
 
-
   try {
 
-    const reference =
-      doc(
-        db,
-        "likes",
-        `${type}_${id}_${currentUser.uid}`
-      );
-
+    const reference = doc(
+      db,
+      "likes",
+      `${type}_${id}_${currentUser.uid}`
+    );
 
     const snapshot =
-      await getDoc(
-        reference
-      );
-
+      await getDoc(reference);
 
     return (
       snapshot.exists() &&
       snapshot.data().active === true
     );
 
-  }
-
-  catch {
+  } catch {
 
     return false;
 
@@ -337,51 +290,49 @@ async function userLiked(
 
 
 /* =====================================================
-   UPDATE STATS
+   UPDATE CARD STATS
 ===================================================== */
 
-async function updateStats(
-  card
-) {
+async function updateStats(card) {
+
+  if (!card) {
+
+    return;
+
+  }
 
   const type =
     card.dataset.type;
 
-
   const id =
     card.dataset.id;
 
-
   const stats =
-    await getStats(
-      type,
-      id
-    );
+    await getStats(type, id);
 
 
-  const likes =
+  const likeCount =
     card.querySelector(
       ".like-count"
     );
 
-
-  const views =
+  const viewCount =
     card.querySelector(
       ".view-count"
     );
 
 
-  if (likes) {
+  if (likeCount) {
 
-    likes.textContent =
+    likeCount.textContent =
       stats.likes;
 
   }
 
 
-  if (views) {
+  if (viewCount) {
 
-    views.textContent =
+    viewCount.textContent =
       stats.views;
 
   }
@@ -401,7 +352,6 @@ async function updateStats(
         id
       );
 
-
     likeButton.classList.toggle(
       "liked",
       liked
@@ -413,22 +363,24 @@ async function updateStats(
 
 
 /* =====================================================
-   VIEW
+   ADD VIEW
 ===================================================== */
 
-async function addView(
-  card
-) {
+async function addView(card) {
+
+  if (!card) {
+
+    return;
+
+  }
 
   const type =
     card.dataset.type;
 
-
   const id =
     card.dataset.id;
 
-
-  const key =
+  const sessionKey =
     `view_${type}_${id}`;
 
 
@@ -436,7 +388,7 @@ async function addView(
 
     if (
       !sessionStorage.getItem(
-        key
+        sessionKey
       )
     ) {
 
@@ -449,42 +401,33 @@ async function addView(
 
 
       await setDoc(
-
         reference,
-
         {
 
           type,
-
           contentId: id,
 
           views:
             increment(1)
 
         },
-
         {
           merge: true
         }
-
       );
 
 
       sessionStorage.setItem(
-        key,
+        sessionKey,
         "true"
       );
 
     }
 
 
-    await updateStats(
-      card
-    );
+    await updateStats(card);
 
-  }
-
-  catch(error) {
+  } catch (error) {
 
     console.error(
       "View error:",
@@ -497,16 +440,12 @@ async function addView(
 
 
 /* =====================================================
-   LIKE
+   LIKE / UNLIKE
 ===================================================== */
 
-async function toggleLike(
-  button
-) {
+async function toggleLike(button) {
 
-  if (
-    !requireLogin()
-  ) {
+  if (!requireLogin()) {
 
     return;
 
@@ -518,7 +457,6 @@ async function toggleLike(
       ".content-card"
     );
 
-
   if (!card) {
 
     return;
@@ -529,15 +467,13 @@ async function toggleLike(
   const type =
     card.dataset.type;
 
-
   const id =
     card.dataset.id;
 
 
   try {
 
-    button.disabled =
-      true;
+    button.disabled = true;
 
 
     const likeRef =
@@ -557,9 +493,7 @@ async function toggleLike(
 
 
     const snapshot =
-      await getDoc(
-        likeRef
-      );
+      await getDoc(likeRef);
 
 
     const liked =
@@ -570,9 +504,7 @@ async function toggleLike(
     if (liked) {
 
       await setDoc(
-
         likeRef,
-
         {
 
           uid:
@@ -590,39 +522,30 @@ async function toggleLike(
             serverTimestamp()
 
         },
-
         {
           merge: true
         }
-
       );
 
 
       await setDoc(
-
         statsRef,
-
         {
 
           likes:
             increment(-1)
 
         },
-
         {
           merge: true
         }
-
       );
 
-    }
 
-    else {
+    } else {
 
       await setDoc(
-
         likeRef,
-
         {
 
           uid:
@@ -640,58 +563,44 @@ async function toggleLike(
             serverTimestamp()
 
         },
-
         {
           merge: true
         }
-
       );
 
 
       await setDoc(
-
         statsRef,
-
         {
 
           likes:
             increment(1)
 
         },
-
         {
           merge: true
         }
-
       );
 
     }
 
 
-    await updateStats(
-      card
-    );
+    await updateStats(card);
 
-  }
-
-  catch(error) {
+  } catch (error) {
 
     console.error(
       "Like error:",
       error
     );
 
-
     alert(
-      "Like error. Firebase rules check karo."
+      "Like error. Please check Firebase Firestore rules."
     );
 
-  }
+  } finally {
 
-  finally {
-
-    button.disabled =
-      false;
+    button.disabled = false;
 
   }
 
@@ -699,18 +608,15 @@ async function toggleLike(
 
 
 /* =====================================================
-   COMMENT OPEN
+   OPEN COMMENT BOX
 ===================================================== */
 
-function openComment(
-  button
-) {
+function openComment(button) {
 
   const card =
     button.closest(
       ".content-card"
     );
-
 
   if (!card) {
 
@@ -724,8 +630,16 @@ function openComment(
       ".comment-box"
     );
 
-
   if (!box) {
+
+    return;
+
+  }
+
+
+  if (!currentUser) {
+
+    requireLogin();
 
     return;
 
@@ -738,16 +652,15 @@ function openComment(
 
   if (!box.hidden) {
 
-    const input =
+    const textarea =
       box.querySelector(
         "textarea"
       );
 
-
-    if (input) {
+    if (textarea) {
 
       setTimeout(
-        () => input.focus(),
+        () => textarea.focus(),
         100
       );
 
@@ -762,13 +675,9 @@ function openComment(
    POST COMMENT
 ===================================================== */
 
-async function postComment(
-  button
-) {
+async function postComment(button) {
 
-  if (
-    !requireLogin()
-  ) {
+  if (!requireLogin()) {
 
     return;
 
@@ -780,7 +689,6 @@ async function postComment(
       ".content-card"
     );
 
-
   if (!card) {
 
     return;
@@ -788,13 +696,12 @@ async function postComment(
   }
 
 
-  const input =
+  const textarea =
     card.querySelector(
       "textarea"
     );
 
-
-  if (!input) {
+  if (!textarea) {
 
     return;
 
@@ -802,7 +709,7 @@ async function postComment(
 
 
   const text =
-    input.value.trim();
+    textarea.value.trim();
 
 
   if (!text) {
@@ -818,17 +725,14 @@ async function postComment(
 
   try {
 
-    button.disabled =
-      true;
+    button.disabled = true;
 
 
     await addDoc(
-
       collection(
         db,
         "comments"
       ),
-
       {
 
         uid:
@@ -849,38 +753,31 @@ async function postComment(
           serverTimestamp()
 
       }
-
     );
 
 
-    input.value =
-      "";
-
+    textarea.value = "";
 
     alert(
-      "Comment posted."
+      "Comment posted successfully."
     );
 
-  }
 
-  catch(error) {
+  } catch (error) {
 
     console.error(
       "Comment error:",
       error
     );
 
-
     alert(
-      "Comment error. Firebase rules check karo."
+      "Comment error. Please check Firebase rules."
     );
 
-  }
 
-  finally {
+  } finally {
 
-    button.disabled =
-      false;
+    button.disabled = false;
 
   }
 
@@ -891,15 +788,12 @@ async function postComment(
    SHARE
 ===================================================== */
 
-async function shareCard(
-  button
-) {
+async function shareCard(button) {
 
   const card =
     button.closest(
       ".content-card"
     );
-
 
   if (!card) {
 
@@ -936,24 +830,19 @@ async function shareCard(
 
       });
 
-    }
-
-    else {
+    } else {
 
       await navigator.clipboard.writeText(
         url
       );
 
-
       alert(
-        "Link copied."
+        "Link copied successfully."
       );
 
     }
 
-  }
-
-  catch(error) {
+  } catch (error) {
 
     if (
       error.name !==
@@ -961,6 +850,7 @@ async function shareCard(
     ) {
 
       console.error(
+        "Share error:",
         error
       );
 
@@ -972,13 +862,75 @@ async function shareCard(
 
 
 /* =====================================================
+   ACTION BUTTON HTML
+===================================================== */
+
+function actionsHTML() {
+
+  return `
+
+    <div class="card-actions">
+
+      <button
+        type="button"
+        class="action-btn"
+        data-action="like"
+      >
+        ❤️ Like
+        <span class="like-count">0</span>
+      </button>
+
+
+      <button
+        type="button"
+        class="action-btn"
+        data-action="comment"
+      >
+        💬 Comment
+      </button>
+
+
+      <button
+        type="button"
+        class="action-btn"
+        data-action="share"
+      >
+        ↗ Share
+      </button>
+
+    </div>
+
+
+    <div
+      class="comment-box"
+      hidden
+    >
+
+      <textarea
+        placeholder="Write your comment..."
+      ></textarea>
+
+
+      <button
+        type="button"
+        class="comment-submit"
+        data-action="post-comment"
+      >
+        Post Comment
+      </button>
+
+    </div>
+
+  `;
+
+}
+
+
+/* =====================================================
    BOOK CARD
 ===================================================== */
 
-function bookCard(
-  book,
-  index
-) {
+function bookCard(book, index) {
 
   const id =
     book.id ||
@@ -1013,54 +965,75 @@ function bookCard(
 
   return `
 
-<article
-  class="content-card"
-  data-type="books"
-  data-id="${escapeHTML(id)}"
->
-
-  <img
-    class="card-image"
-    src="${escapeHTML(cover)}"
-    alt="${escapeHTML(title)}"
-    loading="lazy"
-    onerror="this.src='logo.png'"
-  >
-
-
-  <div class="card-body">
-
-    <h3>
-      ${escapeHTML(title)}
-    </h3>
-
-
-    <div class="urdu-title">
-      ${escapeHTML(urdu)}
-    </div>
-
-
-    <div class="card-author">
-      ${escapeHTML(author)}
-    </div>
-
-
-    <a
-      href="${escapeHTML(link)}"
-      target="_blank"
-      class="read-btn"
+    <article
+      class="content-card"
+      data-type="books"
+      data-id="${escapeHTML(id)}"
     >
-      📖 Read Book
-    </a>
+
+      <img
+        class="card-image"
+        src="${escapeHTML(cover)}"
+        alt="${escapeHTML(title)}"
+        loading="lazy"
+        onerror="this.src='logo.png'"
+      >
 
 
-    ${actionsHTML()}
+      <div class="card-body">
 
-  </div>
+        <h3>
+          ${escapeHTML(title)}
+        </h3>
 
-</article>
 
-`;
+        <div class="urdu-title">
+          ${escapeHTML(urdu)}
+        </div>
+
+
+        <div class="card-author">
+          ${escapeHTML(author)}
+        </div>
+
+
+        <a
+          href="${escapeHTML(link)}"
+          target="_blank"
+          rel="noopener"
+          class="read-btn"
+        >
+          📖 Read Book
+        </a>
+
+
+        <div class="card-stats">
+
+          <span>
+            👁
+            <strong class="view-count">
+              0
+            </strong>
+            Views
+          </span>
+
+          <span>
+            ❤️
+            <strong class="like-count">
+              0
+            </strong>
+          </span>
+
+        </div>
+
+
+        ${actionsHTML()}
+
+      </div>
+
+    </article>
+
+  `;
 
 }
 
@@ -1069,11 +1042,7 @@ function bookCard(
    VIDEO / SHORT CARD
 ===================================================== */
 
-function mediaCard(
-  item,
-  index,
-  type
-) {
+function mediaCard(item, index, type) {
 
   const id =
     item.id ||
@@ -1082,13 +1051,18 @@ function mediaCard(
 
   const title =
     item.title ||
-    `${type === "videos" ? "Video" : "Short"} ${index + 1}`;
+    `${
+      type === "videos"
+        ? "Video"
+        : "Short"
+    } ${index + 1}`;
 
 
   const media =
     item.video ||
     item.media ||
     item.src ||
+    item.file ||
     "";
 
 
@@ -1099,156 +1073,84 @@ function mediaCard(
 
   return `
 
-<article
-  class="content-card"
-  data-type="${escapeHTML(type)}"
-  data-id="${escapeHTML(id)}"
->
-
-  <div class="video-container">
-
-    <video
-      controls
-      playsinline
-      preload="metadata"
+    <article
+      class="content-card"
+      data-type="${escapeHTML(type)}"
+      data-id="${escapeHTML(id)}"
     >
 
-      <source
-        src="${escapeHTML(media)}"
-        type="video/mp4"
-      >
+      <div class="video-container">
 
-      Your browser does not support video.
+        <video
+          controls
+          playsinline
+          preload="metadata"
+        >
 
-    </video>
+          <source
+            src="${escapeHTML(media)}"
+            type="video/mp4"
+          >
 
-  </div>
+          Your browser does not support video.
 
+        </video>
 
-  <div class="card-body">
-
-    <h3>
-      ${escapeHTML(title)}
-    </h3>
-
-
-    <div class="card-author">
-      ${escapeHTML(author)}
-    </div>
+      </div>
 
 
-    <div class="card-stats">
+      <div class="card-body">
 
-      <span>
-        👁
-        <strong class="view-count">
-          0
-        </strong>
-        Views
-      </span>
-
-      <span>
-        ❤️
-        <strong class="like-count">
-          0
-        </strong>
-      </span>
-
-    </div>
+        <h3>
+          ${escapeHTML(title)}
+        </h3>
 
 
-    ${actionsHTML()}
-
-  </div>
-
-</article>
-
-`;
-
-}
+        <div class="card-author">
+          ${escapeHTML(author)}
+        </div>
 
 
-/* =====================================================
-   ACTION HTML
-===================================================== */
+        <div class="card-stats">
 
-function actionsHTML() {
-
-  return `
-
-<div class="card-actions">
-
-  <button
-    type="button"
-    class="action-btn"
-    data-action="like"
-  >
-    ❤️
-    Like
-    <span class="like-count">
-      0
-    </span>
-  </button>
+          <span>
+            👁
+            <strong class="view-count">
+              0
+            </strong>
+            Views
+          </span>
 
 
-  <button
-    type="button"
-    class="action-btn"
-    data-action="comment"
-  >
-    💬
-    Comment
-  </button>
+          <span>
+            ❤️
+            <strong class="like-count">
+              0
+            </strong>
+            Likes
+          </span>
+
+        </div>
 
 
-  <button
-    type="button"
-    class="action-btn"
-    data-action="share"
-  >
-    ↗
-    Share
-  </button>
+        ${actionsHTML()}
 
-</div>
+      </div>
 
+    </article>
 
-<div
-  class="comment-box"
-  hidden
->
-
-  <textarea
-    placeholder="Write your comment..."
-  ></textarea>
-
-
-  <button
-    type="button"
-    class="comment-submit"
-    data-action="post-comment"
-  >
-    Post Comment
-  </button>
-
-</div>
-
-`;
+  `;
 
 }
 
 
 /* =====================================================
-   CARD SETUP
+   SETUP CARD
 ===================================================== */
 
-async function setupCard(
-  card
-) {
+async function setupCard(card) {
 
-  await updateStats(
-    card
-  );
+  await updateStats(card);
 
 
   const video =
@@ -1259,8 +1161,7 @@ async function setupCard(
 
   if (video) {
 
-    let counted =
-      false;
+    let counted = false;
 
 
     video.addEventListener(
@@ -1273,25 +1174,17 @@ async function setupCard(
 
         }
 
+        counted = true;
 
-        counted =
-          true;
-
-
-        await addView(
-          card
-        );
+        await addView(card);
 
       }
     );
 
-  }
 
-  else {
+  } else {
 
-    await addView(
-      card
-    );
+    await addView(card);
 
   }
 
@@ -1299,7 +1192,7 @@ async function setupCard(
 
 
 /* =====================================================
-   LOAD ALL CONTENT
+   LOAD BOOKS / VIDEOS / SHORTS
 ===================================================== */
 
 async function loadContent() {
@@ -1322,28 +1215,42 @@ async function loadContent() {
     );
 
 
+  if (
+    !booksTrack ||
+    !videosTrack ||
+    !shortsTrack
+  ) {
+
+    console.error(
+      "Slider tracks not found."
+    );
+
+    return;
+
+  }
+
+
   try {
 
     const [
       booksData,
       videosData,
       shortsData
-    ] =
-      await Promise.all([
+    ] = await Promise.all([
 
-        loadJSON(
-          "books.json"
-        ),
+      loadJSON(
+        "books.json"
+      ),
 
-        loadJSON(
-          "videos.json"
-        ),
+      loadJSON(
+        "videos.json"
+      ),
 
-        loadJSON(
-          "shorts.json"
-        )
+      loadJSON(
+        "shorts.json"
+      )
 
-      ]);
+    ]);
 
 
     const books =
@@ -1364,63 +1271,115 @@ async function loadContent() {
       );
 
 
-    /* BOOKS */
+    /* ==============================
+       BOOKS
+    ============================== */
 
-    booksTrack.innerHTML =
-      books
-        .map(
-          bookCard
-        )
-        .join("");
+    if (books.length) {
 
+      booksTrack.innerHTML =
+        books
+          .map(
+            bookCard
+          )
+          .join("");
 
-    /* VIDEOS */
+    } else {
 
-    videosTrack.innerHTML =
-      videos
-        .map(
-          (item,index) =>
-            mediaCard(
-              item,
-              index,
-              "videos"
-            )
-        )
-        .join("");
+      booksTrack.innerHTML = `
+        <div class="loading">
+          No books available.
+        </div>
+      `;
 
-
-    /* SHORTS */
-
-    shortsTrack.innerHTML =
-      shorts
-        .map(
-          (item,index) =>
-            mediaCard(
-              item,
-              index,
-              "shorts"
-            )
-        )
-        .join("");
+    }
 
 
-    document
-      .querySelectorAll(
+    /* ==============================
+       VIDEOS
+    ============================== */
+
+    if (videos.length) {
+
+      videosTrack.innerHTML =
+        videos
+          .map(
+            (item, index) =>
+              mediaCard(
+                item,
+                index,
+                "videos"
+              )
+          )
+          .join("");
+
+    } else {
+
+      videosTrack.innerHTML = `
+        <div class="loading">
+          No videos available.
+        </div>
+      `;
+
+    }
+
+
+    /* ==============================
+       SHORTS
+    ============================== */
+
+    if (shorts.length) {
+
+      shortsTrack.innerHTML =
+        shorts
+          .map(
+            (item, index) =>
+              mediaCard(
+                item,
+                index,
+                "shorts"
+              )
+          )
+          .join("");
+
+    } else {
+
+      shortsTrack.innerHTML = `
+        <div class="loading">
+          No shorts available.
+        </div>
+      `;
+
+    }
+
+
+    /* ==============================
+       CARD SETUP
+    ============================== */
+
+    const cards =
+      document.querySelectorAll(
         ".content-card"
-      )
-      .forEach(
-        setupCard
       );
 
 
+    for (const card of cards) {
+
+      await setupCard(card);
+
+    }
+
+
+    /* ==============================
+       START SLIDERS
+    ============================== */
+
     startAutoSliders();
 
-  }
-
-  catch(error) {
+  } catch (error) {
 
     console.error(
-      "Content error:",
+      "Content loading error:",
       error
     );
 
@@ -1433,11 +1392,25 @@ async function loadContent() {
 
         <br><br>
 
-        ${escapeHTML(error.message)}
+        ${escapeHTML(
+          error.message
+        )}
 
         <br><br>
 
-        JSON files check karo.
+        Check:
+
+        <br>
+
+        books.json
+
+        <br>
+
+        videos.json
+
+        <br>
+
+        shorts.json
 
       </div>
 
@@ -1447,10 +1420,8 @@ async function loadContent() {
     booksTrack.innerHTML =
       message;
 
-
     videosTrack.innerHTML =
       message;
-
 
     shortsTrack.innerHTML =
       message;
@@ -1473,10 +1444,9 @@ function startAutoSliders() {
 
 
   viewports.forEach(
-    viewport => {
+    (viewport) => {
 
-      let paused =
-        false;
+      let paused = false;
 
 
       const track =
@@ -1492,7 +1462,7 @@ function startAutoSliders() {
       }
 
 
-      function cardWidth() {
+      function getCardWidth() {
 
         const card =
           track.querySelector(
@@ -1507,7 +1477,7 @@ function startAutoSliders() {
         }
 
 
-        const style =
+        const trackStyle =
           getComputedStyle(
             track
           );
@@ -1515,8 +1485,8 @@ function startAutoSliders() {
 
         const gap =
           parseFloat(
-            style.gap
-          ) || 18;
+            trackStyle.gap
+          ) || 20;
 
 
         return (
@@ -1527,7 +1497,7 @@ function startAutoSliders() {
       }
 
 
-      function move() {
+      function moveNext() {
 
         if (paused) {
 
@@ -1536,43 +1506,44 @@ function startAutoSliders() {
         }
 
 
-        const max =
+        const amount =
+          getCardWidth();
+
+
+        const maxScroll =
           viewport.scrollWidth -
           viewport.clientWidth;
 
 
         if (
-          viewport.scrollLeft >=
-          max - 5
+          maxScroll <= 0
         ) {
 
-          /*
-            Important:
+          return;
 
-            1 2 3 4 5
-            ↓
-            1 2 3 4 5
-            ↓
-            cycle again
+        }
 
-          */
+
+        if (
+          viewport.scrollLeft >=
+          maxScroll - 5
+        ) {
 
           viewport.scrollTo({
 
             left: 0,
 
-            behavior: "smooth"
+            behavior:
+              "smooth"
 
           });
 
-        }
-
-        else {
+        } else {
 
           viewport.scrollBy({
 
             left:
-              cardWidth(),
+              amount,
 
             behavior:
               "smooth"
@@ -1584,16 +1555,22 @@ function startAutoSliders() {
       }
 
 
+      /* Slow movement */
+
       setInterval(
-        move,
-        4500
+        moveNext,
+        5000
       );
 
+
+      /* Desktop pause */
 
       viewport.addEventListener(
         "mouseenter",
         () => {
+
           paused = true;
+
         }
       );
 
@@ -1601,15 +1578,21 @@ function startAutoSliders() {
       viewport.addEventListener(
         "mouseleave",
         () => {
+
           paused = false;
+
         }
       );
 
 
+      /* Mobile touch */
+
       viewport.addEventListener(
         "touchstart",
         () => {
+
           paused = true;
+
         },
         {
           passive: true
@@ -1623,9 +1606,11 @@ function startAutoSliders() {
 
           setTimeout(
             () => {
+
               paused = false;
+
             },
-            1500
+            1800
           );
 
         },
@@ -1641,7 +1626,7 @@ function startAutoSliders() {
 
 
 /* =====================================================
-   ARROWS
+   SLIDER ARROWS
 ===================================================== */
 
 function setupArrows() {
@@ -1651,7 +1636,7 @@ function setupArrows() {
       ".slider-btn"
     )
     .forEach(
-      button => {
+      (button) => {
 
         button.addEventListener(
           "click",
@@ -1683,8 +1668,22 @@ function setupArrows() {
             }
 
 
+            const track =
+              target.querySelector(
+                ".slider-track"
+              );
+
+
+            const style =
+              getComputedStyle(
+                track
+              );
+
+
             const gap =
-              18;
+              parseFloat(
+                style.gap
+              ) || 20;
 
 
             const amount =
@@ -1692,16 +1691,16 @@ function setupArrows() {
               gap;
 
 
+            const max =
+              target.scrollWidth -
+              target.clientWidth;
+
+
             if (
               button.classList.contains(
                 "next-btn"
               )
             ) {
-
-              const max =
-                target.scrollWidth -
-                target.clientWidth;
-
 
               if (
                 target.scrollLeft >=
@@ -1712,36 +1711,17 @@ function setupArrows() {
 
                   left: 0,
 
-                  behavior: "smooth"
+                  behavior:
+                    "smooth"
 
                 });
 
-              }
-
-              else {
+              } else {
 
                 target.scrollBy({
 
-                  left: amount,
-
-                  behavior: "smooth"
-
-                });
-
-              }
-
-            }
-
-            else {
-
-              if (
-                target.scrollLeft <= 5
-              ) {
-
-                target.scrollTo({
-
                   left:
-                    target.scrollWidth,
+                    amount,
 
                   behavior:
                     "smooth"
@@ -1750,7 +1730,23 @@ function setupArrows() {
 
               }
 
-              else {
+            } else {
+
+              if (
+                target.scrollLeft <= 5
+              ) {
+
+                target.scrollTo({
+
+                  left:
+                    max,
+
+                  behavior:
+                    "smooth"
+
+                });
+
+              } else {
 
                 target.scrollBy({
 
@@ -1776,7 +1772,101 @@ function setupArrows() {
 
 
 /* =====================================================
-   MENU
+   DRAG / SWIPE SLIDER
+===================================================== */
+
+function setupDragScroll() {
+
+  const sliders =
+    document.querySelectorAll(
+      ".slider-viewport"
+    );
+
+
+  sliders.forEach(
+    (slider) => {
+
+      let isDown = false;
+
+      let startX = 0;
+
+      let scrollLeft = 0;
+
+
+      slider.addEventListener(
+        "mousedown",
+        (event) => {
+
+          isDown = true;
+
+          startX =
+            event.pageX -
+            slider.offsetLeft;
+
+          scrollLeft =
+            slider.scrollLeft;
+
+        }
+      );
+
+
+      slider.addEventListener(
+        "mouseleave",
+        () => {
+
+          isDown = false;
+
+        }
+      );
+
+
+      slider.addEventListener(
+        "mouseup",
+        () => {
+
+          isDown = false;
+
+        }
+      );
+
+
+      slider.addEventListener(
+        "mousemove",
+        (event) => {
+
+          if (!isDown) {
+
+            return;
+
+          }
+
+
+          event.preventDefault();
+
+
+          const x =
+            event.pageX -
+            slider.offsetLeft;
+
+
+          const walk =
+            (x - startX) * 1.3;
+
+
+          slider.scrollLeft =
+            scrollLeft - walk;
+
+        }
+      );
+
+    }
+  );
+
+}
+
+
+/* =====================================================
+   MOBILE MENU
 ===================================================== */
 
 function setupMenu() {
@@ -1817,7 +1907,7 @@ function setupMenu() {
       "a"
     )
     .forEach(
-      link => {
+      (link) => {
 
         link.addEventListener(
           "click",
@@ -1873,7 +1963,7 @@ async function visitorCounter() {
 
       await runTransaction(
         db,
-        async transaction => {
+        async (transaction) => {
 
           const snapshot =
             await transaction.get(
@@ -1884,25 +1974,24 @@ async function visitorCounter() {
           const oldCount =
             snapshot.exists()
               ? Number(
-                  snapshot.data()
+                  snapshot
+                    .data()
                     .count || 0
                 )
               : 0;
 
 
           transaction.set(
-
             reference,
-
             {
+
               count:
                 oldCount + 1
-            },
 
+            },
             {
               merge: true
             }
-
           );
 
         }
@@ -1926,7 +2015,8 @@ async function visitorCounter() {
     const count =
       snapshot.exists()
         ? Number(
-            snapshot.data()
+            snapshot
+              .data()
               .count || 0
           )
         : 0;
@@ -1935,15 +2025,13 @@ async function visitorCounter() {
     element.textContent =
       count.toLocaleString();
 
-  }
 
-  catch(error) {
+  } catch (error) {
 
     console.error(
-      "Visitor error:",
+      "Visitor counter error:",
       error
     );
-
 
     element.textContent =
       "0";
@@ -1959,7 +2047,7 @@ async function visitorCounter() {
 
 document.addEventListener(
   "click",
-  event => {
+  (event) => {
 
     const button =
       event.target.closest(
@@ -2026,12 +2114,12 @@ document.addEventListener(
 
 
 /* =====================================================
-   TOUCH GOLDEN GLOW
+   GOLDEN TOUCH / MOUSE GLOW
 ===================================================== */
 
 document.addEventListener(
   "pointermove",
-  event => {
+  (event) => {
 
     document.body.style.setProperty(
       "--mouse-x",
@@ -2052,16 +2140,66 @@ document.addEventListener(
 
 
 /* =====================================================
-   START
+   TOUCH GOLDEN FLASH
+===================================================== */
+
+document.addEventListener(
+  "pointerdown",
+  (event) => {
+
+    document.body.style.setProperty(
+      "--touch-x",
+      `${event.clientX}px`
+    );
+
+
+    document.body.style.setProperty(
+      "--touch-y",
+      `${event.clientY}px`
+    );
+
+
+    document.body.classList.add(
+      "touch-glow"
+    );
+
+
+    setTimeout(
+      () => {
+
+        document.body.classList.remove(
+          "touch-glow"
+        );
+
+      },
+      500
+    );
+
+  },
+  {
+    passive: true
+  }
+);
+
+
+/* =====================================================
+   INITIALIZE
 ===================================================== */
 
 document.addEventListener(
   "DOMContentLoaded",
   () => {
 
+    console.log(
+      "Bazam-E-Saim website starting..."
+    );
+
+
     setupMenu();
 
     setupArrows();
+
+    setupDragScroll();
 
     visitorCounter();
 
