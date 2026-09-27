@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>Admin Dashboard | Bazam-E-Saim</title>
+
+  <link
+    rel="icon"
+    href="logo.png"
+  >
+
+  <style>
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      background: #050505;
+      color: #eee;
+      font-family: Arial, Helvetica, sans-serif;
+      overflow-x: hidden;
+    }
+
+    body::before,
+    body::after {
+      content: "";
+      position: fixed;
+      width: 450px;
+      height: 450px;
+      border-radius: 50%;
+      background: rgba(218, 175, 55, 0.12);
+      filter: blur(110px);
+      z-index: -1;
+      pointer-events: none;
+      animation: moveGlow 12s ease-in-out infinite alternate;
+    }
+
+    body::before {
+      top: 0;
+      left: 0;
+    }
+
+    body::after {
+      right: 0;
+      bottom: 0;
+      animation-delay: 4s;
+    }
+
+    @keyframes moveGlow {
+      from {
+        transform: translate(0, 0);
+      }
+
+      to {
+        transform: translate(120px, 80px);
+      }
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+
+      min-height: 72px;
+
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      gap: 20px;
+
+      padding: 12px 25px;
+
+      background: rgba(7, 7, 7, 0.94);
+
+      border-bottom:
+        1px solid
+        rgba(218, 175, 55, 0.25);
+
+      backdrop-filter: blur(15px);
+    }
+
+    .brand-area {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-area img {
+      width: 45px;
+      height: 45px;
+      object-fit: contain;
+    }
+
+    .brand-name {
+      color: #f0cf62;
+      font-weight: bold;
+    }
+
+    .brand-sub {
+      color: #777;
+      font-size: 12px;
+      margin-top: 3px;
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    button,
+    select,
+    input,
+    textarea {
+      font: inherit;
+    }
+
+    .btn {
+      border: 1px solid #a98425;
+      border-radius: 8px;
+      padding: 10px 15px;
+      background: #121212;
+      color: #f2d064;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .btn:hover {
+      background: #201b0e;
+      box-shadow:
+        0 0 15px
+        rgba(218,175,55,0.18);
+    }
+
+    .btn-gold {
+      background:
+        linear-gradient(
+          135deg,
+          #f6d776,
+          #bd8f20
+        );
+
+      color: #111;
+      font-weight: bold;
+    }
+
+    .btn-danger {
+      color: #ff7777;
+      border-color: #733333;
+    }
+
+    .container {
+      width: min(1250px, 94%);
+      margin: 30px auto 60px;
+    }
+
+    .welcome {
+      margin-bottom: 25px;
+    }
+
+    .welcome h1 {
+      color: #f0cf62;
+      font-size: clamp(25px, 4vw, 38px);
+    }
+
+    .welcome p {
+      margin-top: 7px;
+      color: #999;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns:
+        repeat(4, 1fr);
+
+      gap: 15px;
+      margin-bottom: 25px;
+    }
+
+    .stat {
+      padding: 22px;
+      border:
+        1px solid
+        rgba(218,175,55,0.2);
+
+      background:
+        rgba(15,15,15,0.9);
+
+      border-radius: 14px;
+    }
+
+    .stat-title {
+      color: #888;
+      font-size: 13px;
+    }
+
+    .stat-number {
+      color: #f0cf62;
+      font-size: 30px;
+      font-weight: bold;
+      margin-top: 8px;
+    }
+
+    .panel {
+      background:
+        rgba(12,12,12,0.94);
+
+      border:
+        1px solid
+        rgba(218,175,55,0.22);
+
+      border-radius: 16px;
+
+      padding: 25px;
+
+      margin-bottom: 25px;
+
+      box-shadow:
+        0 0 30px
+        rgba(0,0,0,0.25);
+    }
+
+    .panel h2 {
+      color: #f0cf62;
+      margin-bottom: 20px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns:
+        repeat(2, 1fr);
+
+      gap: 16px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .field.full {
+      grid-column: 1 / -1;
+    }
+
+    label {
+      color: #c7c7c7;
+      font-size: 13px;
+    }
+
+    input,
+    textarea,
+    select {
+
+      width: 100%;
+
+      padding: 12px 13px;
+
+      border:
+        1px solid
+        #303030;
+
+      border-radius: 8px;
+
+      background: #0a0a0a;
+
+      color: #eee;
+
+      outline: none;
+    }
+
+    input:focus,
+    textarea:focus,
+    select:focus {
+      border-color: #caa438;
+      box-shadow:
+        0 0 10px
+        rgba(202,164,56,0.12);
+    }
+
+    textarea {
+      min-height: 110px;
+      resize: vertical;
+    }
+
+    .upload-help {
+      color: #777;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .progress-wrap {
+      display: none;
+      margin-top: 15px;
+    }
+
+    .progress-wrap.show {
+      display: block;
+    }
+
+    .progress {
+      height: 8px;
+      background: #222;
+      border-radius: 99px;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      width: 0%;
+      height: 100%;
+      background: #d5ae3c;
+      transition: width 0.2s;
+    }
+
+    .status {
+      margin-top: 10px;
+      min-height: 22px;
+      font-size: 14px;
+    }
+
+    .success {
+      color: #7ee08a;
+    }
+
+    .error {
+      color: #ff6c6c;
+    }
+
+    .content-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .content-toolbar select {
+      width: auto;
+      min-width: 170px;
+    }
+
+    .items {
+      display: grid;
+
+      grid-template-columns:
+        repeat(3, 1fr);
+
+      gap: 18px;
+    }
+
+    .item-card {
+      overflow: hidden;
+
+      background: #0b0b0b;
+
+      border:
+        1px solid
+        rgba(218,175,55,0.18);
+
+      border-radius: 13px;
+    }
+
+    .item-cover {
+      width: 100%;
+      height: 170px;
+      object-fit: cover;
+      background: #161616;
+    }
+
+    .item-body {
+      padding: 16px;
+    }
+
+    .item-type {
+      color: #d3ac3d;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .item-title {
+      color: #eee;
+      font-size: 17px;
+      font-weight: bold;
+      margin: 7px 0;
+    }
+
+    .item-urdu {
+      color: #d1b24d;
+      direction: rtl;
+      margin-bottom: 7px;
+    }
+
+    .item-meta {
+      color: #777;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .item-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .item-actions button {
+      flex: 1;
+    }
+
+    .empty {
+      padding: 40px;
+      text-align: center;
+      color: #777;
+      border:
+        1px dashed
+        #333;
+      border-radius: 10px;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    @media (max-width: 900px) {
+
+      .stats {
+        grid-template-columns:
+          repeat(2, 1fr);
+      }
+
+      .items {
+        grid-template-columns:
+          repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 650px) {
+
+      .topbar {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .top-actions {
+        width: 100%;
+      }
+
+      .top-actions .btn {
+        flex: 1;
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .field.full {
+        grid-column: auto;
+      }
+
+      .stats {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .items {
+        grid-template-columns: 1fr;
+      }
+
+      .panel {
+        padding: 17px;
+      }
+    }
+
+  </style>
+</head>
+
+<body>
+
+  <header class="topbar">
+
+    <div class="brand-area">
+
+      <img
+        src="logo.png"
+        alt="Bazam-E-Saim"
+      >
+
+      <div>
+        <div class="brand-name">
+          Bazam-E-Saim Admin
+        </div>
+
+        <div
+          id="adminEmail"
+          class="brand-sub"
+        >
+          Loading...
+        </div>
+      </div>
+
+    </div>
+
+    <div class="top-actions">
+
+      <a
+        href="index.html"
+        class="btn"
+      >
+        Website
+      </a>
+
+      <button
+        id="logoutBtn"
+        class="btn btn-danger"
+      >
+        Logout
+      </button>
+
+    </div>
+
+  </header>
+
+
+  <main class="container">
+
+    <section class="welcome">
+
+      <h1>
+        Admin Dashboard
+      </h1>
+
+      <p>
+        Manage Bazam-E-Saim books, videos, shorts and audios.
+      </p>
+
+    </section>
+
+
+    <!-- STATS -->
+
+    <section class="stats">
+
+      <div class="stat">
+
+        <div class="stat-title">
+          Books
+        </div>
+
+        <div
+          id="bookCount"
+          class="stat-number"
+        >
+          0
+        </div>
+
+      </div>
+
+
+      <div class="stat">
+
+        <div class="stat-title">
+          Videos
+        </div>
+
+        <div
+          id="videoCount"
+          class="stat-number"
+        >
+          0
+        </div>
+
+      </div>
+
+
+      <div class="stat">
+
+        <div class="stat-title">
+          Shorts
+        </div>
+
+        <div
+          id="shortCount"
+          class="stat-number"
+        >
+          0
+        </div>
+
+      </div>
+
+
+      <div class="stat">
+
+        <div class="stat-title">
+          Audios
+        </div>
+
+        <div
+          id="audioCount"
+          class="stat-number"
+        >
+          0
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- ADD CONTENT -->
+
+    <section class="panel">
+
+      <h2>
+        Add New Content
+      </h2>
+
+      <form id="contentForm">
+
+        <div class="form-grid">
+
+
+          <div class="field">
+
+            <label for="contentType">
+              Content Type
+            </label>
+
+            <select id="contentType" required>
+
+              <option value="books">
+                Book
+              </option>
+
+              <option value="videos">
+                Video
+              </option>
+
+              <option value="shorts">
+                Short
+              </option>
+
+              <option value="audios">
+                Audio
+              </option>
+
+            </select>
+
+          </div>
+
+
+          <div class="field">
+
+            <label for="title">
+              Title *
+            </label>
+
+            <input
+              id="title"
+              type="text"
+              placeholder="Content title"
+              required
+            >
+
+          </div>
+
+
+          <div class="field">
+
+            <label for="urduTitle">
+              Urdu Title
+            </label>
+
+            <input
+              id="urduTitle"
+              type="text"
+              dir="rtl"
+              placeholder="اردو عنوان"
+            >
+
+          </div>
+
+
+          <div class="field">
+
+            <label for="author">
+              Author
+            </label>
+
+            <input
+              id="author"
+              type="text"
+              placeholder="Hazrat Allama Saim Chishti"
+            >
+
+          </div>
+
+
+          <div class="field full">
+
+            <label for="description">
+              Description
+            </label>
+
+            <textarea
+              id="description"
+              placeholder="Description..."
+            ></textarea>
+
+          </div>
+
+
+          <div class="field">
+
+            <label for="coverFile">
+              Cover / Thumbnail
+            </label>
+
+            <input
+              id="coverFile"
+              type="file"
+              accept="image/*"
+            >
+
+            <div class="upload-help">
+              JPG, PNG, WEBP etc.
+            </div>
+
+          </div>
+
+
+          <div class="field">
+
+            <label for="mediaFile">
+              Media File
+            </label>
+
+            <input
+              id="mediaFile"
+              type="file"
+            >
+
+            <div class="upload-help">
+              Book PDF / Video / Short / Audio
+            </div>
+
+          </div>
+
+
+          <div class="field full">
+
+            <label for="externalUrl">
+              External URL (optional)
+            </label>
+
+            <input
+              id="externalUrl"
+              type="url"
+              placeholder="https://..."
+            >
+
+          </div>
+
+
+          <div class="field full">
+
+            <button
+              id="uploadBtn"
+              type="submit"
+              class="btn btn-gold"
+            >
+              Add Content
+            </button>
+
+          </div>
+
+        </div>
+
+
+        <div
+          id="progressWrap"
+          class="progress-wrap"
+        >
+
+          <div class="progress">
+
+            <div
+              id="progressBar"
+              class="progress-bar"
+            ></div>
+
+          </div>
+
+          <div
+            id="progressText"
+            class="status"
+          >
+            Uploading...
+          </div>
+
+        </div>
+
+
+        <div
+          id="formStatus"
+          class="status"
+        ></div>
+
+      </form>
+
+    </section>
+
+
+    <!-- CONTENT -->
+
+    <section class="panel">
+
+      <div class="content-toolbar">
+
+        <h2>
+          Website Content
+        </h2>
+
+        <select id="filterType">
+
+          <option value="all">
+            All Content
+          </option>
+
+          <option value="books">
+            Books
+          </option>
+
+          <option value="videos">
+            Videos
+          </option>
+
+          <option value="shorts">
+            Shorts
+          </option>
+
+          <option value="audios">
+            Audios
+          </option>
+
+        </select>
+
+      </div>
+
+
+      <div
+        id="itemsContainer"
+        class="items"
+      ></div>
+
+    </section>
+
+  </main>
+
+
+  <script
+    type="module"
+    src="admin-dashboard.js"
+  ></script>
+
+</body>
+</html>
