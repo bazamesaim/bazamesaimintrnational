@@ -2209,167 +2209,141 @@ document.addEventListener(
 );
 
 /* =====================================================
-   AUTO MOVING SLIDERS - PASTE AT END OF script.js
+   AUTO SLIDER - WORKING VERSION
 ===================================================== */
 
-(function startMovingSliders() {
+function startAutoSliders() {
 
-  function start() {
+  const viewports = document.querySelectorAll(
+    ".slider-viewport"
+  );
 
-    const sliders = document.querySelectorAll(
-      ".slider-viewport"
+  viewports.forEach((viewport) => {
+
+    const track = viewport.querySelector(
+      ".slider-track"
     );
 
-    sliders.forEach((viewport) => {
+    if (!track) return;
 
-      if (viewport.dataset.autoMoveStarted === "true") {
-        return;
-      }
+    let timer = null;
+    let paused = false;
 
-      const track = viewport.querySelector(
-        ".slider-track"
+    function getCardStep() {
+
+      const card = track.querySelector(
+        ".content-card"
       );
 
-      if (!track) {
-        return;
-      }
+      if (!card) return 320;
 
-      viewport.dataset.autoMoveStarted = "true";
+      const gap =
+        parseFloat(
+          getComputedStyle(track).gap
+        ) || 20;
 
-      let paused = false;
+      return card.offsetWidth + gap;
+    }
 
-      function getStep() {
+    function moveNext() {
 
-        const card = track.querySelector(
-          ".content-card"
-        );
+      if (paused) return;
 
-        if (!card) {
-          return 320;
-        }
+      const maxScroll =
+        viewport.scrollWidth -
+        viewport.clientWidth;
 
-        const style =
-          window.getComputedStyle(track);
+      if (maxScroll <= 5) return;
 
-        const gap =
-          parseFloat(style.gap) || 20;
+      const step = getCardStep();
 
-        return card.offsetWidth + gap;
-      }
+      /*
+        1 → 2 → 3 → 4 → 5 → 1
+      */
 
-      function moveSlider() {
+      if (
+        viewport.scrollLeft + step >=
+        maxScroll - 5
+      ) {
 
-        if (paused) {
-          return;
-        }
+        viewport.scrollTo({
+          left: 0,
+          behavior: "smooth"
+        });
 
-        const maxScroll =
-          viewport.scrollWidth -
-          viewport.clientWidth;
+      } else {
 
-        if (maxScroll <= 0) {
-          return;
-        }
-
-        const step = getStep();
-
-        if (
-          viewport.scrollLeft >=
-          maxScroll - 5
-        ) {
-
-          viewport.scrollTo({
-            left: 0,
-            behavior: "smooth"
-          });
-
-        } else {
-
-          viewport.scrollBy({
-            left: step,
-            behavior: "smooth"
-          });
-
-        }
+        viewport.scrollBy({
+          left: step,
+          behavior: "smooth"
+        });
 
       }
+    }
 
-      /* Slow movement */
-      setInterval(
-        moveSlider,
-        4000
+    function start() {
+
+      if (timer) {
+        clearInterval(timer);
+      }
+
+      timer = setInterval(
+        moveNext,
+        3500
       );
+    }
 
-      /* Mouse pause */
-      viewport.addEventListener(
-        "mouseenter",
-        () => {
-          paused = true;
-        }
-      );
+    function stop() {
 
-      viewport.addEventListener(
-        "mouseleave",
-        () => {
-          paused = false;
-        }
-      );
+      if (timer) {
+        clearInterval(timer);
+        timer = null;
+      }
+    }
 
-      /* Touch pause */
-      viewport.addEventListener(
-        "touchstart",
-        () => {
-          paused = true;
-        },
-        {
-          passive: true
-        }
-      );
+    /* Mouse */
+    viewport.addEventListener(
+      "mouseenter",
+      () => {
+        paused = true;
+      }
+    );
 
-      viewport.addEventListener(
-        "touchend",
-        () => {
+    viewport.addEventListener(
+      "mouseleave",
+      () => {
+        paused = false;
+      }
+    );
 
-          setTimeout(() => {
-            paused = false;
-          }, 1200);
+    /* Touch */
+    viewport.addEventListener(
+      "touchstart",
+      () => {
+        paused = true;
+      },
+      {
+        passive: true
+      }
+    );
 
-        },
-        {
-          passive: true
-        }
-      );
-
-    });
-
-  }
-
-
-  /* Wait until cards are loaded */
-  if (
-    document.readyState ===
-    "loading"
-  ) {
-
-    document.addEventListener(
-      "DOMContentLoaded",
+    viewport.addEventListener(
+      "touchend",
       () => {
 
-        setTimeout(
-          start,
-          1500
-        );
+        setTimeout(() => {
+          paused = false;
+        }, 1000);
 
+      },
+      {
+        passive: true
       }
     );
 
-  } else {
+    /* Start */
+    start();
 
-    setTimeout(
-      start,
-      1500
-    );
+  });
 
-  }
-
-})();
+}
