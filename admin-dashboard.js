@@ -1,12 +1,12 @@
 import {
   initializeApp
-} from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
+} from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
 
 import {
   getAuth,
   onAuthStateChanged,
   signOut
-} from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
+} from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
 
 import {
   getFirestore,
@@ -15,50 +15,38 @@ import {
   getDocs,
   deleteDoc,
   doc,
-  serverTimestamp
-} from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
+  serverTimestamp,
+  query,
+  orderBy
+} from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
 
 import {
   getStorage,
   ref,
-  uploadBytes,
+  uploadBytesResumable,
   getDownloadURL,
   deleteObject
-} from "https://www.gstatic.com/firebasejs/12.3.0/firebase-storage.js";
+} from "https://www.gstatic.com/firebasejs/12.7.0/firebase-storage.js";
 
 
-/* =========================================================
-   FIREBASE CONFIG
-========================================================= */
+// =====================================================
+// FIREBASE CONFIG
+// =====================================================
 
 const firebaseConfig = {
-
   apiKey: "AIzaSyBFzwp8jL3J1oUxAeDDq23T2CmydtgTa1k",
-
-  authDomain:
-    "bazamesaiminternational.firebaseapp.com",
-
-  projectId:
-    "bazamesaiminternational",
-
-  storageBucket:
-    "bazamesaiminternational.firebasestorage.app",
-
-  messagingSenderId:
-    "879282438130",
-
-  appId:
-    "1:879282438130:web:a285d48f427e6659e3f56b",
-
-  measurementId:
-    "G-S79YY7WPWX"
-
+  authDomain: "bazamesaiminternational.firebaseapp.com",
+  projectId: "bazamesaiminternational",
+  storageBucket: "bazamesaiminternational.firebasestorage.app",
+  messagingSenderId: "879282438130",
+  appId: "1:879282438130:web:a285d48f427e6659e3f56b",
+  measurementId: "G-S79YY7WPWX"
 };
 
 
-/* =========================================================
-   INITIALIZE
-========================================================= */
+// =====================================================
+// INITIALIZE
+// =====================================================
 
 const app = initializeApp(firebaseConfig);
 
@@ -69,880 +57,972 @@ const db = getFirestore(app);
 const storage = getStorage(app);
 
 
-/* =========================================================
-   ADMIN UID
-========================================================= */
+// =====================================================
+// ADMIN
+// =====================================================
 
 const ADMIN_UID =
   "4fPc8xh4nocESroI4UtFZbCBgMl2";
 
 
-/* =========================================================
-   AUTH CHECK
-========================================================= */
+// =====================================================
+// ELEMENTS
+// =====================================================
 
-onAuthStateChanged(auth, async (user) => {
-
-  if (!user) {
-
-    window.location.href = "admin.html";
-
-    return;
-  }
-
-  console.log("Dashboard user:", user.email);
-
-  console.log("Dashboard UID:", user.uid);
-
-
-  if (user.uid !== ADMIN_UID) {
-
-    await signOut(auth);
-
-    alert("You are not authorized to access the Admin Dashboard.");
-
-    window.location.href = "admin.html";
-
-    return;
-  }
-
-
-  console.log("ADMIN VERIFIED");
-
-  await loadAllContent();
-
-});
-
-
-/* =========================================================
-   LOGOUT
-========================================================= */
+const adminEmail =
+  document.getElementById("adminEmail");
 
 const logoutBtn =
   document.getElementById("logoutBtn");
 
+const contentForm =
+  document.getElementById("contentForm");
 
-logoutBtn.addEventListener("click", async () => {
+const contentType =
+  document.getElementById("contentType");
 
-  try {
+const titleInput =
+  document.getElementById("title");
 
-    await signOut(auth);
+const urduTitleInput =
+  document.getElementById("urduTitle");
 
-    window.location.href = "admin.html";
+const authorInput =
+  document.getElementById("author");
 
-  } catch (error) {
+const descriptionInput =
+  document.getElementById("description");
 
-    console.error("Logout error:", error);
+const coverFileInput =
+  document.getElementById("coverFile");
+
+const mediaFileInput =
+  document.getElementById("mediaFile");
+
+const externalUrlInput =
+  document.getElementById("externalUrl");
+
+const uploadBtn =
+  document.getElementById("uploadBtn");
+
+const formStatus =
+  document.getElementById("formStatus");
+
+const progressWrap =
+  document.getElementById("progressWrap");
+
+const progressBar =
+  document.getElementById("progressBar");
+
+const progressText =
+  document.getElementById("progressText");
+
+const filterType =
+  document.getElementById("filterType");
+
+const itemsContainer =
+  document.getElementById("itemsContainer");
+
+const bookCount =
+  document.getElementById("bookCount");
+
+const videoCount =
+  document.getElementById("videoCount");
+
+const shortCount =
+  document.getElementById("shortCount");
+
+const audioCount =
+  document.getElementById("audioCount");
+
+
+// =====================================================
+// DATA CACHE
+// =====================================================
+
+let allItems = [];
+
+
+// =====================================================
+// AUTH CHECK
+// =====================================================
+
+onAuthStateChanged(
+  auth,
+  async (user) => {
+
+    if (!user) {
+
+      window.location.href =
+        "admin.html";
+
+      return;
+    }
+
+
+    if (user.uid !== ADMIN_UID) {
+
+      await signOut(auth);
+
+      localStorage.removeItem(
+        "bazamAdminLoggedIn"
+      );
+
+      window.location.href =
+        "admin.html";
+
+      return;
+    }
+
+
+    // Authorized
+
+    if (adminEmail) {
+
+      adminEmail.textContent =
+        user.email ||
+        user.displayName ||
+        "Admin";
+
+    }
+
+
+    await loadAllContent();
 
   }
+);
 
-});
 
+// =====================================================
+// LOGOUT
+// =====================================================
 
-/* =========================================================
-   SIDEBAR
-========================================================= */
+if (logoutBtn) {
 
-document.querySelectorAll(".side-btn")
-  .forEach(button => {
+  logoutBtn.addEventListener(
+    "click",
+    async () => {
 
-    button.addEventListener("click", () => {
+      try {
 
-      document
-        .querySelectorAll(".side-btn")
-        .forEach(btn =>
-          btn.classList.remove("active")
+        await signOut(auth);
+
+        localStorage.removeItem(
+          "bazamAdminLoggedIn"
         );
 
-      button.classList.add("active");
-
-
-      document
-        .querySelectorAll(".panel")
-        .forEach(panel =>
-          panel.classList.remove("active")
+        localStorage.removeItem(
+          "bazamAdminUID"
         );
 
+        localStorage.removeItem(
+          "bazamAdminEmail"
+        );
 
-      const panelId =
-        button.dataset.panel;
+        localStorage.removeItem(
+          "bazamAdminName"
+        );
 
-      document
-        .getElementById(panelId)
-        .classList.add("active");
+        window.location.href =
+          "admin.html";
 
-    });
+      } catch (error) {
 
-  });
+        console.error(
+          "Logout error:",
+          error
+        );
 
+      }
 
-/* =========================================================
-   STORAGE UPLOAD
-========================================================= */
-
-async function uploadFile(file, folder) {
-
-  if (!file) {
-
-    return {
-      url: "",
-      path: ""
-    };
-
-  }
-
-
-  const safeName =
-    file.name.replace(
-      /[^a-zA-Z0-9._-]/g,
-      "_"
-    );
-
-
-  const uniqueName =
-    Date.now() + "_" + safeName;
-
-
-  const storagePath =
-    `${folder}/${uniqueName}`;
-
-
-  const storageRef =
-    ref(storage, storagePath);
-
-
-  await uploadBytes(
-    storageRef,
-    file
+    }
   );
-
-
-  const url =
-    await getDownloadURL(storageRef);
-
-
-  return {
-    url,
-    path: storagePath
-  };
 
 }
 
 
-/* =========================================================
-   BOOK FORM
-========================================================= */
+// =====================================================
+// STATUS
+// =====================================================
 
-const bookForm =
-  document.getElementById("bookForm");
+function setStatus(
+  text,
+  type = ""
+) {
 
+  if (!formStatus) return;
 
-bookForm.addEventListener(
-  "submit",
-  async (event) => {
+  formStatus.textContent = text;
 
-    event.preventDefault();
-
-
-    const status =
-      document.getElementById("bookStatus");
-
-
-    const saveButton =
-      bookForm.querySelector(".save-btn");
+  formStatus.className =
+    "status " + type;
+}
 
 
-    try {
+// =====================================================
+// SAFE HTML
+// =====================================================
 
-      saveButton.disabled = true;
+function escapeHTML(value) {
 
-      status.textContent =
-        "Uploading book...";
+  if (value === null ||
+      value === undefined) {
 
-
-      const pdfFile =
-        document.getElementById("bookPdf").files[0];
-
-
-      const coverFile =
-        document.getElementById("bookCover").files[0];
-
-
-      const pdfUpload =
-        await uploadFile(
-          pdfFile,
-          "books/pdf"
-        );
-
-
-      status.textContent =
-        "Uploading cover...";
-
-
-      const coverUpload =
-        await uploadFile(
-          coverFile,
-          "books/covers"
-        );
-
-
-      const pdfUrl =
-        pdfUpload.url ||
-        document.getElementById("bookPdfUrl").value.trim();
-
-
-      const coverUrl =
-        coverUpload.url || "";
-
-
-      const data = {
-
-        title:
-          document.getElementById("bookTitle")
-            .value.trim(),
-
-        titleUrdu:
-          document.getElementById("bookTitleUrdu")
-            .value.trim(),
-
-        author:
-          document.getElementById("bookAuthor")
-            .value.trim(),
-
-        authorUrdu:
-          document.getElementById("bookAuthorUrdu")
-            .value.trim(),
-
-        pdfUrl,
-
-        coverUrl,
-
-        libraryUrl:
-          document.getElementById("bookLibraryUrl")
-            .value.trim(),
-
-        pdfStoragePath:
-          pdfUpload.path,
-
-        coverStoragePath:
-          coverUpload.path,
-
-        type: "book",
-
-        createdAt:
-          serverTimestamp()
-
-      };
-
-
-      await addDoc(
-        collection(db, "books"),
-        data
-      );
-
-
-      status.textContent =
-        "✓ Book added successfully.";
-
-
-      bookForm.reset();
-
-
-      await loadAllContent();
-
-
-    } catch (error) {
-
-      console.error(
-        "Book upload error:",
-        error
-      );
-
-
-      status.textContent =
-        "Error: " + error.message;
-
-    } finally {
-
-      saveButton.disabled = false;
-
-    }
+    return "";
 
   }
-);
+
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
 
 
-/* =========================================================
-   VIDEO FORM
-========================================================= */
+// =====================================================
+// UPLOAD FILE
+// =====================================================
 
-const videoForm =
-  document.getElementById("videoForm");
+function uploadFile(
+  file,
+  folder,
+  onProgress
+) {
 
+  return new Promise(
+    (resolve, reject) => {
 
-videoForm.addEventListener(
-  "submit",
-  async (event) => {
+      if (!file) {
 
-    event.preventDefault();
+        resolve(null);
 
-
-    const status =
-      document.getElementById("videoStatus");
-
-
-    const saveButton =
-      videoForm.querySelector(".save-btn");
+        return;
+      }
 
 
-    try {
-
-      saveButton.disabled = true;
-
-      status.textContent =
-        "Uploading video...";
-
-
-      const videoFile =
-        document.getElementById("videoFile")
-          .files[0];
-
-
-      const thumbnailFile =
-        document.getElementById("videoThumbnail")
-          .files[0];
-
-
-      const videoUpload =
-        await uploadFile(
-          videoFile,
-          "videos/files"
+      const safeName =
+        file.name.replace(
+          /[^a-zA-Z0-9._-]/g,
+          "_"
         );
 
 
-      status.textContent =
-        "Uploading thumbnail...";
+      const uniqueName =
+        Date.now() +
+        "_" +
+        Math.random()
+          .toString(36)
+          .slice(2, 9) +
+        "_" +
+        safeName;
 
 
-      const thumbnailUpload =
-        await uploadFile(
-          thumbnailFile,
-          "videos/thumbnails"
+      const storageRef =
+        ref(
+          storage,
+          `${folder}/${uniqueName}`
         );
 
 
-      const videoUrl =
-        videoUpload.url ||
-        document.getElementById("videoUrl")
-          .value.trim();
+      const task =
+        uploadBytesResumable(
+          storageRef,
+          file
+        );
 
 
-      const thumbnailUrl =
-        thumbnailUpload.url ||
-        document.getElementById("videoThumbnailUrl")
-          .value.trim();
+      task.on(
+        "state_changed",
+
+        (snapshot) => {
+
+          const percent =
+            Math.round(
+              (
+                snapshot.bytesTransferred /
+                snapshot.totalBytes
+              ) * 100
+            );
 
 
-      const data = {
+          if (onProgress) {
+            onProgress(percent);
+          }
 
-        title:
-          document.getElementById("videoTitle")
-            .value.trim(),
+        },
 
-        titleUrdu:
-          document.getElementById("videoTitleUrdu")
-            .value.trim(),
+        (error) => {
 
-        description:
-          document.getElementById("videoDescription")
-            .value.trim(),
+          reject(error);
 
-        videoUrl,
+        },
 
-        thumbnailUrl,
+        async () => {
 
-        videoStoragePath:
-          videoUpload.path,
+          try {
 
-        thumbnailStoragePath:
-          thumbnailUpload.path,
+            const url =
+              await getDownloadURL(
+                task.snapshot.ref
+              );
 
-        type: "video",
+            resolve({
+              url: url,
+              path: task.snapshot.ref.fullPath,
+              name: file.name,
+              size: file.size,
+              type: file.type
+            });
 
-        views: 0,
+          } catch (error) {
 
-        likes: 0,
+            reject(error);
 
-        comments: 0,
+          }
 
-        createdAt:
-          serverTimestamp()
-
-      };
-
-
-      await addDoc(
-        collection(db, "videos"),
-        data
+        }
       );
-
-
-      status.textContent =
-        "✓ Video added successfully.";
-
-
-      videoForm.reset();
-
-
-      await loadAllContent();
-
-
-    } catch (error) {
-
-      console.error(
-        "Video upload error:",
-        error
-      );
-
-
-      status.textContent =
-        "Error: " + error.message;
-
-    } finally {
-
-      saveButton.disabled = false;
 
     }
+  );
 
-  }
-);
-
-
-/* =========================================================
-   SHORT FORM
-========================================================= */
-
-const shortForm =
-  document.getElementById("shortForm");
+}
 
 
-shortForm.addEventListener(
-  "submit",
-  async (event) => {
+// =====================================================
+// ADD CONTENT
+// =====================================================
 
-    event.preventDefault();
+if (contentForm) {
 
+  contentForm.addEventListener(
+    "submit",
+    async (event) => {
 
-    const status =
-      document.getElementById("shortStatus");
-
-
-    const saveButton =
-      shortForm.querySelector(".save-btn");
+      event.preventDefault();
 
 
-    try {
-
-      saveButton.disabled = true;
-
-      status.textContent =
-        "Uploading short...";
+      const user =
+        auth.currentUser;
 
 
-      const shortFile =
-        document.getElementById("shortFile")
-          .files[0];
+      if (!user ||
+          user.uid !== ADMIN_UID) {
+
+        setStatus(
+          "Admin authentication required.",
+          "error"
+        );
+
+        return;
+      }
 
 
-      const thumbnailFile =
-        document.getElementById("shortThumbnail")
-          .files[0];
+      const type =
+        contentType.value;
+
+      const title =
+        titleInput.value.trim();
 
 
-      const shortUpload =
-        await uploadFile(
-          shortFile,
-          "shorts/files"
+      if (!title) {
+
+        setStatus(
+          "Please enter a title.",
+          "error"
+        );
+
+        return;
+      }
+
+
+      uploadBtn.disabled = true;
+
+      uploadBtn.textContent =
+        "Uploading...";
+
+
+      progressWrap.classList.add(
+        "show"
+      );
+
+      progressBar.style.width =
+        "0%";
+
+      progressText.textContent =
+        "Preparing upload...";
+
+
+      try {
+
+        // ---------------------------------------------
+        // COVER
+        // ---------------------------------------------
+
+        let coverData = null;
+
+
+        if (coverFileInput.files.length > 0) {
+
+          progressText.textContent =
+            "Uploading cover...";
+
+
+          coverData =
+            await uploadFile(
+              coverFileInput.files[0],
+              "covers",
+              (percent) => {
+
+                progressBar.style.width =
+                  percent + "%";
+
+                progressText.textContent =
+                  `Uploading cover: ${percent}%`;
+
+              }
+            );
+
+        }
+
+
+        // ---------------------------------------------
+        // MEDIA
+        // ---------------------------------------------
+
+        let mediaData = null;
+
+
+        if (mediaFileInput.files.length > 0) {
+
+          progressText.textContent =
+            "Uploading media...";
+
+
+          mediaData =
+            await uploadFile(
+              mediaFileInput.files[0],
+              type,
+              (percent) => {
+
+                progressBar.style.width =
+                  percent + "%";
+
+                progressText.textContent =
+                  `Uploading media: ${percent}%`;
+
+              }
+            );
+
+        }
+
+
+        // ---------------------------------------------
+        // FIRESTORE DATA
+        // ---------------------------------------------
+
+        const data = {
+
+          title: title,
+
+          urduTitle:
+            urduTitleInput.value.trim(),
+
+          author:
+            authorInput.value.trim(),
+
+          description:
+            descriptionInput.value.trim(),
+
+          type: type,
+
+          coverUrl:
+            coverData?.url || "",
+
+          coverPath:
+            coverData?.path || "",
+
+          mediaUrl:
+            mediaData?.url ||
+            externalUrlInput.value.trim() ||
+            "",
+
+          mediaPath:
+            mediaData?.path || "",
+
+          mediaName:
+            mediaData?.name || "",
+
+          externalUrl:
+            externalUrlInput.value.trim(),
+
+          views: 0,
+
+          likes: 0,
+
+          comments: 0,
+
+          shares: 0,
+
+          createdBy:
+            user.uid,
+
+          createdByEmail:
+            user.email || "",
+
+          createdAt:
+            serverTimestamp()
+
+        };
+
+
+        progressText.textContent =
+          "Saving content...";
+
+
+        const collectionRef =
+          collection(
+            db,
+            type
+          );
+
+
+        const added =
+          await addDoc(
+            collectionRef,
+            data
+          );
+
+
+        console.log(
+          "Content added:",
+          added.id
         );
 
 
-      status.textContent =
-        "Uploading thumbnail...";
-
-
-      const thumbnailUpload =
-        await uploadFile(
-          thumbnailFile,
-          "shorts/thumbnails"
+        setStatus(
+          "Content added successfully.",
+          "success"
         );
 
 
-      const shortUrl =
-        shortUpload.url ||
-        document.getElementById("shortUrl")
-          .value.trim();
+        contentForm.reset();
 
 
-      const thumbnailUrl =
-        thumbnailUpload.url ||
-        document.getElementById("shortThumbnailUrl")
-          .value.trim();
+        progressBar.style.width =
+          "100%";
+
+        progressText.textContent =
+          "Upload complete.";
 
 
-      const data = {
-
-        title:
-          document.getElementById("shortTitle")
-            .value.trim(),
-
-        titleUrdu:
-          document.getElementById("shortTitleUrdu")
-            .value.trim(),
-
-        description:
-          document.getElementById("shortDescription")
-            .value.trim(),
-
-        videoUrl:
-          shortUrl,
-
-        thumbnailUrl,
-
-        videoStoragePath:
-          shortUpload.path,
-
-        thumbnailStoragePath:
-          thumbnailUpload.path,
-
-        type: "short",
-
-        views: 0,
-
-        likes: 0,
-
-        comments: 0,
-
-        createdAt:
-          serverTimestamp()
-
-      };
+        await loadAllContent();
 
 
-      await addDoc(
-        collection(db, "shorts"),
-        data
-      );
+      } catch (error) {
+
+        console.error(
+          "Upload error:",
+          error
+        );
 
 
-      status.textContent =
-        "✓ Short added successfully.";
+        setStatus(
+          "Error: " + error.message,
+          "error"
+        );
 
 
-      shortForm.reset();
+        progressText.textContent =
+          "Upload failed.";
 
+      } finally {
 
-      await loadAllContent();
+        uploadBtn.disabled =
+          false;
 
+        uploadBtn.textContent =
+          "Add Content";
 
-    } catch (error) {
+        setTimeout(() => {
 
-      console.error(
-        "Short upload error:",
-        error
-      );
+          progressWrap.classList.remove(
+            "show"
+          );
 
+        }, 1500);
 
-      status.textContent =
-        "Error: " + error.message;
-
-    } finally {
-
-      saveButton.disabled = false;
+      }
 
     }
+  );
 
-  }
-);
+}
 
 
-/* =========================================================
-   LOAD ALL CONTENT
-========================================================= */
+// =====================================================
+// LOAD COLLECTION
+// =====================================================
 
-async function loadAllContent() {
+async function loadCollection(
+  collectionName
+) {
+
+  const result = [];
+
 
   try {
 
-    const booksSnapshot =
-      await getDocs(
-        collection(db, "books")
+    const refCollection =
+      collection(
+        db,
+        collectionName
       );
 
 
-    const videosSnapshot =
+    const snapshot =
       await getDocs(
-        collection(db, "videos")
+        refCollection
       );
 
 
-    const shortsSnapshot =
-      await getDocs(
-        collection(db, "shorts")
-      );
+    snapshot.forEach(
+      (docSnap) => {
 
+        result.push({
+          id: docSnap.id,
+          collection:
+            collectionName,
+          ...docSnap.data()
+        });
 
-    const books =
-      booksSnapshot.docs.map(item => ({
-        id: item.id,
-        collection: "books",
-        ...item.data()
-      }));
-
-
-    const videos =
-      videosSnapshot.docs.map(item => ({
-        id: item.id,
-        collection: "videos",
-        ...item.data()
-      }));
-
-
-    const shorts =
-      shortsSnapshot.docs.map(item => ({
-        id: item.id,
-        collection: "shorts",
-        ...item.data()
-      }));
-
-
-    document.getElementById(
-      "booksCount"
-    ).textContent =
-      books.length;
-
-
-    document.getElementById(
-      "videosCount"
-    ).textContent =
-      videos.length;
-
-
-    document.getElementById(
-      "shortsCount"
-    ).textContent =
-      shorts.length;
-
-
-    document.getElementById(
-      "totalCount"
-    ).textContent =
-      books.length +
-      videos.length +
-      shorts.length;
-
-
-    renderContent([
-      ...books,
-      ...videos,
-      ...shorts
-    ]);
+      }
+    );
 
 
   } catch (error) {
 
     console.error(
-      "Loading content failed:",
+      `Error loading ${collectionName}:`,
       error
     );
 
-
-    document.getElementById(
-      "allContent"
-    ).innerHTML = `
-      <div class="empty">
-        Error loading content.<br>
-        ${escapeHTML(error.message)}
-      </div>
-    `;
-
   }
+
+
+  return result;
 
 }
 
 
-/* =========================================================
-   RENDER CONTENT
-========================================================= */
+// =====================================================
+// LOAD ALL
+// =====================================================
 
-function renderContent(items) {
+async function loadAllContent() {
 
-  const container =
-    document.getElementById("allContent");
-
-
-  if (!items.length) {
-
-    container.innerHTML = `
-      <div class="empty">
-        No content has been added yet.
-      </div>
-    `;
-
-    return;
-  }
+  if (!itemsContainer) return;
 
 
-  container.innerHTML =
-    items.map(item => {
-
-      const title =
-        item.title ||
-        "Untitled";
-
-
-      const type =
-        item.collection === "books"
-          ? "📚 Book"
-          : item.collection === "videos"
-            ? "🎬 Video"
-            : "📱 Short";
-
-
-      const image =
-        item.coverUrl ||
-        item.thumbnailUrl ||
-        "logo.png";
-
-
-      return `
-
-        <article class="content-card">
-
-          <img
-            src="${escapeAttribute(image)}"
-            alt="${escapeAttribute(title)}"
-            onerror="this.src='logo.png'"
-          >
-
-          <div class="card-body">
-
-            <h3>
-              ${escapeHTML(title)}
-            </h3>
-
-            <p>
-              ${type}
-            </p>
-
-            <button
-              class="delete-btn"
-              data-id="${escapeAttribute(item.id)}"
-              data-collection="${escapeAttribute(item.collection)}"
-              data-pdf="${escapeAttribute(item.pdfStoragePath || "")}"
-              data-file="${escapeAttribute(item.videoStoragePath || "")}"
-              data-cover="${escapeAttribute(item.coverStoragePath || "")}"
-              data-thumb="${escapeAttribute(item.thumbnailStoragePath || "")}"
-            >
-              Delete
-            </button>
-
-          </div>
-
-        </article>
-
-      `;
-
-    }).join("");
-
-
-  container
-    .querySelectorAll(".delete-btn")
-    .forEach(button => {
-
-      button.addEventListener(
-        "click",
-        async () => {
-
-          await deleteContent(button);
-
-        }
-      );
-
-    });
-
-}
-
-
-/* =========================================================
-   DELETE CONTENT
-========================================================= */
-
-async function deleteContent(button) {
-
-  const id =
-    button.dataset.id;
-
-
-  const collectionName =
-    button.dataset.collection;
-
-
-  const confirmed =
-    confirm(
-      "Are you sure you want to delete this content?"
-    );
-
-
-  if (!confirmed) {
-    return;
-  }
+  itemsContainer.innerHTML =
+    `<div class="empty">Loading content...</div>`;
 
 
   try {
 
-    button.disabled = true;
+    const [
+      books,
+      videos,
+      shorts,
+      audios
+    ] = await Promise.all([
 
-    button.textContent =
-      "Deleting...";
+      loadCollection("books"),
+
+      loadCollection("videos"),
+
+      loadCollection("shorts"),
+
+      loadCollection("audios")
+
+    ]);
 
 
-    const storagePaths = [
-
-      button.dataset.pdf,
-
-      button.dataset.file,
-
-      button.dataset.cover,
-
-      button.dataset.thumb
-
+    allItems = [
+      ...books,
+      ...videos,
+      ...shorts,
+      ...audios
     ];
 
 
-    for (const path of storagePaths) {
+    updateStats(
+      books.length,
+      videos.length,
+      shorts.length,
+      audios.length
+    );
 
-      if (!path) {
-        continue;
-      }
+
+    renderItems();
 
 
-      try {
+  } catch (error) {
 
-        await deleteObject(
-          ref(storage, path)
-        );
+    console.error(
+      "Load all error:",
+      error
+    );
 
-      } catch (storageError) {
 
-        console.warn(
-          "Storage file could not be deleted:",
-          storageError
-        );
+    itemsContainer.innerHTML =
+      `<div class="empty">
+        Unable to load content.
+      </div>`;
 
-      }
+  }
 
-    }
+}
 
+
+// =====================================================
+// STATS
+// =====================================================
+
+function updateStats(
+  books,
+  videos,
+  shorts,
+  audios
+) {
+
+  if (bookCount)
+    bookCount.textContent = books;
+
+  if (videoCount)
+    videoCount.textContent = videos;
+
+  if (shortCount)
+    shortCount.textContent = shorts;
+
+  if (audioCount)
+    audioCount.textContent = audios;
+
+}
+
+
+// =====================================================
+// RENDER
+// =====================================================
+
+function renderItems() {
+
+  const filter =
+    filterType.value;
+
+
+  let items =
+    allItems;
+
+
+  if (filter !== "all") {
+
+    items =
+      allItems.filter(
+        item =>
+          item.collection === filter
+      );
+
+  }
+
+
+  if (!items.length) {
+
+    itemsContainer.innerHTML =
+      `<div class="empty">
+        No content found.
+      </div>`;
+
+    return;
+  }
+
+
+  itemsContainer.innerHTML =
+    items
+      .map(
+        item =>
+          createItemCard(item)
+      )
+      .join("");
+
+}
+
+
+// =====================================================
+// CARD
+// =====================================================
+
+function createItemCard(item) {
+
+  const cover =
+    item.coverUrl ||
+    "logo.png";
+
+
+  const typeLabel =
+    item.collection;
+
+
+  const date =
+    item.createdAt?.toDate
+      ? item.createdAt
+          .toDate()
+          .toLocaleDateString()
+      : "";
+
+
+  return `
+
+    <article class="item-card">
+
+      <img
+        class="item-cover"
+        src="${escapeHTML(cover)}"
+        alt="${escapeHTML(item.title)}"
+        onerror="this.src='logo.png'"
+      >
+
+      <div class="item-body">
+
+        <div class="item-type">
+          ${escapeHTML(typeLabel)}
+        </div>
+
+        <div class="item-title">
+          ${escapeHTML(item.title)}
+        </div>
+
+        ${
+          item.urduTitle
+            ? `
+              <div class="item-urdu">
+                ${escapeHTML(item.urduTitle)}
+              </div>
+            `
+            : ""
+        }
+
+        <div class="item-meta">
+
+          ${
+            item.author
+              ? `Author: ${escapeHTML(item.author)}<br>`
+              : ""
+          }
+
+          Views: ${Number(item.views || 0)}<br>
+
+          Likes: ${Number(item.likes || 0)}<br>
+
+          ${
+            date
+              ? `Added: ${escapeHTML(date)}`
+              : ""
+          }
+
+        </div>
+
+
+        <div class="item-actions">
+
+          ${
+            item.mediaUrl
+              ? `
+                <button
+                  class="btn"
+                  onclick="window.open(
+                    '${escapeHTML(item.mediaUrl)}',
+                    '_blank'
+                  )"
+                >
+                  Open
+                </button>
+              `
+              : ""
+          }
+
+
+          <button
+            class="btn btn-danger"
+            data-delete-id="${escapeHTML(item.id)}"
+            data-delete-collection="${escapeHTML(item.collection)}"
+          >
+            Delete
+          </button>
+
+        </div>
+
+      </div>
+
+    </article>
+
+  `;
+
+}
+
+
+// =====================================================
+// DELETE CONTENT
+// =====================================================
+
+async function deleteContent(
+  collectionName,
+  id
+) {
+
+  const user =
+    auth.currentUser;
+
+
+  if (!user ||
+      user.uid !== ADMIN_UID) {
+
+    alert(
+      "You are not authorized."
+    );
+
+    return;
+
+  }
+
+
+  const item =
+    allItems.find(
+      x =>
+        x.id === id &&
+        x.collection === collectionName
+    );
+
+
+  if (!item) return;
+
+
+  const confirmed =
+    confirm(
+      `Delete "${item.title}" permanently?`
+    );
+
+
+  if (!confirmed) return;
+
+
+  try {
+
+    // -----------------------------------------------
+    // DELETE FIRESTORE
+    // -----------------------------------------------
 
     await deleteDoc(
       doc(
@@ -951,6 +1031,60 @@ async function deleteContent(button) {
         id
       )
     );
+
+
+    // -----------------------------------------------
+    // DELETE MEDIA FROM STORAGE
+    // -----------------------------------------------
+
+    if (item.mediaPath) {
+
+      try {
+
+        await deleteObject(
+          ref(
+            storage,
+            item.mediaPath
+          )
+        );
+
+      } catch (storageError) {
+
+        console.warn(
+          "Media storage delete failed:",
+          storageError
+        );
+
+      }
+
+    }
+
+
+    // -----------------------------------------------
+    // DELETE COVER FROM STORAGE
+    // -----------------------------------------------
+
+    if (item.coverPath) {
+
+      try {
+
+        await deleteObject(
+          ref(
+            storage,
+            item.coverPath
+          )
+        );
+
+      } catch (storageError) {
+
+        console.warn(
+          "Cover storage delete failed:",
+          storageError
+        );
+
+      }
+
+    }
 
 
     await loadAllContent();
@@ -969,35 +1103,57 @@ async function deleteContent(button) {
       error.message
     );
 
-
-    button.disabled = false;
-
-    button.textContent =
-      "Delete";
-
   }
 
 }
 
 
-/* =========================================================
-   SECURITY HELPERS
-========================================================= */
+// =====================================================
+// DELETE BUTTONS
+// =====================================================
 
-function escapeHTML(value) {
+if (itemsContainer) {
 
-  return String(value ?? "")
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
+  itemsContainer.addEventListener(
+    "click",
+    (event) => {
+
+      const button =
+        event.target.closest(
+          "[data-delete-id]"
+        );
+
+
+      if (!button) return;
+
+
+      const id =
+        button.dataset.deleteId;
+
+      const collectionName =
+        button.dataset.deleteCollection;
+
+
+      deleteContent(
+        collectionName,
+        id
+      );
+
+    }
+  );
 
 }
 
 
-function escapeAttribute(value) {
+// =====================================================
+// FILTER
+// =====================================================
 
-  return escapeHTML(value);
+if (filterType) {
+
+  filterType.addEventListener(
+    "change",
+    renderItems
+  );
 
 }
