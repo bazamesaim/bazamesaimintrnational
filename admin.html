@@ -1,513 +1,230 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
+  <title>Admin Panel | Bazam-E-Saim</title>
 
-  <title>
-    Admin Panel | Bazam-E-Saim
-  </title>
+  <link rel="icon" href="logo.png">
 
-  <link
-    rel="icon"
-    type="image/png"
-    href="logo.png"
-  >
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-  <link
-    rel="stylesheet"
-    href="admin.css"
-  >
+    body {
+      min-height: 100vh;
+      font-family: Arial, Helvetica, sans-serif;
+      color: #fff;
+      background:
+        radial-gradient(circle at 15% 25%, rgba(212,168,55,.18), transparent 25%),
+        radial-gradient(circle at 85% 75%, rgba(212,168,55,.13), transparent 25%),
+        #030303;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow-x: hidden;
+    }
 
+    body::before {
+      content: "";
+      position: fixed;
+      width: 450px;
+      height: 450px;
+      background: rgba(218, 170, 45, .07);
+      filter: blur(100px);
+      border-radius: 50%;
+      top: 5%;
+      left: 5%;
+      animation: glowMove 8s infinite alternate ease-in-out;
+      pointer-events: none;
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      width: 400px;
+      height: 400px;
+      background: rgba(218, 170, 45, .06);
+      filter: blur(100px);
+      border-radius: 50%;
+      right: 5%;
+      bottom: 5%;
+      animation: glowMove2 10s infinite alternate ease-in-out;
+      pointer-events: none;
+    }
+
+    @keyframes glowMove {
+      from {
+        transform: translate(0, 0);
+      }
+      to {
+        transform: translate(150px, 80px);
+      }
+    }
+
+    @keyframes glowMove2 {
+      from {
+        transform: translate(0, 0);
+      }
+      to {
+        transform: translate(-120px, -100px);
+      }
+    }
+
+    .admin-login {
+      width: min(440px, 92%);
+      padding: 40px 32px;
+      background: rgba(13, 13, 13, .94);
+      border: 1px solid rgba(225, 183, 61, .5);
+      border-radius: 22px;
+      box-shadow:
+        0 0 35px rgba(225, 183, 61, .08),
+        inset 0 0 30px rgba(225, 183, 61, .025);
+      text-align: center;
+      position: relative;
+      z-index: 2;
+    }
+
+    .logo {
+      width: 90px;
+      height: 90px;
+      object-fit: contain;
+      margin-bottom: 14px;
+      filter: drop-shadow(0 0 12px rgba(231, 191, 70, .45));
+    }
+
+    .brand {
+      color: #e7c65a;
+      letter-spacing: 4px;
+      font-size: 13px;
+      margin-bottom: 8px;
+    }
+
+    h1 {
+      color: #f0cf65;
+      font-size: 32px;
+      margin-bottom: 5px;
+    }
+
+    .urdu {
+      color: #d9b64f;
+      direction: rtl;
+      font-size: 18px;
+      margin-bottom: 20px;
+    }
+
+    .description {
+      color: #aaa;
+      line-height: 1.6;
+      margin-bottom: 28px;
+    }
+
+    .google-btn {
+      width: 100%;
+      border: none;
+      padding: 15px 18px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #f8dd82, #c89d36);
+      color: #080808;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: .25s ease;
+    }
+
+    .google-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(225, 183, 61, .22);
+    }
+
+    .google-icon {
+      background: #fff;
+      color: #4285f4;
+      width: 25px;
+      height: 25px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 8px;
+      font-weight: bold;
+    }
+
+    #message {
+      min-height: 24px;
+      margin-top: 18px;
+      color: #e5c55b;
+      font-size: 14px;
+    }
+
+    .back {
+      display: inline-block;
+      margin-top: 22px;
+      color: #d9b64f;
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    .back:hover {
+      color: #fff;
+    }
+
+    .copyright {
+      color: #666;
+      font-size: 12px;
+      margin-top: 28px;
+    }
+
+    @media (max-width: 500px) {
+      .admin-login {
+        padding: 32px 22px;
+      }
+
+      h1 {
+        font-size: 27px;
+      }
+    }
+  </style>
 </head>
-
 
 <body>
 
-<div class="glow glow-1"></div>
-<div class="glow glow-2"></div>
+  <main class="admin-login">
 
+    <img src="logo.png" class="logo" alt="Bazam-E-Saim Logo">
 
-<!-- =====================================================
-     LOGIN
-===================================================== -->
+    <div class="brand">BAZAM-E-SAIM</div>
 
-<section
-  id="adminLogin"
-  class="login-screen"
->
+    <h1>Admin Panel</h1>
 
-  <div class="login-box">
+    <div class="urdu">ایڈمن پینل</div>
 
-    <img
-      src="logo.png"
-      alt="Bazam-E-Saim"
-    >
-
-    <div class="mini-title">
-      BAZAM-E-SAIM
-    </div>
-
-    <h1>
-      Admin Panel
-    </h1>
-
-    <p class="urdu">
-      ایڈمن پینل
-    </p>
-
-
-    <p class="login-description">
+    <p class="description">
       Sign in with your authorized Firebase account.
     </p>
 
-
-    <button
-      id="googleAdminLogin"
-      class="gold-button"
-      type="button"
-    >
-
-      <span>
-        G
-      </span>
-
+    <button id="googleLoginBtn" class="google-btn">
+      <span class="google-icon">G</span>
       Continue with Google
-
     </button>
 
+    <div id="message"></div>
 
-    <button
-      id="logoutLogin"
-      class="text-button"
-      type="button"
-      hidden
-    >
-      Logout
-    </button>
-
-
-    <p
-      id="loginMessage"
-      class="message"
-    ></p>
-
-
-    <a
-      href="index.html"
-      class="back-link"
-    >
+    <a href="index.html" class="back">
       ← Back to Website
     </a>
 
-  </div>
-
-</section>
-
-
-<!-- =====================================================
-     ADMIN APP
-===================================================== -->
-
-<div
-  id="adminApp"
-  class="admin-app"
-  hidden
->
-
-
-<header class="admin-header">
-
-  <div class="brand">
-
-    <img
-      src="logo.png"
-      alt="Logo"
-    >
-
-    <div>
-
-      <strong>
-        Bazam-E-Saim
-      </strong>
-
-      <span>
-        Admin Panel
-      </span>
-
+    <div class="copyright">
+      © 2026 Bazam-E-Saim — All Rights Reserved.
     </div>
 
-  </div>
+  </main>
 
-
-  <div class="header-right">
-
-    <span id="adminEmail">
-      Admin
-    </span>
-
-
-    <a
-      href="index.html"
-      class="website-button"
-    >
-      View Website
-    </a>
-
-
-    <button
-      id="logoutButton"
-      class="logout-button"
-      type="button"
-    >
-      Logout
-    </button>
-
-  </div>
-
-</header>
-
-
-<main class="dashboard">
-
-
-<!-- =====================================================
-     STATS
-===================================================== -->
-
-<section class="stats-grid">
-
-
-  <div class="stat-card">
-
-    <span>
-      📚
-    </span>
-
-    <div>
-
-      <small>
-        Books
-      </small>
-
-      <strong id="bookCount">
-        0
-      </strong>
-
-    </div>
-
-  </div>
-
-
-  <div class="stat-card">
-
-    <span>
-      🎬
-    </span>
-
-    <div>
-
-      <small>
-        Videos
-      </small>
-
-      <strong id="videoCount">
-        0
-      </strong>
-
-    </div>
-
-  </div>
-
-
-  <div class="stat-card">
-
-    <span>
-      📱
-    </span>
-
-    <div>
-
-      <small>
-        Shorts
-      </small>
-
-      <strong id="shortCount">
-        0
-      </strong>
-
-    </div>
-
-  </div>
-
-
-</section>
-
-
-<!-- =====================================================
-     ADD CONTENT
-===================================================== -->
-
-<section class="panel">
-
-  <div class="panel-heading">
-
-    <div>
-
-      <span>
-        CONTENT MANAGEMENT
-      </span>
-
-      <h2>
-        Add New Content
-      </h2>
-
-    </div>
-
-  </div>
-
-
-  <form
-    id="contentForm"
-    class="content-form"
-  >
-
-
-    <div class="field">
-
-      <label>
-        Content Type
-      </label>
-
-      <select
-        id="contentType"
-        required
-      >
-
-        <option value="books">
-          📚 Book
-        </option>
-
-        <option value="videos">
-          🎬 Video
-        </option>
-
-        <option value="shorts">
-          📱 Short
-        </option>
-
-      </select>
-
-    </div>
-
-
-    <div class="field">
-
-      <label>
-        Title
-      </label>
-
-      <input
-        id="contentTitle"
-        type="text"
-        placeholder="Enter title"
-        required
-      >
-
-    </div>
-
-
-    <div class="field">
-
-      <label>
-        Urdu Title
-      </label>
-
-      <input
-        id="contentUrduTitle"
-        type="text"
-        placeholder="اردو عنوان"
-      >
-
-    </div>
-
-
-    <div class="field">
-
-      <label>
-        Author
-      </label>
-
-      <input
-        id="contentAuthor"
-        type="text"
-        value="Hazrat Allama Saim Chishti"
-      >
-
-    </div>
-
-
-    <div class="field">
-
-      <label>
-        Media / PDF URL
-      </label>
-
-      <input
-        id="contentUrl"
-        type="text"
-        placeholder="video.mp4 / PDF URL"
-      >
-
-      <small>
-        Example: New Video.mp4
-      </small>
-
-    </div>
-
-
-    <div class="field">
-
-      <label>
-        Cover / Thumbnail
-      </label>
-
-      <input
-        id="contentCover"
-        type="text"
-        placeholder="cover.png"
-      >
-
-    </div>
-
-
-    <div class="field full">
-
-      <label>
-        Description
-      </label>
-
-      <textarea
-        id="contentDescription"
-        rows="4"
-        placeholder="Description..."
-      ></textarea>
-
-    </div>
-
-
-    <button
-      type="submit"
-      class="gold-button submit-button"
-    >
-
-      + Add Content
-
-    </button>
-
-
-    <p
-      id="formMessage"
-      class="message"
-    ></p>
-
-
-  </form>
-
-</section>
-
-
-<!-- =====================================================
-     CONTENT LIST
-===================================================== -->
-
-<section class="panel">
-
-  <div class="panel-heading list-heading">
-
-    <div>
-
-      <span>
-        MANAGE CONTENT
-      </span>
-
-      <h2>
-        Your Content
-      </h2>
-
-    </div>
-
-
-    <select
-      id="filterType"
-    >
-
-      <option value="all">
-        All
-      </option>
-
-      <option value="books">
-        Books
-      </option>
-
-      <option value="videos">
-        Videos
-      </option>
-
-      <option value="shorts">
-        Shorts
-      </option>
-
-    </select>
-
-  </div>
-
-
-  <div
-    id="contentList"
-    class="content-list"
-  >
-
-    <div class="loading">
-      Loading...
-    </div>
-
-  </div>
-
-</section>
-
-
-</main>
-
-
-<footer class="admin-footer">
-
-  <span>
-    Bazam-E-Saim
-  </span>
-
-  <span>
-    Admin Panel
-  </span>
-
-</footer>
-
-
-</div>
-
-
-<script
-  type="module"
-  src="admin.js"
-></script>
-
+  <script type="module" src="admin.js"></script>
 
 </body>
-
 </html>
