@@ -2284,3 +2284,526 @@ textarea:focus-visible {
       0.01ms !important;
   }
 }
+/* =====================================================
+   AUTO MOVING SLIDER - CSS
+===================================================== */
+
+.slider-wrapper {
+  width: 100%;
+  max-width: 1450px;
+  margin: 0 auto;
+
+  display: grid;
+  grid-template-columns: 50px minmax(0, 1fr) 50px;
+
+  gap: 12px;
+  align-items: center;
+
+  position: relative;
+}
+
+
+/* =====================================================
+   SLIDER VIEWPORT
+===================================================== */
+
+.slider-viewport {
+  width: 100%;
+
+  overflow-x: auto;
+  overflow-y: hidden;
+
+  scroll-behavior: smooth;
+
+  scrollbar-width: none;
+
+  -webkit-overflow-scrolling: touch;
+
+  overscroll-behavior-x: contain;
+
+  padding: 15px 5px 30px;
+
+  cursor: grab;
+}
+
+.slider-viewport:active {
+  cursor: grabbing;
+}
+
+.slider-viewport::-webkit-scrollbar {
+  display: none;
+}
+
+
+/* =====================================================
+   SLIDER TRACK
+===================================================== */
+
+.slider-track {
+  width: max-content;
+
+  display: flex;
+
+  gap: 20px;
+
+  align-items: stretch;
+
+  will-change: transform;
+}
+
+
+/* =====================================================
+   CARDS
+===================================================== */
+
+.content-card {
+  flex: 0 0 300px;
+
+  width: 300px;
+
+  overflow: hidden;
+
+  border: 1px solid var(--border);
+
+  border-radius: 18px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(20,20,20,.97),
+      rgba(5,5,5,.98)
+    );
+
+  box-shadow:
+    0 15px 40px rgba(0,0,0,.35);
+
+  transition:
+    transform .35s ease,
+    border-color .35s ease,
+    box-shadow .35s ease;
+}
+
+.content-card:hover {
+  transform: translateY(-8px);
+
+  border-color:
+    rgba(243,210,123,.75);
+
+  box-shadow:
+    0 20px 50px rgba(0,0,0,.55),
+    0 0 30px rgba(201,154,62,.15);
+}
+
+
+/* =====================================================
+   BOOK IMAGE
+===================================================== */
+
+.card-image {
+  width: 100%;
+
+  height: 350px;
+
+  display: block;
+
+  object-fit: cover;
+
+  background: #050505;
+}
+
+
+/* =====================================================
+   VIDEO / SHORT
+===================================================== */
+
+.video-container {
+  width: 100%;
+
+  aspect-ratio: 16 / 10;
+
+  background: #000;
+
+  overflow: hidden;
+}
+
+.video-container video {
+  width: 100%;
+  height: 100%;
+
+  display: block;
+
+  object-fit: cover;
+}
+
+
+/* =====================================================
+   CARD BODY
+===================================================== */
+
+.card-body {
+  padding: 18px;
+}
+
+.card-body h3 {
+  color: var(--gold2);
+
+  font-size: 17px;
+
+  line-height: 1.4;
+}
+
+.urdu-title {
+  margin-top: 6px;
+
+  color: #d7ccb5;
+
+  direction: rtl;
+}
+
+.card-author {
+  margin-top: 8px;
+
+  color: var(--muted);
+
+  font-size: 13px;
+}
+
+
+/* =====================================================
+   STATS
+===================================================== */
+
+.card-stats {
+  display: flex;
+
+  gap: 14px;
+
+  margin-top: 12px;
+
+  color: var(--muted);
+
+  font-size: 12px;
+}
+
+.card-stats strong {
+  color: var(--gold2);
+}
+
+
+/* =====================================================
+   ACTION BUTTONS
+===================================================== */
+
+.card-actions {
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, 1fr);
+
+  gap: 5px;
+
+  margin-top: 14px;
+
+  padding-top: 12px;
+
+  border-top:
+    1px solid
+    rgba(201,154,62,.12);
+}
+
+.action-btn {
+  min-height: 36px;
+
+  padding: 5px;
+
+  border:
+    1px solid transparent;
+
+  border-radius: 8px;
+
+  background: transparent;
+
+  color: #aaa;
+
+  cursor: pointer;
+
+  font-size: 11px;
+
+  transition: .25s;
+}
+
+.action-btn:hover {
+  color: var(--gold2);
+
+  border-color:
+    var(--border);
+
+  background:
+    rgba(201,154,62,.07);
+}
+
+.action-btn.liked {
+  color: var(--gold3);
+
+  background:
+    rgba(201,154,62,.14);
+
+  border-color:
+    rgba(243,210,123,.3);
+}
+
+
+/* =====================================================
+   READ BOOK BUTTON
+===================================================== */
+
+.read-btn {
+  display: inline-block;
+
+  margin-top: 14px;
+
+  padding: 9px 14px;
+
+  border:
+    1px solid var(--border);
+
+  border-radius: 9px;
+
+  color: var(--gold2);
+
+  transition: .25s;
+}
+
+.read-btn:hover {
+  background:
+    rgba(201,154,62,.1);
+
+  transform:
+    translateY(-2px);
+}
+
+
+/* =====================================================
+   COMMENT BOX
+===================================================== */
+
+.comment-box {
+  margin-top: 10px;
+}
+
+.comment-box textarea {
+  width: 100%;
+
+  min-height: 70px;
+
+  resize: vertical;
+
+  padding: 10px;
+
+  border:
+    1px solid var(--border);
+
+  border-radius: 8px;
+
+  outline: none;
+
+  background: #050505;
+
+  color: white;
+}
+
+.comment-box textarea:focus {
+  border-color:
+    var(--gold2);
+
+  box-shadow:
+    0 0 15px
+    rgba(201,154,62,.12);
+}
+
+.comment-submit {
+  margin-top: 7px;
+
+  padding: 8px 14px;
+
+  border: none;
+
+  border-radius: 8px;
+
+  background:
+    linear-gradient(
+      135deg,
+      var(--gold3),
+      var(--gold)
+    );
+
+  color: #050505;
+
+  font-weight: bold;
+
+  cursor: pointer;
+}
+
+
+/* =====================================================
+   ARROW BUTTONS
+===================================================== */
+
+.slider-btn {
+  width: 48px;
+  height: 48px;
+
+  flex-shrink: 0;
+
+  border:
+    1px solid var(--border);
+
+  border-radius: 50%;
+
+  background:
+    rgba(10,10,10,.9);
+
+  color: var(--gold2);
+
+  font-size: 32px;
+
+  cursor: pointer;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  transition:
+    transform .25s ease,
+    background .25s ease,
+    box-shadow .25s ease;
+}
+
+.slider-btn:hover {
+  transform: scale(1.08);
+
+  background:
+    rgba(201,154,62,.12);
+
+  box-shadow:
+    0 0 25px
+    rgba(201,154,62,.25);
+}
+
+.slider-btn:active {
+  transform: scale(.94);
+}
+
+
+/* =====================================================
+   LOADING
+===================================================== */
+
+.loading {
+  min-width: 280px;
+
+  padding: 50px 30px;
+
+  text-align: center;
+
+  color: var(--gold);
+}
+
+
+/* =====================================================
+   GOLDEN SLIDER GLOW
+===================================================== */
+
+.slider-viewport {
+  position: relative;
+}
+
+.slider-viewport::after {
+  content: "";
+
+  position: absolute;
+
+  left: 5%;
+
+  right: 5%;
+
+  bottom: 8px;
+
+  height: 1px;
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(243,210,123,.5),
+      transparent
+    );
+
+  pointer-events: none;
+}
+
+
+/* =====================================================
+   MOBILE
+===================================================== */
+
+@media (max-width: 700px) {
+
+  .slider-wrapper {
+    grid-template-columns:
+      38px minmax(0,1fr) 38px;
+
+    gap: 5px;
+  }
+
+  .slider-btn {
+    width: 38px;
+    height: 38px;
+
+    font-size: 25px;
+  }
+
+  .slider-track {
+    gap: 15px;
+  }
+
+  .content-card {
+    flex: 0 0 82vw;
+
+    width: 82vw;
+  }
+
+  .card-image {
+    height: 390px;
+  }
+
+}
+
+
+/* =====================================================
+   SMALL MOBILE
+===================================================== */
+
+@media (max-width: 420px) {
+
+  .content-card {
+    flex: 0 0 86vw;
+
+    width: 86vw;
+  }
+
+  .card-image {
+    height: 350px;
+  }
+
+  .card-actions {
+    gap: 3px;
+  }
+
+  .action-btn {
+    font-size: 10px;
+  }
+
+}
