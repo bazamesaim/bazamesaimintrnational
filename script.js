@@ -2207,3 +2207,169 @@ document.addEventListener(
 
   }
 );
+
+/* =====================================================
+   AUTO MOVING SLIDERS - PASTE AT END OF script.js
+===================================================== */
+
+(function startMovingSliders() {
+
+  function start() {
+
+    const sliders = document.querySelectorAll(
+      ".slider-viewport"
+    );
+
+    sliders.forEach((viewport) => {
+
+      if (viewport.dataset.autoMoveStarted === "true") {
+        return;
+      }
+
+      const track = viewport.querySelector(
+        ".slider-track"
+      );
+
+      if (!track) {
+        return;
+      }
+
+      viewport.dataset.autoMoveStarted = "true";
+
+      let paused = false;
+
+      function getStep() {
+
+        const card = track.querySelector(
+          ".content-card"
+        );
+
+        if (!card) {
+          return 320;
+        }
+
+        const style =
+          window.getComputedStyle(track);
+
+        const gap =
+          parseFloat(style.gap) || 20;
+
+        return card.offsetWidth + gap;
+      }
+
+      function moveSlider() {
+
+        if (paused) {
+          return;
+        }
+
+        const maxScroll =
+          viewport.scrollWidth -
+          viewport.clientWidth;
+
+        if (maxScroll <= 0) {
+          return;
+        }
+
+        const step = getStep();
+
+        if (
+          viewport.scrollLeft >=
+          maxScroll - 5
+        ) {
+
+          viewport.scrollTo({
+            left: 0,
+            behavior: "smooth"
+          });
+
+        } else {
+
+          viewport.scrollBy({
+            left: step,
+            behavior: "smooth"
+          });
+
+        }
+
+      }
+
+      /* Slow movement */
+      setInterval(
+        moveSlider,
+        4000
+      );
+
+      /* Mouse pause */
+      viewport.addEventListener(
+        "mouseenter",
+        () => {
+          paused = true;
+        }
+      );
+
+      viewport.addEventListener(
+        "mouseleave",
+        () => {
+          paused = false;
+        }
+      );
+
+      /* Touch pause */
+      viewport.addEventListener(
+        "touchstart",
+        () => {
+          paused = true;
+        },
+        {
+          passive: true
+        }
+      );
+
+      viewport.addEventListener(
+        "touchend",
+        () => {
+
+          setTimeout(() => {
+            paused = false;
+          }, 1200);
+
+        },
+        {
+          passive: true
+        }
+      );
+
+    });
+
+  }
+
+
+  /* Wait until cards are loaded */
+  if (
+    document.readyState ===
+    "loading"
+  ) {
+
+    document.addEventListener(
+      "DOMContentLoaded",
+      () => {
+
+        setTimeout(
+          start,
+          1500
+        );
+
+      }
+    );
+
+  } else {
+
+    setTimeout(
+      start,
+      1500
+    );
+
+  }
+
+})();
