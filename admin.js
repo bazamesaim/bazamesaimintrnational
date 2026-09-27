@@ -1,6 +1,6 @@
 import {
   initializeApp
-} from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
+} from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
 
 import {
   getAuth,
@@ -8,7 +8,18 @@ import {
   signInWithPopup,
   onAuthStateChanged,
   signOut
-} from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
+} from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+
+import {
+  getFirestore,
+  doc,
+  getDoc
+} from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+
+
+// =====================================================
+// FIREBASE CONFIG
+// =====================================================
 
 const firebaseConfig = {
   apiKey: "AIzaSyBFzwp8jL3J1oUxAeDDq23T2CmydtgTa1k",
@@ -20,119 +31,295 @@ const firebaseConfig = {
   measurementId: "G-S79YY7WPWX"
 };
 
+
+// =====================================================
+// INITIALIZE FIREBASE
+// =====================================================
+
 const app = initializeApp(firebaseConfig);
 
 const auth = getAuth(app);
 
+const db = getFirestore(app);
+
 const provider = new GoogleAuthProvider();
+
+
+// =====================================================
+// ADMIN UID
+// =====================================================
 
 const ADMIN_UID = "4fPc8xh4nocESroI4UtFZbCBgMl2";
 
-const loginButton = document.getElementById("googleLoginBtn");
-const message = document.getElementById("message");
 
-function showMessage(text, error = false) {
+// =====================================================
+// ELEMENTS
+// =====================================================
+
+const googleLoginBtn =
+  document.getElementById("googleLoginBtn");
+
+const message =
+  document.getElementById("message");
+
+
+// =====================================================
+// MESSAGE
+// =====================================================
+
+function showMessage(text, type = "error") {
+
   if (!message) return;
 
   message.textContent = text;
-  message.style.color = error ? "#ff6b6b" : "#e7c65a";
+
+  message.className = "message " + type;
 }
 
-onAuthStateChanged(auth, (user) => {
+
+// =====================================================
+// CHECK ADMIN
+// =====================================================
+
+function isAdmin(user) {
 
   if (!user) {
-    return;
+    return false;
   }
 
-  console.log("Current Firebase user:", user.uid);
+  return user.uid === ADMIN_UID;
+}
 
-  if (user.uid === ADMIN_UID) {
 
-    showMessage("Admin verified. Opening dashboard...");
+// =====================================================
+// GOOGLE LOGIN
+// =====================================================
 
-    setTimeout(() => {
-      window.location.href = "admin-dashboard.html";
-    }, 700);
+async function loginAsAdmin() {
 
-  } else {
+  if (!googleLoginBtn) return;
 
-    console.warn("Unauthorized account:", user.email);
+  googleLoginBtn.disabled = true;
 
-    showMessage(
-      "This Google account is not authorized as Admin.",
-      true
+  showMessage(
+    "Opening Google login...",
+    "success"
+  );
+
+  try {
+
+    const result =
+      await signInWithPopup(
+        auth,
+        provider
+      );
+
+    const user = result.user;
+
+    console.log(
+      "Logged in user:",
+      user
     );
 
-    signOut(auth);
-  }
-});
+    console.log(
+      "UID:",
+      user.uid
+    );
 
-if (loginButton) {
+    // -------------------------------------------------
+    // ADMIN CHECK
+    // -------------------------------------------------
 
-  loginButton.addEventListener("click", async () => {
+    if (!isAdmin(user)) {
 
-    try {
+      await signOut(auth);
 
-      loginButton.disabled = true;
+      showMessage(
+        "This Google account is not authorized as Admin.",
+        "error"
+      );
 
-      loginButton.style.opacity = "0.6";
+      console.error(
+        "Unauthorized Admin UID:",
+        user.uid
+      );
 
-      showMessage("Opening Google login...");
+      googleLoginBtn.disabled = false;
 
-      const result = await signInWithPopup(auth, provider);
-
-      const user = result.user;
-
-      console.log("Google login:", user.email);
-      console.log("UID:", user.uid);
-
-      if (user.uid !== ADMIN_UID) {
-
-        await signOut(auth);
-
-        showMessage(
-          "This account is not authorized as Admin.",
-          true
-        );
-
-        loginButton.disabled = false;
-        loginButton.style.opacity = "1";
-
-        return;
-      }
-
-      showMessage("Login successful. Opening Admin Dashboard...");
-
-      setTimeout(() => {
-        window.location.href = "admin-dashboard.html";
-      }, 500);
-
-    } catch (error) {
-
-      console.error("Admin login error:", error);
-
-      let errorMessage = error.message;
-
-      if (error.code === "auth/popup-closed-by-user") {
-        errorMessage = "Google login window was closed.";
-      }
-
-      if (error.code === "auth/unauthorized-domain") {
-        errorMessage =
-          "bazamesaim.github.io is not authorized in Firebase.";
-      }
-
-      if (error.code === "auth/popup-blocked") {
-        errorMessage =
-          "Browser blocked the Google login popup.";
-      }
-
-      showMessage(errorMessage, true);
-
-      loginButton.disabled = false;
-      loginButton.style.opacity = "1";
+      return;
     }
 
-  });
+
+    // -------------------------------------------------
+    // ADMIN LOGIN SUCCESS
+    // -------------------------------------------------
+
+    localStorage.setItem(
+      "bazamAdminUID",
+      user.uid
+    );
+
+    localStorage.setItem(
+      "bazamAdminEmail",
+      user.email || ""
+    );
+
+    localStorage.setItem(
+      "bazamAdminName",
+      user.displayName || "Admin"
+    );
+
+    localStorage.setItem(
+      "bazamAdminLoggedIn",
+      "true"
+    );
+
+
+    showMessage(
+      "Admin login successful. Opening dashboard...",
+      "success"
+    );
+
+
+    setTimeout(() => {
+
+      window.location.href =
+        "admin-dashboard.html";
+
+    }, 700);
+
+
+  } catch (error) {
+
+    console.error(
+      "Admin login error:",
+      error
+    );
+
+
+    let errorMessage =
+      "Unable to sign in. Please try again.";
+
+
+    if (
+      error.code ===
+      "auth/unauthorized-domain"
+    ) {
+
+      errorMessage =
+        "GitHub Pages domain is not authorized in Firebase.";
+
+    } else if (
+      error.code ===
+      "auth/popup-closed-by-user"
+    ) {
+
+      errorMessage =
+        "Google login window was closed.";
+
+    } else if (
+      error.code ===
+      "auth/popup-blocked"
+    ) {
+
+      errorMessage =
+        "Browser blocked the Google login popup.";
+
+    } else if (
+      error.code ===
+      "auth/cancelled-popup-request"
+    ) {
+
+      errorMessage =
+        "Login request was cancelled.";
+
+    } else if (error.message) {
+
+      errorMessage =
+        error.message;
+
+    }
+
+
+    showMessage(
+      errorMessage,
+      "error"
+    );
+
+    googleLoginBtn.disabled = false;
+  }
+}
+
+
+// =====================================================
+// ALREADY LOGGED IN
+// =====================================================
+
+onAuthStateChanged(
+  auth,
+  async (user) => {
+
+    if (!user) {
+      return;
+    }
+
+
+    console.log(
+      "Current Firebase user:",
+      user.uid
+    );
+
+
+    if (isAdmin(user)) {
+
+      localStorage.setItem(
+        "bazamAdminLoggedIn",
+        "true"
+      );
+
+      localStorage.setItem(
+        "bazamAdminUID",
+        user.uid
+      );
+
+      if (
+        window.location.pathname.endsWith(
+          "admin.html"
+        )
+      ) {
+
+        showMessage(
+          "Admin already signed in. Opening dashboard...",
+          "success"
+        );
+
+        setTimeout(() => {
+
+          window.location.href =
+            "admin-dashboard.html";
+
+        }, 500);
+      }
+
+    } else {
+
+      await signOut(auth);
+
+    }
+
+  }
+);
+
+
+// =====================================================
+// BUTTON
+// =====================================================
+
+if (googleLoginBtn) {
+
+  googleLoginBtn.addEventListener(
+    "click",
+    loginAsAdmin
+  );
 
 }
