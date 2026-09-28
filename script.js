@@ -1,5 +1,9 @@
 // =====================================================
-// BAZAM-E-SAIM - MAIN SCRIPT
+// BAZAM-E-SAIM
+// COMPLETE MAIN SCRIPT
+// Books + Videos + Shorts
+// Firebase + Likes + Views + Comments + Sharing
+// Auto Slider + Drag + Touch
 // =====================================================
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
@@ -27,25 +31,13 @@ import {
 // =====================================================
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBFzwp8jL3J1oUxAeDDq23T2CmydtgTa1k",
-
-  authDomain:
-    "bazamesaiminternational.firebaseapp.com",
-
-  projectId:
-    "bazamesaiminternational",
-
-  storageBucket:
-    "bazamesaiminternational.firebasestorage.app",
-
-  messagingSenderId:
-    "879282438130",
-
-  appId:
-    "1:879282438130:web:a285d48f427e6659e3f56b",
-
-  measurementId:
-    "G-S79YY7WPWX"
+  apiKey: "AIzaSyBFzwp8J3L1oUxAeDDq23T2CmydtgTa1k",
+  authDomain: "bazamesaiminternational.firebaseapp.com",
+  projectId: "bazamesaiminternational",
+  storageBucket: "bazamesaiminternational.firebasestorage.app",
+  messagingSenderId: "879282438130",
+  appId: "1:879282438130:web:a285d48f427e6659e3f56b",
+  measurementId: "G-S79YY7WPWX"
 };
 
 
@@ -54,9 +46,7 @@ const firebaseConfig = {
 // =====================================================
 
 const app = initializeApp(firebaseConfig);
-
 const auth = getAuth(app);
-
 const db = getFirestore(app);
 
 let currentUser = null;
@@ -72,14 +62,12 @@ console.log(
 // =====================================================
 
 onAuthStateChanged(auth, (user) => {
-
   currentUser = user;
 
   console.log(
     "Current user:",
     user ? user.email : "Not logged in"
   );
-
 });
 
 
@@ -88,10 +76,9 @@ onAuthStateChanged(auth, (user) => {
 // =====================================================
 
 function escapeHTML(value) {
-
-  return String(value ?? "")
-    .replace(/[&<>"']/g, (character) => {
-
+  return String(value ?? "").replace(
+    /[&<>"']/g,
+    (character) => {
       const map = {
         "&": "&amp;",
         "<": "&lt;",
@@ -101,9 +88,8 @@ function escapeHTML(value) {
       };
 
       return map[character];
-
-    });
-
+    }
+  );
 }
 
 
@@ -112,47 +98,46 @@ function escapeHTML(value) {
 // =====================================================
 
 async function loadJSON(file) {
-
   const response = await fetch(
-    file + "?v=" + Date.now()
+    file + "?v=" + Date.now(),
+    {
+      cache: "no-store"
+    }
   );
 
   if (!response.ok) {
-
     throw new Error(
-      file + " not found"
+      `${file} not found`
     );
-
   }
 
-  return await response.json();
-
+  try {
+    return await response.json();
+  } catch (error) {
+    throw new Error(
+      `${file} contains invalid JSON`
+    );
+  }
 }
 
 
 // =====================================================
-// JSON ARRAY HELPER
+// ARRAY HELPER
 // =====================================================
 
 function arrayData(data) {
-
   if (Array.isArray(data)) {
-
     return data;
-
   }
 
   if (
     data &&
     Array.isArray(data.items)
   ) {
-
     return data.items;
-
   }
 
   return [];
-
 }
 
 
@@ -161,11 +146,8 @@ function arrayData(data) {
 // =====================================================
 
 function requireLogin() {
-
   if (currentUser) {
-
     return true;
-
   }
 
   alert(
@@ -176,18 +158,15 @@ function requireLogin() {
   window.location.href = "login.html";
 
   return false;
-
 }
 
 
 // =====================================================
-// GET CONTENT STATS
+// FIREBASE STATS
 // =====================================================
 
 async function getStats(type, id) {
-
   try {
-
     const reference = doc(
       db,
       "contentStats",
@@ -197,22 +176,17 @@ async function getStats(type, id) {
     const snapshot = await getDoc(reference);
 
     if (!snapshot.exists()) {
-
       return {
         likes: 0,
         views: 0
       };
-
     }
 
     const data = snapshot.data();
 
     return {
-
       likes: Number(data.likes || 0),
-
       views: Number(data.views || 0)
-
     };
 
   } catch (error) {
@@ -226,9 +200,7 @@ async function getStats(type, id) {
       likes: 0,
       views: 0
     };
-
   }
-
 }
 
 
@@ -237,11 +209,8 @@ async function getStats(type, id) {
 // =====================================================
 
 async function userLiked(type, id) {
-
   if (!currentUser) {
-
     return false;
-
   }
 
   try {
@@ -252,7 +221,8 @@ async function userLiked(type, id) {
       `${type}_${id}_${currentUser.uid}`
     );
 
-    const snapshot = await getDoc(reference);
+    const snapshot =
+      await getDoc(reference);
 
     return (
       snapshot.exists() &&
@@ -267,9 +237,7 @@ async function userLiked(type, id) {
     );
 
     return false;
-
   }
-
 }
 
 
@@ -280,46 +248,40 @@ async function userLiked(type, id) {
 async function updateStats(card) {
 
   if (!card) {
-
     return;
-
   }
 
-  const type = card.dataset.type;
+  const type =
+    card.dataset.type;
 
-  const id = card.dataset.id;
+  const id =
+    card.dataset.id;
 
-  const stats = await getStats(
-    type,
-    id
-  );
-
-
-  // Like count
-
-  const likeElements =
-    card.querySelectorAll(".like-count");
-
-  likeElements.forEach((element) => {
-
-    element.textContent = stats.likes;
-
-  });
+  const stats =
+    await getStats(type, id);
 
 
-  // View count
+  // LIKE COUNT
 
-  const viewElements =
-    card.querySelectorAll(".view-count");
-
-  viewElements.forEach((element) => {
-
-    element.textContent = stats.views;
-
-  });
+  card
+    .querySelectorAll(".like-count")
+    .forEach((element) => {
+      element.textContent =
+        stats.likes;
+    });
 
 
-  // Like button
+  // VIEW COUNT
+
+  card
+    .querySelectorAll(".view-count")
+    .forEach((element) => {
+      element.textContent =
+        stats.views;
+    });
+
+
+  // LIKE BUTTON
 
   const likeButton =
     card.querySelector(
@@ -328,18 +290,17 @@ async function updateStats(card) {
 
   if (likeButton) {
 
-    const liked = await userLiked(
-      type,
-      id
-    );
+    const liked =
+      await userLiked(
+        type,
+        id
+      );
 
     likeButton.classList.toggle(
       "liked",
       liked
     );
-
   }
-
 }
 
 
@@ -350,14 +311,14 @@ async function updateStats(card) {
 async function addView(card) {
 
   if (!card) {
-
     return;
-
   }
 
-  const type = card.dataset.type;
+  const type =
+    card.dataset.type;
 
-  const id = card.dataset.id;
+  const id =
+    card.dataset.id;
 
   const sessionKey =
     `view_${type}_${id}`;
@@ -365,25 +326,24 @@ async function addView(card) {
 
   try {
 
-    // One view per browser session
-
     if (
-      !sessionStorage.getItem(sessionKey)
+      !sessionStorage.getItem(
+        sessionKey
+      )
     ) {
 
-      const reference = doc(
-        db,
-        "contentStats",
-        `${type}_${id}`
-      );
+      const reference =
+        doc(
+          db,
+          "contentStats",
+          `${type}_${id}`
+        );
 
       await setDoc(
         reference,
         {
           type: type,
-
           contentId: id,
-
           views: increment(1)
         },
         {
@@ -395,9 +355,7 @@ async function addView(card) {
         sessionKey,
         "true"
       );
-
     }
-
 
     await updateStats(card);
 
@@ -407,36 +365,34 @@ async function addView(card) {
       "View error:",
       error
     );
-
   }
-
 }
 
 
 // =====================================================
-// TOGGLE LIKE
+// LIKE
 // =====================================================
 
 async function toggleLike(button) {
 
   if (!requireLogin()) {
-
     return;
-
   }
 
   const card =
-    button.closest(".content-card");
+    button.closest(
+      ".content-card"
+    );
 
   if (!card) {
-
     return;
-
   }
 
-  const type = card.dataset.type;
+  const type =
+    card.dataset.type;
 
-  const id = card.dataset.id;
+  const id =
+    card.dataset.id;
 
 
   try {
@@ -444,18 +400,20 @@ async function toggleLike(button) {
     button.disabled = true;
 
 
-    const likeRef = doc(
-      db,
-      "likes",
-      `${type}_${id}_${currentUser.uid}`
-    );
+    const likeRef =
+      doc(
+        db,
+        "likes",
+        `${type}_${id}_${currentUser.uid}`
+      );
 
 
-    const statsRef = doc(
-      db,
-      "contentStats",
-      `${type}_${id}`
-    );
+    const statsRef =
+      doc(
+        db,
+        "contentStats",
+        `${type}_${id}`
+      );
 
 
     const snapshot =
@@ -473,13 +431,9 @@ async function toggleLike(button) {
         likeRef,
         {
           uid: currentUser.uid,
-
           type: type,
-
           contentId: id,
-
           active: false,
-
           updatedAt: serverTimestamp()
         },
         {
@@ -504,13 +458,9 @@ async function toggleLike(button) {
         likeRef,
         {
           uid: currentUser.uid,
-
           type: type,
-
           contentId: id,
-
           active: true,
-
           createdAt: serverTimestamp()
         },
         {
@@ -528,7 +478,6 @@ async function toggleLike(button) {
           merge: true
         }
       );
-
     }
 
 
@@ -548,56 +497,53 @@ async function toggleLike(button) {
   } finally {
 
     button.disabled = false;
-
   }
-
 }
 
 
 // =====================================================
-// OPEN COMMENT
+// COMMENT OPEN
 // =====================================================
 
 function openComment(button) {
 
   const card =
-    button.closest(".content-card");
+    button.closest(
+      ".content-card"
+    );
 
   if (!card) {
-
     return;
-
   }
 
   const box =
-    card.querySelector(".comment-box");
+    card.querySelector(
+      ".comment-box"
+    );
 
   if (!box) {
-
     return;
-
   }
 
-  box.hidden = !box.hidden;
+  box.hidden =
+    !box.hidden;
 
 
   if (!box.hidden) {
 
     const textarea =
-      box.querySelector("textarea");
+      box.querySelector(
+        "textarea"
+      );
 
     if (textarea) {
 
-      setTimeout(() => {
-
-        textarea.focus();
-
-      }, 100);
-
+      setTimeout(
+        () => textarea.focus(),
+        100
+      );
     }
-
   }
-
 }
 
 
@@ -608,27 +554,25 @@ function openComment(button) {
 async function postComment(button) {
 
   if (!requireLogin()) {
-
     return;
-
   }
 
   const card =
-    button.closest(".content-card");
+    button.closest(
+      ".content-card"
+    );
 
   if (!card) {
-
     return;
-
   }
 
   const textarea =
-    card.querySelector("textarea");
+    card.querySelector(
+      "textarea"
+    );
 
   if (!textarea) {
-
     return;
-
   }
 
   const text =
@@ -642,7 +586,6 @@ async function postComment(button) {
     );
 
     return;
-
   }
 
 
@@ -650,11 +593,14 @@ async function postComment(button) {
 
     button.disabled = true;
 
-
     await addDoc(
-      collection(db, "comments"),
+      collection(
+        db,
+        "comments"
+      ),
       {
-        uid: currentUser.uid,
+        uid:
+          currentUser.uid,
 
         email:
           currentUser.email || "",
@@ -665,7 +611,8 @@ async function postComment(button) {
         contentId:
           card.dataset.id,
 
-        text: text,
+        text:
+          text,
 
         createdAt:
           serverTimestamp()
@@ -693,9 +640,7 @@ async function postComment(button) {
   } finally {
 
     button.disabled = false;
-
   }
-
 }
 
 
@@ -706,16 +651,17 @@ async function postComment(button) {
 async function shareCard(button) {
 
   const card =
-    button.closest(".content-card");
+    button.closest(
+      ".content-card"
+    );
 
   if (!card) {
-
     return;
-
   }
 
   const title =
-    card.querySelector("h3")?.textContent ||
+    card.querySelector("h3")
+      ?.textContent ||
     "Bazam-E-Saim";
 
 
@@ -725,19 +671,12 @@ async function shareCard(button) {
 
   try {
 
-    if (
-      navigator.share
-    ) {
+    if (navigator.share) {
 
       await navigator.share({
-
         title: title,
-
-        text:
-          "Bazam-E-Saim",
-
+        text: "Bazam-E-Saim",
         url: url
-
       });
 
     } else {
@@ -749,24 +688,21 @@ async function shareCard(button) {
       alert(
         "Link copied."
       );
-
     }
 
   } catch (error) {
 
     if (
-      error.name !== "AbortError"
+      error.name !==
+      "AbortError"
     ) {
 
       console.error(
         "Share error:",
         error
       );
-
     }
-
   }
-
 }
 
 
@@ -825,7 +761,6 @@ function actionsHTML() {
 
     </div>
   `;
-
 }
 
 
@@ -839,26 +774,21 @@ function bookCard(book, index) {
     book.id ||
     `book-${index + 1}`;
 
-
   const title =
     book.title ||
     `Book ${index + 1}`;
-
 
   const urdu =
     book.urduTitle ||
     "";
 
-
   const author =
     book.author ||
     "Hazrat Allama Saim Chishti";
 
-
   const cover =
     book.cover ||
     "cover.png";
-
 
   const link =
     book.link ||
@@ -867,7 +797,6 @@ function bookCard(book, index) {
 
 
   return `
-
     <article
       class="content-card"
       data-type="books"
@@ -910,9 +839,7 @@ function bookCard(book, index) {
       </div>
 
     </article>
-
   `;
-
 }
 
 
@@ -926,7 +853,6 @@ function mediaCard(item, index, type) {
     item.id ||
     `${type}-${index + 1}`;
 
-
   const title =
     item.title ||
     (
@@ -935,7 +861,6 @@ function mediaCard(item, index, type) {
         : `Short ${index + 1}`
     );
 
-
   const media =
     item.video ||
     item.media ||
@@ -943,14 +868,12 @@ function mediaCard(item, index, type) {
     item.url ||
     "";
 
-
   const author =
     item.author ||
     "Hazrat Allama Saim Chishti";
 
 
   return `
-
     <article
       class="content-card"
       data-type="${escapeHTML(type)}"
@@ -976,7 +899,6 @@ function mediaCard(item, index, type) {
 
       </div>
 
-
       <div class="card-body">
 
         <h3>
@@ -986,7 +908,6 @@ function mediaCard(item, index, type) {
         <div class="card-author">
           ${escapeHTML(author)}
         </div>
-
 
         <div class="card-stats">
 
@@ -1008,15 +929,12 @@ function mediaCard(item, index, type) {
 
         </div>
 
-
         ${actionsHTML()}
 
       </div>
 
     </article>
-
   `;
-
 }
 
 
@@ -1030,50 +948,48 @@ async function setupCard(card) {
 
 
   const video =
-    card.querySelector("video");
+    card.querySelector(
+      "video"
+    );
 
 
   if (video) {
 
     let counted = false;
 
-
     video.addEventListener(
       "play",
       async () => {
 
         if (counted) {
-
           return;
-
         }
 
         counted = true;
 
         await addView(card);
-
       }
     );
 
   } else {
 
     await addView(card);
-
   }
-
 }
 
 
 // =====================================================
-// DRAG / SWIPE SLIDER
+// DRAG SLIDER
 // =====================================================
 
 function setupDragSlider(viewport) {
 
+  if (!viewport) {
+    return;
+  }
+
   let isDown = false;
-
   let startX = 0;
-
   let startScroll = 0;
 
 
@@ -1087,11 +1003,24 @@ function setupDragSlider(viewport) {
         "dragging"
       );
 
-      startX = event.pageX;
+      startX =
+        event.pageX;
 
       startScroll =
         viewport.scrollLeft;
+    }
+  );
 
+
+  window.addEventListener(
+    "mouseup",
+    () => {
+
+      isDown = false;
+
+      viewport.classList.remove(
+        "dragging"
+      );
     }
   );
 
@@ -1105,21 +1034,6 @@ function setupDragSlider(viewport) {
       viewport.classList.remove(
         "dragging"
       );
-
-    }
-  );
-
-
-  viewport.addEventListener(
-    "mouseup",
-    () => {
-
-      isDown = false;
-
-      viewport.classList.remove(
-        "dragging"
-      );
-
     }
   );
 
@@ -1129,29 +1043,23 @@ function setupDragSlider(viewport) {
     (event) => {
 
       if (!isDown) {
-
         return;
-
       }
 
       event.preventDefault();
 
-
       const distance =
         event.pageX - startX;
 
-
       viewport.scrollLeft =
         startScroll - distance;
-
     }
   );
-
 }
 
 
 // =====================================================
-// CARD WIDTH
+// CARD STEP
 // =====================================================
 
 function getCardStep(viewport) {
@@ -1161,34 +1069,33 @@ function getCardStep(viewport) {
       ".content-card"
     );
 
-
   if (!card) {
-
     return 320;
-
   }
-
 
   const track =
     viewport.querySelector(
       ".slider-track"
     );
 
-
   if (!track) {
-
-    return card.offsetWidth + 20;
-
+    return (
+      card.offsetWidth + 20
+    );
   }
 
-
   const styles =
-    window.getComputedStyle(track);
-
+    window.getComputedStyle(
+      track
+    );
 
   const gap =
-    parseFloat(styles.columnGap) ||
-    parseFloat(styles.gap) ||
+    parseFloat(
+      styles.columnGap
+    ) ||
+    parseFloat(
+      styles.gap
+    ) ||
     20;
 
 
@@ -1196,7 +1103,6 @@ function getCardStep(viewport) {
     card.offsetWidth +
     gap
   );
-
 }
 
 
@@ -1204,12 +1110,26 @@ function getCardStep(viewport) {
 // MOVE SLIDER
 // =====================================================
 
-function moveSlider(viewport, direction) {
+function moveSlider(
+  viewport,
+  direction
+) {
 
   if (!viewport) {
-
     return;
+  }
 
+
+  const maxScroll =
+    Math.max(
+      0,
+      viewport.scrollWidth -
+      viewport.clientWidth
+    );
+
+
+  if (maxScroll <= 5) {
+    return;
   }
 
 
@@ -1217,12 +1137,9 @@ function moveSlider(viewport, direction) {
     getCardStep(viewport);
 
 
-  const maxScroll =
-    viewport.scrollWidth -
-    viewport.clientWidth;
-
-
-  if (direction === "next") {
+  if (
+    direction === "next"
+  ) {
 
     if (
       viewport.scrollLeft >=
@@ -1230,23 +1147,16 @@ function moveSlider(viewport, direction) {
     ) {
 
       viewport.scrollTo({
-
         left: 0,
-
         behavior: "smooth"
-
       });
 
     } else {
 
       viewport.scrollBy({
-
         left: step,
-
         behavior: "smooth"
-
       });
-
     }
 
   } else {
@@ -1256,27 +1166,89 @@ function moveSlider(viewport, direction) {
     ) {
 
       viewport.scrollTo({
-
         left: maxScroll,
-
         behavior: "smooth"
-
       });
 
     } else {
 
       viewport.scrollBy({
-
         left: -step,
-
         behavior: "smooth"
-
       });
-
     }
-
   }
+}
 
+
+// =====================================================
+// TOUCH SWIPE
+// =====================================================
+
+function setupTouchSlider(viewport) {
+
+  let startX = 0;
+  let startScroll = 0;
+  let touching = false;
+
+
+  viewport.addEventListener(
+    "touchstart",
+    (event) => {
+
+      if (
+        event.touches.length !== 1
+      ) {
+        return;
+      }
+
+      touching = true;
+
+      startX =
+        event.touches[0].pageX;
+
+      startScroll =
+        viewport.scrollLeft;
+    },
+    {
+      passive: true
+    }
+  );
+
+
+  viewport.addEventListener(
+    "touchmove",
+    (event) => {
+
+      if (!touching) {
+        return;
+      }
+
+      const currentX =
+        event.touches[0].pageX;
+
+      const distance =
+        currentX - startX;
+
+      viewport.scrollLeft =
+        startScroll - distance;
+    },
+    {
+      passive: true
+    }
+  );
+
+
+  viewport.addEventListener(
+    "touchend",
+    () => {
+
+      touching = false;
+    },
+    {
+      passive: true
+    }
+  );
 }
 
 
@@ -1284,164 +1256,149 @@ function moveSlider(viewport, direction) {
 // AUTO SLIDER
 // =====================================================
 
+const sliderTimers =
+  new WeakMap();
+
+
 function startAutoSliders() {
 
-  const viewports =
-    document.querySelectorAll(
+  document
+    .querySelectorAll(
       ".slider-viewport"
-    );
+    )
+    .forEach((viewport) => {
 
-
-  viewports.forEach((viewport) => {
-
-    // Prevent duplicate timers
-
-    if (
-      viewport.dataset.autoSliderStarted ===
-      "true"
-    ) {
-
-      return;
-
-    }
-
-
-    viewport.dataset.autoSliderStarted =
-      "true";
-
-
-    let paused = false;
-
-
-    // Mouse pause
-
-    viewport.addEventListener(
-      "mouseenter",
-      () => {
-
-        paused = true;
-
-      }
-    );
-
-
-    viewport.addEventListener(
-      "mouseleave",
-      () => {
-
-        paused = false;
-
-      }
-    );
-
-
-    // Touch pause
-
-    viewport.addEventListener(
-      "touchstart",
-      () => {
-
-        paused = true;
-
-      },
-      {
-        passive: true
-      }
-    );
-
-
-    viewport.addEventListener(
-      "touchend",
-      () => {
-
-        setTimeout(() => {
-
-          paused = false;
-
-        }, 1500);
-
-      },
-      {
-        passive: true
-      }
-    );
-
-
-    // Auto move every 4 seconds
-
-    setInterval(() => {
-
-      if (paused) {
-
-        return;
-
+      if (
+        sliderTimers.has(viewport)
+      ) {
+        clearInterval(
+          sliderTimers.get(
+            viewport
+          )
+        );
       }
 
-      moveSlider(
-        viewport,
-        "next"
+
+      let paused = false;
+
+
+      viewport.addEventListener(
+        "mouseenter",
+        () => {
+          paused = true;
+        }
       );
 
-    }, 4000);
 
-  });
+      viewport.addEventListener(
+        "mouseleave",
+        () => {
+          paused = false;
+        }
+      );
 
+
+      viewport.addEventListener(
+        "touchstart",
+        () => {
+          paused = true;
+        },
+        {
+          passive: true
+        }
+      );
+
+
+      viewport.addEventListener(
+        "touchend",
+        () => {
+
+          setTimeout(
+            () => {
+              paused = false;
+            },
+            1500
+          );
+
+        },
+        {
+          passive: true
+        }
+      );
+
+
+      const timer =
+        setInterval(
+          () => {
+
+            if (paused) {
+              return;
+            }
+
+            moveSlider(
+              viewport,
+              "next"
+            );
+
+          },
+          4500
+        );
+
+
+      sliderTimers.set(
+        viewport,
+        timer
+      );
+
+    });
 }
 
 
 // =====================================================
-// ARROW BUTTONS
+// ARROWS
 // =====================================================
 
 function setupArrows() {
 
-  const buttons =
-    document.querySelectorAll(
+  document
+    .querySelectorAll(
       ".slider-btn"
-    );
+    )
+    .forEach((button) => {
+
+      button.addEventListener(
+        "click",
+        () => {
+
+          const targetId =
+            button.dataset.target;
+
+          const viewport =
+            document.getElementById(
+              targetId
+            );
+
+          if (!viewport) {
+            return;
+          }
 
 
-  buttons.forEach((button) => {
-
-    button.addEventListener(
-      "click",
-      () => {
-
-        const targetId =
-          button.dataset.target;
+          const direction =
+            button.classList.contains(
+              "next-btn"
+            )
+              ? "next"
+              : "prev";
 
 
-        const viewport =
-          document.getElementById(
-            targetId
+          moveSlider(
+            viewport,
+            direction
           );
-
-
-        if (!viewport) {
-
-          return;
-
         }
+      );
 
-
-        const direction =
-          button.classList.contains(
-            "next-btn"
-          )
-            ? "next"
-            : "prev";
-
-
-        moveSlider(
-          viewport,
-          direction
-        );
-
-      }
-    );
-
-  });
-
+    });
 }
 
 
@@ -1456,7 +1413,6 @@ function setupMenu() {
       "menuBtn"
     );
 
-
   const nav =
     document.getElementById(
       "mainNav"
@@ -1464,9 +1420,7 @@ function setupMenu() {
 
 
   if (!menu || !nav) {
-
     return;
-
   }
 
 
@@ -1498,7 +1452,6 @@ function setupMenu() {
       );
 
     });
-
 }
 
 
@@ -1513,11 +1466,8 @@ async function visitorCounter() {
       "visitorCount"
     );
 
-
   if (!element) {
-
     return;
-
   }
 
 
@@ -1554,7 +1504,8 @@ async function visitorCounter() {
           const oldCount =
             snapshot.exists()
               ? Number(
-                  snapshot.data().count || 0
+                  snapshot.data()
+                    .count || 0
                 )
               : 0;
 
@@ -1578,25 +1529,26 @@ async function visitorCounter() {
         visitorKey,
         "true"
       );
-
     }
 
 
     const snapshot =
-      await getDoc(reference);
+      await getDoc(
+        reference
+      );
 
 
     const count =
       snapshot.exists()
         ? Number(
-            snapshot.data().count || 0
+            snapshot.data()
+              .count || 0
           )
         : 0;
 
 
     element.textContent =
       count.toLocaleString();
-
 
   } catch (error) {
 
@@ -1605,15 +1557,14 @@ async function visitorCounter() {
       error
     );
 
-    element.textContent = "0";
-
+    element.textContent =
+      "0";
   }
-
 }
 
 
 // =====================================================
-// ACTION BUTTON EVENTS
+// ACTION EVENTS
 // =====================================================
 
 document.addEventListener(
@@ -1625,11 +1576,8 @@ document.addEventListener(
         "[data-action]"
       );
 
-
     if (!button) {
-
       return;
-
     }
 
 
@@ -1643,33 +1591,23 @@ document.addEventListener(
 
       toggleLike(button);
 
-    }
-
-
-    else if (
+    } else if (
       action === "comment"
     ) {
 
       openComment(button);
 
-    }
-
-
-    else if (
+    } else if (
       action === "post-comment"
     ) {
 
       postComment(button);
 
-    }
-
-
-    else if (
+    } else if (
       action === "share"
     ) {
 
       shareCard(button);
-
     }
 
   }
@@ -1677,7 +1615,7 @@ document.addEventListener(
 
 
 // =====================================================
-// POINTER GOLD EFFECT
+// GOLDEN MOUSE GLOW
 // =====================================================
 
 document.addEventListener(
@@ -1688,7 +1626,6 @@ document.addEventListener(
       "--mouse-x",
       `${event.clientX}px`
     );
-
 
     document.body.style.setProperty(
       "--mouse-y",
@@ -1703,7 +1640,7 @@ document.addEventListener(
 
 
 // =====================================================
-// LOAD ALL CONTENT
+// LOAD CONTENT
 // =====================================================
 
 async function loadContent() {
@@ -1713,12 +1650,10 @@ async function loadContent() {
       "booksTrack"
     );
 
-
   const videosTrack =
     document.getElementById(
       "videosTrack"
     );
-
 
   const shortsTrack =
     document.getElementById(
@@ -1733,248 +1668,251 @@ async function loadContent() {
   ) {
 
     console.error(
-      "Books/Videos/Shorts elements missing from HTML."
+      "Books/Videos/Shorts elements missing."
     );
 
     return;
+  }
 
+
+  // ---------------------------------------------------
+  // Load each JSON separately
+  // ---------------------------------------------------
+
+  let books = [];
+  let videos = [];
+  let shorts = [];
+
+
+  try {
+
+    const data =
+      await loadJSON(
+        "books.json"
+      );
+
+    books =
+      arrayData(data);
+
+  } catch (error) {
+
+    console.error(
+      "BOOKS JSON ERROR:",
+      error
+    );
+
+    booksTrack.innerHTML = `
+      <div class="loading error-loading">
+        Books could not be loaded.
+        <br>
+        <small>${escapeHTML(error.message)}</small>
+      </div>
+    `;
   }
 
 
   try {
 
-    const [
-      booksData,
-      videosData,
-      shortsData
-    ] = await Promise.all([
-
-      loadJSON(
-        "books.json"
-      ),
-
-      loadJSON(
+    const data =
+      await loadJSON(
         "videos.json"
-      ),
+      );
 
-      loadJSON(
+    videos =
+      arrayData(data);
+
+  } catch (error) {
+
+    console.error(
+      "VIDEOS JSON ERROR:",
+      error
+    );
+
+    videosTrack.innerHTML = `
+      <div class="loading error-loading">
+        Videos could not be loaded.
+        <br>
+        <small>${escapeHTML(error.message)}</small>
+      </div>
+    `;
+  }
+
+
+  try {
+
+    const data =
+      await loadJSON(
         "shorts.json"
-      )
-
-    ]);
-
-
-    const books =
-      arrayData(
-        booksData
       );
 
+    shorts =
+      arrayData(data);
 
-    const videos =
-      arrayData(
-        videosData
-      );
+  } catch (error) {
 
-
-    const shorts =
-      arrayData(
-        shortsData
-      );
-
-
-    console.log(
-      "Books loaded:",
-      books.length
+    console.error(
+      "SHORTS JSON ERROR:",
+      error
     );
 
-
-    console.log(
-      "Videos loaded:",
-      videos.length
-    );
-
-
-    console.log(
-      "Shorts loaded:",
-      shorts.length
-    );
+    shortsTrack.innerHTML = `
+      <div class="loading error-loading">
+        Shorts could not be loaded.
+        <br>
+        <small>${escapeHTML(error.message)}</small>
+      </div>
+    `;
+  }
 
 
-    // =================================================
-    // BOOKS
-    // =================================================
+  // ---------------------------------------------------
+  // BOOKS
+  // ---------------------------------------------------
 
-    if (books.length > 0) {
+  if (books.length) {
 
-      booksTrack.innerHTML =
-        books
-          .map(
-            (book, index) =>
-              bookCard(
-                book,
-                index
-              )
-          )
-          .join("");
+    booksTrack.innerHTML =
+      books
+        .map(
+          (book, index) =>
+            bookCard(
+              book,
+              index
+            )
+        )
+        .join("");
 
-    } else {
+  } else if (
+    !booksTrack.querySelector(
+      ".error-loading"
+    )
+  ) {
 
-      booksTrack.innerHTML =
-        `
-          <div class="loading">
-            No books found.
-          </div>
-        `;
-
-    }
-
-
-    // =================================================
-    // VIDEOS
-    // =================================================
-
-    if (videos.length > 0) {
-
-      videosTrack.innerHTML =
-        videos
-          .map(
-            (item, index) =>
-              mediaCard(
-                item,
-                index,
-                "videos"
-              )
-          )
-          .join("");
-
-    } else {
-
-      videosTrack.innerHTML =
-        `
-          <div class="loading">
-            No videos found.
-          </div>
-        `;
-
-    }
+    booksTrack.innerHTML = `
+      <div class="loading">
+        No books found.
+      </div>
+    `;
+  }
 
 
-    // =================================================
-    // SHORTS
-    // =================================================
+  // ---------------------------------------------------
+  // VIDEOS
+  // ---------------------------------------------------
 
-    if (shorts.length > 0) {
+  if (videos.length) {
 
-      shortsTrack.innerHTML =
-        shorts
-          .map(
-            (item, index) =>
-              mediaCard(
-                item,
-                index,
-                "shorts"
-              )
-          )
-          .join("");
+    videosTrack.innerHTML =
+      videos
+        .map(
+          (item, index) =>
+            mediaCard(
+              item,
+              index,
+              "videos"
+            )
+        )
+        .join("");
 
-    } else {
+  } else if (
+    !videosTrack.querySelector(
+      ".error-loading"
+    )
+  ) {
 
-      shortsTrack.innerHTML =
-        `
-          <div class="loading">
-            No shorts found.
-          </div>
-        `;
-
-    }
-
-
-    // =================================================
-    // SETUP CARDS
-    // =================================================
-
-    const cards =
-      document.querySelectorAll(
-        ".content-card"
-      );
+    videosTrack.innerHTML = `
+      <div class="loading">
+        No videos found.
+      </div>
+    `;
+  }
 
 
-    cards.forEach((card) => {
+  // ---------------------------------------------------
+  // SHORTS
+  // ---------------------------------------------------
+
+  if (shorts.length) {
+
+    shortsTrack.innerHTML =
+      shorts
+        .map(
+          (item, index) =>
+            mediaCard(
+              item,
+              index,
+              "shorts"
+            )
+        )
+        .join("");
+
+  } else if (
+    !shortsTrack.querySelector(
+      ".error-loading"
+    )
+  ) {
+
+    shortsTrack.innerHTML = `
+      <div class="loading">
+        No shorts found.
+      </div>
+    `;
+  }
+
+
+  // ---------------------------------------------------
+  // Setup cards
+  // ---------------------------------------------------
+
+  document
+    .querySelectorAll(
+      ".content-card"
+    )
+    .forEach((card) => {
 
       setupCard(card);
 
     });
 
 
-    // =================================================
-    // DRAG SLIDERS
-    // =================================================
+  // ---------------------------------------------------
+  // Setup sliders AFTER cards exist
+  // ---------------------------------------------------
 
-    document
-      .querySelectorAll(
-        ".slider-viewport"
-      )
-      .forEach((viewport) => {
+  document
+    .querySelectorAll(
+      ".slider-viewport"
+    )
+    .forEach((viewport) => {
 
-        setupDragSlider(
-          viewport
-        );
+      setupDragSlider(
+        viewport
+      );
 
-      });
+      setupTouchSlider(
+        viewport
+      );
 
-
-    // =================================================
-    // AUTO SLIDERS
-    // =================================================
-
-    startAutoSliders();
+    });
 
 
-  } catch (error) {
-
-    console.error(
-      "CONTENT LOAD ERROR:",
-      error
-    );
+  startAutoSliders();
 
 
-    const message = `
+  console.log(
+    "Books loaded:",
+    books.length
+  );
 
-      <div class="loading">
+  console.log(
+    "Videos loaded:",
+    videos.length
+  );
 
-        Content load nahi hua.
-
-        <br><br>
-
-        ${escapeHTML(
-          error.message
-        )}
-
-        <br><br>
-
-        Check:
-        books.json,
-        videos.json,
-        shorts.json
-
-      </div>
-
-    `;
-
-
-    booksTrack.innerHTML =
-      message;
-
-
-    videosTrack.innerHTML =
-      message;
-
-
-    shortsTrack.innerHTML =
-      message;
-
-  }
-
+  console.log(
+    "Shorts loaded:",
+    shorts.length
+  );
 }
 
 
@@ -1986,11 +1924,6 @@ document.addEventListener(
   "DOMContentLoaded",
   () => {
 
-    console.log(
-      "Bazam-E-Saim website starting..."
-    );
-
-
     setupMenu();
 
     setupArrows();
@@ -2001,253 +1934,3 @@ document.addEventListener(
 
   }
 );
-
-
-
-/* =========================================================
-   BAZAM-E-SAIM — BOOKS / VIDEOS / SHORTS SLIDER
-   Paste at the VERY END of script.js
-========================================================= */
-
-(function () {
-  "use strict";
-
-  function setupSlider(viewportId, direction) {
-    const viewport = document.getElementById(viewportId);
-
-    if (!viewport) return;
-
-    // Prevent duplicate initialization
-    if (viewport.dataset.sliderReady === "true") return;
-    viewport.dataset.sliderReady = "true";
-
-    let timer = null;
-    let isHovering = false;
-    let isDragging = false;
-    let startX = 0;
-    let startScroll = 0;
-
-    const track = viewport.querySelector(".slider-track");
-
-    if (!track) return;
-
-    /* -------------------------------------------------------
-       BUTTONS
-    ------------------------------------------------------- */
-
-    const wrapper = viewport.closest(".slider-wrapper");
-
-    if (wrapper) {
-      const prev = wrapper.querySelector(".prev-btn");
-      const next = wrapper.querySelector(".next-btn");
-
-      if (prev) {
-        prev.addEventListener("click", function () {
-          viewport.scrollBy({
-            left: -330,
-            behavior: "smooth"
-          });
-        });
-      }
-
-      if (next) {
-        next.addEventListener("click", function () {
-          viewport.scrollBy({
-            left: 330,
-            behavior: "smooth"
-          });
-        });
-      }
-    }
-
-    /* -------------------------------------------------------
-       AUTO MOVE
-    ------------------------------------------------------- */
-
-    function moveSlider() {
-      if (isHovering || isDragging) return;
-
-      const maxScroll =
-        viewport.scrollWidth - viewport.clientWidth;
-
-      if (maxScroll <= 5) return;
-
-      const current = viewport.scrollLeft;
-
-      if (direction === "left") {
-        if (current <= 5) {
-          viewport.scrollTo({
-            left: maxScroll,
-            behavior: "smooth"
-          });
-        } else {
-          viewport.scrollBy({
-            left: -320,
-            behavior: "smooth"
-          });
-        }
-      } else {
-        if (current >= maxScroll - 5) {
-          viewport.scrollTo({
-            left: 0,
-            behavior: "smooth"
-          });
-        } else {
-          viewport.scrollBy({
-            left: 320,
-            behavior: "smooth"
-          });
-        }
-      }
-    }
-
-    function startAuto() {
-      stopAuto();
-
-      timer = setInterval(function () {
-        moveSlider();
-      }, 3500);
-    }
-
-    function stopAuto() {
-      if (timer) {
-        clearInterval(timer);
-        timer = null;
-      }
-    }
-
-    /* -------------------------------------------------------
-       MOUSE HOVER
-    ------------------------------------------------------- */
-
-    viewport.addEventListener("mouseenter", function () {
-      isHovering = true;
-    });
-
-    viewport.addEventListener("mouseleave", function () {
-      isHovering = false;
-    });
-
-    /* -------------------------------------------------------
-       MOUSE DRAG
-    ------------------------------------------------------- */
-
-    viewport.addEventListener("mousedown", function (e) {
-      isDragging = true;
-
-      startX = e.pageX;
-      startScroll = viewport.scrollLeft;
-
-      viewport.classList.add("dragging");
-
-      stopAuto();
-    });
-
-    document.addEventListener("mousemove", function (e) {
-      if (!isDragging) return;
-
-      e.preventDefault();
-
-      const distance = e.pageX - startX;
-
-      viewport.scrollLeft =
-        startScroll - distance;
-    });
-
-    document.addEventListener("mouseup", function () {
-      if (!isDragging) return;
-
-      isDragging = false;
-
-      viewport.classList.remove("dragging");
-
-      startAuto();
-    });
-
-    /* -------------------------------------------------------
-       TOUCH SWIPE
-    ------------------------------------------------------- */
-
-    let touchStartX = 0;
-    let touchStartScroll = 0;
-
-    viewport.addEventListener(
-      "touchstart",
-      function (e) {
-        touchStartX = e.touches[0].pageX;
-        touchStartScroll = viewport.scrollLeft;
-
-        stopAuto();
-      },
-      { passive: true }
-    );
-
-    viewport.addEventListener(
-      "touchmove",
-      function (e) {
-        const currentX = e.touches[0].pageX;
-        const distance = currentX - touchStartX;
-
-        viewport.scrollLeft =
-          touchStartScroll - distance;
-      },
-      { passive: true }
-    );
-
-    viewport.addEventListener(
-      "touchend",
-      function () {
-        startAuto();
-      },
-      { passive: true }
-    );
-
-    /* -------------------------------------------------------
-       START
-    ------------------------------------------------------- */
-
-    // Wait until cards are actually loaded
-    setTimeout(function () {
-      startAuto();
-    }, 1500);
-  }
-
-
-  /* =========================================================
-     INITIALIZE ALL THREE
-  ========================================================= */
-
-  function initializeAllSliders() {
-    setupSlider("booksViewport", "right");
-    setupSlider("videosViewport", "right");
-    setupSlider("shortsViewport", "right");
-  }
-
-
-  /* ---------------------------------------------------------
-     WAIT FOR PAGE
-  --------------------------------------------------------- */
-
-  if (document.readyState === "loading") {
-    document.addEventListener(
-      "DOMContentLoaded",
-      initializeAllSliders
-    );
-  } else {
-    initializeAllSliders();
-  }
-
-
-  /* =========================================================
-     RE-CHECK AFTER JSON CARDS LOAD
-  ========================================================= */
-
-  setTimeout(function () {
-    initializeAllSliders();
-  }, 2500);
-
-  setTimeout(function () {
-    initializeAllSliders();
-  }, 5000);
-
-})();
