@@ -1,7 +1,12 @@
 /* =====================================================
    BAZAM-E-SAIM
    COMPLETE STYLE.CSS
-   Black + Golden Theme
+   BLACK + GOLDEN PREMIUM THEME
+===================================================== */
+
+
+/* =====================================================
+   RESET
 ===================================================== */
 
 * {
@@ -10,12 +15,15 @@
   box-sizing: border-box;
 }
 
+
 html {
   scroll-behavior: smooth;
   scroll-padding-top: 85px;
 }
 
+
 :root {
+
   --black: #020202;
   --black2: #060606;
   --black3: #0b0b0b;
@@ -30,54 +38,72 @@ html {
   --text: #f5f0e5;
   --muted: #aaa394;
 
-  --border: rgba(201, 154, 62, 0.28);
-  --border-bright: rgba(243, 210, 123, 0.65);
+  --border:
+    rgba(201,154,62,.28);
 
-  --shadow: rgba(0, 0, 0, 0.55);
+  --border-bright:
+    rgba(243,210,123,.65);
+
+  --shadow:
+    rgba(0,0,0,.55);
+
+  --mouse-x: -400px;
+  --mouse-y: -400px;
 }
+
 
 /* =====================================================
    BODY
 ===================================================== */
 
 body {
+
   min-height: 100vh;
 
   background:
+
     radial-gradient(
       circle at 15% 15%,
-      rgba(201, 154, 62, 0.09),
+      rgba(201,154,62,.09),
       transparent 25%
     ),
+
     radial-gradient(
       circle at 85% 35%,
-      rgba(243, 210, 123, 0.06),
+      rgba(243,210,123,.06),
       transparent 25%
     ),
+
     radial-gradient(
       circle at 45% 90%,
-      rgba(201, 154, 62, 0.07),
+      rgba(201,154,62,.07),
       transparent 30%
     ),
+
     #020202;
 
-  color: var(--text);
+  color:
+    var(--text);
 
   font-family:
     Arial,
     Helvetica,
     sans-serif;
 
-  overflow-x: hidden;
+  overflow-x:
+    hidden;
 
-  position: relative;
+  position:
+    relative;
 }
 
+
 /* =====================================================
-   BODY GOLDEN MOUSE GLOW
+   MOUSE GOLDEN GLOW
 ===================================================== */
 
 body::after {
+
   content: "";
 
   position: fixed;
@@ -85,144 +111,191 @@ body::after {
   width: 300px;
   height: 300px;
 
-  left: var(--mouse-x, -400px);
-  top: var(--mouse-y, -400px);
+  left:
+    var(--mouse-x);
 
-  transform: translate(-50%, -50%);
+  top:
+    var(--mouse-y);
 
-  border-radius: 50%;
+  transform:
+    translate(-50%,-50%);
+
+  border-radius:
+    50%;
 
   background:
+
     radial-gradient(
       circle,
-      rgba(243, 210, 123, 0.10),
-      rgba(201, 154, 62, 0.04),
+      rgba(243,210,123,.10),
+      rgba(201,154,62,.04),
       transparent 70%
     );
 
-  filter: blur(25px);
+  filter:
+    blur(25px);
 
-  pointer-events: none;
+  pointer-events:
+    none;
 
-  z-index: -2;
-
-  transition:
-    left 0.15s ease,
-    top 0.15s ease;
+  z-index:
+    -1;
 }
 
+
 /* =====================================================
-   MOVING GOLDEN BACKGROUND GLOW
+   MOVING BACKGROUND GLOW
 ===================================================== */
 
 .bg-glow {
-  position: fixed;
 
-  width: 430px;
-  height: 430px;
+  position:
+    fixed;
 
-  border-radius: 50%;
+  width:
+    430px;
+
+  height:
+    430px;
+
+  border-radius:
+    50%;
 
   background:
+
     radial-gradient(
       circle,
-      rgba(243, 210, 123, 0.15),
-      rgba(201, 154, 62, 0.045),
+      rgba(243,210,123,.16),
+      rgba(201,154,62,.04),
       transparent 70%
     );
 
-  filter: blur(38px);
+  filter:
+    blur(35px);
 
-  pointer-events: none;
+  pointer-events:
+    none;
 
-  z-index: -1;
+  z-index:
+    -2;
 }
+
 
 .glow-one {
-  top: -160px;
-  left: -120px;
+
+  top:
+    -160px;
+
+  left:
+    -120px;
 
   animation:
-    glowOne 13s ease-in-out infinite alternate;
+    glowOne 12s
+    ease-in-out
+    infinite
+    alternate;
 }
+
 
 .glow-two {
-  right: -150px;
-  top: 35%;
+
+  right:
+    -140px;
+
+  top:
+    35%;
 
   animation:
-    glowTwo 16s ease-in-out infinite alternate;
+    glowTwo 15s
+    ease-in-out
+    infinite
+    alternate;
 }
+
 
 .glow-three {
-  left: 25%;
-  bottom: -220px;
+
+  left:
+    25%;
+
+  bottom:
+    -200px;
 
   animation:
-    glowThree 19s ease-in-out infinite alternate;
+    glowThree 18s
+    ease-in-out
+    infinite
+    alternate;
 }
+
 
 @keyframes glowOne {
+
   0% {
     transform:
-      translate(0, 0)
+      translate(0,0)
       scale(1);
   }
 
   100% {
     transform:
-      translate(260px, 190px)
-      scale(1.35);
-  }
-}
-
-@keyframes glowTwo {
-  0% {
-    transform:
-      translate(0, 0)
-      scale(1);
-  }
-
-  100% {
-    transform:
-      translate(-240px, 130px)
-      scale(1.25);
-  }
-}
-
-@keyframes glowThree {
-  0% {
-    transform:
-      translate(0, 0)
-      scale(1);
-  }
-
-  100% {
-    transform:
-      translate(190px, -170px)
+      translate(250px,180px)
       scale(1.3);
   }
 }
+
+
+@keyframes glowTwo {
+
+  0% {
+    transform:
+      translate(0,0);
+  }
+
+  100% {
+    transform:
+      translate(-220px,120px);
+  }
+}
+
+
+@keyframes glowThree {
+
+  0% {
+    transform:
+      translate(0,0);
+  }
+
+  100% {
+    transform:
+      translate(180px,-160px);
+  }
+}
+
 
 /* =====================================================
    COMMON
 ===================================================== */
 
 a {
-  color: inherit;
-  text-decoration: none;
+  color:
+    inherit;
+
+  text-decoration:
+    none;
 }
+
 
 button {
-  font-family: inherit;
+  font-family:
+    inherit;
 }
 
-img {
-  max-width: 100%;
-}
 
 .urdu {
-  direction: rtl;
+
+  direction:
+    rtl;
 
   font-family:
     "Noto Nastaliq Urdu",
@@ -231,142 +304,170 @@ img {
     sans-serif;
 }
 
-/* =====================================================
-   SELECTION
-===================================================== */
-
-::selection {
-  background: var(--gold);
-  color: #050505;
-}
 
 /* =====================================================
    NAVBAR
 ===================================================== */
 
 .navbar {
-  position: sticky;
 
-  top: 0;
+  position:
+    sticky;
 
-  z-index: 1000;
+  top:
+    0;
 
-  min-height: 76px;
+  z-index:
+    1000;
+
+  min-height:
+    76px;
 
   padding:
     10px 5%;
 
-  display: flex;
+  display:
+    flex;
 
-  align-items: center;
+  align-items:
+    center;
 
-  justify-content: space-between;
+  justify-content:
+    space-between;
 
-  gap: 20px;
+  gap:
+    20px;
 
   background:
-    rgba(3, 3, 3, 0.88);
+    rgba(3,3,3,.88);
 
   backdrop-filter:
     blur(18px);
 
-  -webkit-backdrop-filter:
-    blur(18px);
-
   border-bottom:
     1px solid var(--border);
-
-  box-shadow:
-    0 10px 35px rgba(0, 0, 0, 0.28);
 }
 
-/* =====================================================
-   NAV LOGO
-===================================================== */
 
 .logo-area {
-  display: flex;
 
-  align-items: center;
+  display:
+    flex;
 
-  gap: 12px;
+  align-items:
+    center;
 
-  flex-shrink: 0;
+  gap:
+    12px;
 }
 
+
 .logo-area img {
-  width: 50px;
-  height: 50px;
 
-  object-fit: contain;
+  width:
+    50px;
 
-  border-radius: 50%;
+  height:
+    50px;
+
+  object-fit:
+    contain;
+
+  border-radius:
+    50%;
 
   filter:
     drop-shadow(
       0 0 15px
-      rgba(243, 210, 123, 0.45)
+      rgba(243,210,123,.45)
     );
 }
 
+
 .logo-area strong {
-  display: block;
 
-  color: var(--gold2);
+  display:
+    block;
 
-  font-size: 16px;
+  color:
+    var(--gold2);
 
-  letter-spacing: 1px;
+  font-size:
+    16px;
+
+  letter-spacing:
+    1px;
 }
+
 
 .logo-area span {
-  display: block;
 
-  color: var(--gold);
+  display:
+    block;
 
-  margin-top: 3px;
+  color:
+    var(--gold);
 
-  font-size: 13px;
+  margin-top:
+    3px;
 }
+
 
 /* =====================================================
    NAVIGATION
 ===================================================== */
 
 #mainNav {
-  display: flex;
 
-  align-items: center;
+  display:
+    flex;
 
-  gap: 4px;
+  align-items:
+    center;
+
+  gap:
+    4px;
 }
 
+
 #mainNav a {
+
   padding:
     10px 12px;
 
-  color: #d5cdbd;
+  color:
+    #d5cdbd;
 
-  font-size: 14px;
+  font-size:
+    14px;
 
-  position: relative;
+  position:
+    relative;
 
   transition:
-    color 0.3s ease,
-    transform 0.3s ease;
+    .3s;
 }
 
+
 #mainNav a::after {
-  content: "";
 
-  position: absolute;
+  content:
+    "";
 
-  left: 12px;
-  right: 12px;
+  position:
+    absolute;
 
-  bottom: 4px;
+  left:
+    12px;
 
-  height: 1px;
+  right:
+    12px;
+
+  bottom:
+    4px;
+
+  height:
+    1px;
 
   background:
     var(--gold2);
@@ -374,30 +475,28 @@ img {
   transform:
     scaleX(0);
 
-  transform-origin: center;
-
   transition:
-    transform 0.3s ease;
+    .3s;
 }
+
 
 #mainNav a:hover {
-  color: var(--gold2);
 
-  transform:
-    translateY(-1px);
+  color:
+    var(--gold2);
 }
 
+
 #mainNav a:hover::after {
+
   transform:
     scaleX(1);
 }
 
-/* =====================================================
-   LOGIN / ADMIN BUTTONS
-===================================================== */
 
 .login-link,
 .admin-link {
+
   border:
     1px solid var(--border);
 
@@ -406,29 +505,19 @@ img {
 
   margin-left:
     4px;
-
-  padding-left:
-    15px !important;
-
-  padding-right:
-    15px !important;
 }
 
-.login-link:hover,
-.admin-link:hover {
-  background:
-    rgba(201, 154, 62, 0.08);
-}
-
-/* =====================================================
-   MOBILE MENU BUTTON
-===================================================== */
 
 .menu-btn {
-  display: none;
 
-  width: 44px;
-  height: 44px;
+  display:
+    none;
+
+  width:
+    44px;
+
+  height:
+    44px;
 
   border:
     1px solid var(--border);
@@ -437,7 +526,7 @@ img {
     10px;
 
   background:
-    rgba(10, 10, 10, 0.8);
+    transparent;
 
   color:
     var(--gold2);
@@ -447,25 +536,15 @@ img {
 
   cursor:
     pointer;
-
-  transition:
-    0.3s;
 }
 
-.menu-btn:hover {
-  background:
-    rgba(201, 154, 62, 0.10);
-
-  box-shadow:
-    0 0 20px
-    rgba(201, 154, 62, 0.15);
-}
 
 /* =====================================================
    HERO
 ===================================================== */
 
 .hero {
+
   min-height:
     calc(100vh - 76px);
 
@@ -483,21 +562,18 @@ img {
 
   padding:
     80px 20px;
-
-  position:
-    relative;
 }
+
 
 .hero-inner {
+
   width:
-    min(900px, 100%);
+    min(850px,100%);
 }
 
-/* =====================================================
-   HERO LOGO
-===================================================== */
 
 .hero-logo {
+
   width:
     145px;
 
@@ -510,14 +586,18 @@ img {
   filter:
     drop-shadow(
       0 0 30px
-      rgba(243, 210, 123, 0.45)
+      rgba(243,210,123,.45)
     );
 
   animation:
-    logoFloat 5s ease-in-out infinite;
+    logoFloat 5s
+    ease-in-out
+    infinite;
 }
 
+
 @keyframes logoFloat {
+
   0%,
   100% {
     transform:
@@ -530,11 +610,9 @@ img {
   }
 }
 
-/* =====================================================
-   HERO TEXT
-===================================================== */
 
 .small-title {
+
   margin-top:
     20px;
 
@@ -548,12 +626,14 @@ img {
     11px;
 }
 
+
 .hero h1 {
+
   margin-top:
     14px;
 
   font-size:
-    clamp(45px, 8vw, 90px);
+    clamp(45px,8vw,90px);
 
   line-height:
     1;
@@ -562,6 +642,7 @@ img {
     2px;
 
   background:
+
     linear-gradient(
       90deg,
       #c99a3e,
@@ -582,14 +663,13 @@ img {
     transparent;
 
   animation:
-    goldText 5s linear infinite;
+    goldText 5s
+    linear
+    infinite;
 }
 
+
 @keyframes goldText {
-  from {
-    background-position:
-      0%;
-  }
 
   to {
     background-position:
@@ -597,7 +677,9 @@ img {
   }
 }
 
+
 .hero h2 {
+
   margin-top:
     14px;
 
@@ -605,10 +687,12 @@ img {
     var(--gold2);
 
   font-size:
-    clamp(28px, 5vw, 48px);
+    clamp(28px,5vw,48px);
 }
 
+
 .hero p {
+
   margin-top:
     16px;
 
@@ -619,16 +703,16 @@ img {
     17px;
 }
 
+
 .hero .urdu {
+
   color:
     #ded4bd;
 }
 
-/* =====================================================
-   HERO BUTTONS
-===================================================== */
 
 .hero-buttons {
+
   margin-top:
     30px;
 
@@ -638,9 +722,6 @@ img {
   justify-content:
     center;
 
-  align-items:
-    center;
-
   flex-wrap:
     wrap;
 
@@ -648,8 +729,14 @@ img {
     12px;
 }
 
+
+/* =====================================================
+   BUTTONS
+===================================================== */
+
 .gold-btn,
 .outline-btn {
+
   display:
     inline-flex;
 
@@ -669,13 +756,14 @@ img {
     30px;
 
   transition:
-    transform 0.3s ease,
-    box-shadow 0.3s ease,
-    background 0.3s ease;
+    .3s;
 }
 
+
 .gold-btn {
+
   background:
+
     linear-gradient(
       135deg,
       var(--gold3),
@@ -687,45 +775,41 @@ img {
 
   font-weight:
     bold;
-
-  box-shadow:
-    0 5px 20px
-    rgba(201, 154, 62, 0.08);
 }
 
+
 .outline-btn {
+
   border:
     1px solid var(--border);
 
   color:
     var(--gold2);
-
-  background:
-    rgba(255, 255, 255, 0.015);
 }
+
 
 .gold-btn:hover,
 .outline-btn:hover {
+
   transform:
     translateY(-4px);
 
   box-shadow:
     0 0 30px
-    rgba(201, 154, 62, 0.22);
+    rgba(201,154,62,.2);
 }
 
+
 /* =====================================================
-   VISITOR COUNTER
+   VISITOR
 ===================================================== */
 
 .visitor-box {
+
   display:
     inline-flex;
 
   align-items:
-    center;
-
-  justify-content:
     center;
 
   gap:
@@ -747,46 +831,43 @@ img {
     var(--muted);
 
   background:
-    rgba(255, 255, 255, 0.015);
-
-  box-shadow:
-    inset 0 0 20px
-    rgba(201, 154, 62, 0.025);
+    rgba(255,255,255,.02);
 }
 
+
 .visitor-box strong {
+
   color:
     var(--gold2);
 }
 
+
 /* =====================================================
-   CONTENT SECTIONS
+   SECTIONS
 ===================================================== */
 
 .content-section {
+
   padding:
     100px 5%;
-
-  position:
-    relative;
 }
+
 
 .dark-section {
+
   background:
-    rgba(255, 255, 255, 0.015);
+    rgba(255,255,255,.015);
 
   border-top:
-    1px solid rgba(201, 154, 62, 0.06);
+    1px solid rgba(201,154,62,.06);
 
   border-bottom:
-    1px solid rgba(201, 154, 62, 0.06);
+    1px solid rgba(201,154,62,.06);
 }
 
-/* =====================================================
-   SECTION HEADING
-===================================================== */
 
 .section-heading {
+
   max-width:
     800px;
 
@@ -797,7 +878,9 @@ img {
     center;
 }
 
+
 .section-heading > span {
+
   color:
     var(--gold);
 
@@ -808,18 +891,22 @@ img {
     11px;
 }
 
+
 .section-heading h2 {
+
   margin-top:
     10px;
 
   font-size:
-    clamp(32px, 5vw, 55px);
+    clamp(32px,5vw,55px);
 
   color:
     var(--text);
 }
 
+
 .section-heading .urdu {
+
   color:
     var(--gold2);
 
@@ -830,22 +917,23 @@ img {
     23px;
 }
 
+
 .section-heading > p:last-child {
+
   margin-top:
     12px;
 
   color:
     var(--muted);
-
-  line-height:
-    1.7;
 }
+
 
 /* =====================================================
    SLIDER
 ===================================================== */
 
 .slider-wrapper {
+
   max-width:
     1450px;
 
@@ -856,7 +944,7 @@ img {
     grid;
 
   grid-template-columns:
-    50px minmax(0, 1fr) 50px;
+    50px minmax(0,1fr) 50px;
 
   gap:
     12px;
@@ -868,7 +956,9 @@ img {
     relative;
 }
 
+
 .slider-viewport {
+
   width:
     100%;
 
@@ -895,19 +985,38 @@ img {
 
   overscroll-behavior-x:
     contain;
+
+  touch-action:
+    pan-x;
 }
 
+
+.slider-viewport.dragging {
+
+  cursor:
+    grabbing;
+
+  scroll-behavior:
+    auto;
+}
+
+
 .slider-viewport:active {
+
   cursor:
     grabbing;
 }
 
+
 .slider-viewport::-webkit-scrollbar {
+
   display:
     none;
 }
 
+
 .slider-track {
+
   width:
     max-content;
 
@@ -921,13 +1030,120 @@ img {
     stretch;
 }
 
+
 /* =====================================================
-   MOVING CARD
+   SLIDER ARROWS
+===================================================== */
+
+.slider-btn {
+
+  width:
+    48px;
+
+  height:
+    48px;
+
+  flex-shrink:
+    0;
+
+  border:
+    1px solid var(--border);
+
+  border-radius:
+    50%;
+
+  background:
+    rgba(10,10,10,.9);
+
+  color:
+    var(--gold2);
+
+  font-size:
+    32px;
+
+  cursor:
+    pointer;
+
+  transition:
+    transform .25s ease,
+    background .25s ease,
+    box-shadow .25s ease;
+}
+
+
+.slider-btn:hover {
+
+  transform:
+    scale(1.08);
+
+  background:
+    rgba(201,154,62,.12);
+
+  box-shadow:
+    0 0 25px
+    rgba(201,154,62,.25);
+}
+
+
+.slider-btn:active {
+
+  transform:
+    scale(.94);
+}
+
+
+/* =====================================================
+   GOLD SLIDER LINE
+===================================================== */
+
+.slider-wrapper::before {
+
+  content:
+    "";
+
+  position:
+    absolute;
+
+  left:
+    50%;
+
+  bottom:
+    5px;
+
+  width:
+    70%;
+
+  height:
+    1px;
+
+  transform:
+    translateX(-50%);
+
+  background:
+
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(243,210,123,.35),
+      transparent
+    );
+
+  filter:
+    blur(1px);
+
+  pointer-events:
+    none;
+}
+
+
+/* =====================================================
+   CARDS
 ===================================================== */
 
 .content-card {
+
   flex:
-    0 0 300px;
+    0 0 320px;
 
   overflow:
     hidden;
@@ -939,41 +1155,48 @@ img {
     18px;
 
   background:
+
     linear-gradient(
       145deg,
-      rgba(20, 20, 20, 0.97),
-      rgba(5, 5, 5, 0.98)
+      rgba(20,20,20,.97),
+      rgba(5,5,5,.98)
     );
 
   box-shadow:
     0 15px 40px
-    rgba(0, 0, 0, 0.35);
+    rgba(0,0,0,.35);
 
   transition:
-    transform 0.35s ease,
-    border-color 0.35s ease,
-    box-shadow 0.35s ease;
+    transform .35s ease,
+    border-color .35s ease,
+    box-shadow .35s ease;
 }
 
+
 .content-card:hover {
+
   transform:
     translateY(-8px);
 
   border-color:
-    rgba(243, 210, 123, 0.7);
+    rgba(243,210,123,.7);
 
   box-shadow:
+
     0 20px 50px
-    rgba(0, 0, 0, 0.55),
+    rgba(0,0,0,.55),
+
     0 0 30px
-    rgba(201, 154, 62, 0.13);
+    rgba(201,154,62,.13);
 }
 
+
 /* =====================================================
-   CARD IMAGE
+   BOOK IMAGE
 ===================================================== */
 
 .card-image {
+
   width:
     100%;
 
@@ -990,11 +1213,13 @@ img {
     #080808;
 }
 
+
 /* =====================================================
    VIDEO
 ===================================================== */
 
 .video-container {
+
   width:
     100%;
 
@@ -1008,7 +1233,9 @@ img {
     hidden;
 }
 
+
 .video-container video {
+
   width:
     100%;
 
@@ -1022,16 +1249,20 @@ img {
     cover;
 }
 
+
 /* =====================================================
    CARD BODY
 ===================================================== */
 
 .card-body {
+
   padding:
     18px;
 }
 
+
 .card-body h3 {
+
   color:
     var(--gold2);
 
@@ -1042,7 +1273,9 @@ img {
     17px;
 }
 
-.card-body .urdu-title {
+
+.urdu-title {
+
   color:
     #d7ccb5;
 
@@ -1056,7 +1289,9 @@ img {
     1.8;
 }
 
+
 .card-author {
+
   color:
     var(--muted);
 
@@ -1065,16 +1300,15 @@ img {
 
   margin-top:
     8px;
-
-  line-height:
-    1.5;
 }
+
 
 /* =====================================================
    READ BUTTON
 ===================================================== */
 
 .read-btn {
+
   display:
     inline-block;
 
@@ -1094,22 +1328,26 @@ img {
     var(--gold2);
 
   transition:
-    0.25s;
+    .25s;
 }
 
+
 .read-btn:hover {
+
   background:
-    rgba(201, 154, 62, 0.1);
+    rgba(201,154,62,.1);
 
   border-color:
     var(--border-bright);
 }
 
+
 /* =====================================================
-   MEDIA STATS
+   STATS
 ===================================================== */
 
 .card-stats {
+
   margin-top:
     12px;
 
@@ -1129,21 +1367,25 @@ img {
     12px;
 }
 
+
 .card-stats strong {
+
   color:
     var(--gold2);
 }
 
+
 /* =====================================================
-   CARD ACTIONS
+   ACTIONS
 ===================================================== */
 
 .card-actions {
+
   display:
     grid;
 
   grid-template-columns:
-    repeat(3, 1fr);
+    repeat(3,1fr);
 
   gap:
     5px;
@@ -1156,10 +1398,12 @@ img {
 
   border-top:
     1px solid
-    rgba(201, 154, 62, 0.1);
+    rgba(201,154,62,.1);
 }
 
+
 .action-btn {
+
   min-height:
     35px;
 
@@ -1182,10 +1426,12 @@ img {
     11px;
 
   transition:
-    0.25s;
+    .25s;
 }
 
+
 .action-btn:hover {
+
   color:
     var(--gold2);
 
@@ -1193,38 +1439,36 @@ img {
     var(--border);
 
   background:
-    rgba(201, 154, 62, 0.06);
+    rgba(201,154,62,.06);
 }
 
-.action-btn:disabled {
-  opacity:
-    0.55;
-
-  cursor:
-    wait;
-}
 
 .action-btn.liked {
+
   color:
     var(--gold3);
 
   background:
-    rgba(201, 154, 62, 0.12);
+    rgba(201,154,62,.12);
 
   border-color:
-    rgba(243, 210, 123, 0.25);
+    rgba(243,210,123,.35);
 }
 
+
 /* =====================================================
-   COMMENT BOX
+   COMMENTS
 ===================================================== */
 
 .comment-box {
+
   margin-top:
     10px;
 }
 
+
 .comment-box textarea {
+
   width:
     100%;
 
@@ -1256,16 +1500,9 @@ img {
     inherit;
 }
 
-.comment-box textarea:focus {
-  border-color:
-    var(--gold);
-
-  box-shadow:
-    0 0 15px
-    rgba(201, 154, 62, 0.08);
-}
 
 .comment-submit {
+
   margin-top:
     7px;
 
@@ -1289,24 +1526,15 @@ img {
 
   cursor:
     pointer;
-
-  transition:
-    0.25s;
 }
 
-.comment-submit:hover {
-  background:
-    var(--gold2);
-
-  transform:
-    translateY(-1px);
-}
 
 /* =====================================================
-   LIBRARY MORE
+   LIBRARY
 ===================================================== */
 
 .library-more {
+
   text-align:
     center;
 
@@ -1314,11 +1542,13 @@ img {
     25px;
 }
 
+
 /* =====================================================
-   SOCIAL SECTION
+   SOCIAL
 ===================================================== */
 
 .social-grid {
+
   max-width:
     1100px;
 
@@ -1329,13 +1559,15 @@ img {
     grid;
 
   grid-template-columns:
-    repeat(3, 1fr);
+    repeat(3,1fr);
 
   gap:
     15px;
 }
 
+
 .social-card {
+
   padding:
     22px;
 
@@ -1346,28 +1578,28 @@ img {
     15px;
 
   background:
-    rgba(255, 255, 255, 0.02);
+    rgba(255,255,255,.02);
 
   transition:
-    0.3s;
+    .3s;
 }
 
+
 .social-card:hover {
+
   transform:
     translateY(-6px);
 
   background:
-    rgba(201, 154, 62, 0.06);
+    rgba(201,154,62,.06);
 
   border-color:
-    rgba(243, 210, 123, 0.45);
-
-  box-shadow:
-    0 15px 35px
-    rgba(0, 0, 0, 0.25);
+    var(--border-bright);
 }
 
+
 .social-icon {
+
   width:
     42px;
 
@@ -1387,6 +1619,7 @@ img {
     50%;
 
   background:
+
     linear-gradient(
       135deg,
       var(--gold3),
@@ -1403,7 +1636,9 @@ img {
     13px;
 }
 
+
 .social-card strong {
+
   display:
     block;
 
@@ -1411,7 +1646,9 @@ img {
     var(--gold2);
 }
 
+
 .social-card span {
+
   display:
     block;
 
@@ -1425,16 +1662,20 @@ img {
     13px;
 }
 
+
 /* =====================================================
    ABOUT
 ===================================================== */
 
 .about-section {
+
   padding:
     100px 5%;
 }
 
+
 .about-box {
+
   max-width:
     850px;
 
@@ -1454,19 +1695,23 @@ img {
     20px;
 
   background:
-    rgba(255, 255, 255, 0.025);
+    rgba(255,255,255,.025);
 
   box-shadow:
-    0 20px 60px
-    rgba(0, 0, 0, 0.25);
+    0 20px 50px
+    rgba(0,0,0,.25);
 }
 
+
 .about-box h2 {
+
   color:
     var(--gold2);
 }
 
+
 .about-box h3 {
+
   color:
     var(--gold);
 
@@ -1474,7 +1719,9 @@ img {
     5px;
 }
 
+
 .about-box p {
+
   color:
     var(--muted);
 
@@ -1485,11 +1732,13 @@ img {
     15px;
 }
 
+
 /* =====================================================
-   WHATSAPP BUTTON
+   WHATSAPP
 ===================================================== */
 
 .whatsapp-button {
+
   position:
     fixed;
 
@@ -1521,6 +1770,7 @@ img {
     50%;
 
   background:
+
     linear-gradient(
       135deg,
       var(--gold3),
@@ -1535,46 +1785,42 @@ img {
 
   box-shadow:
     0 0 0
-    rgba(201, 154, 62, 0);
+    rgba(201,154,62,0);
 
   animation:
-    whatsappMove 2.2s ease-in-out infinite;
-
-  transition:
-    0.3s;
+    whatsappMove 2.2s
+    ease-in-out
+    infinite;
 }
 
-.whatsapp-button:hover {
-  transform:
-    scale(1.1);
-
-  box-shadow:
-    0 0 35px
-    rgba(243, 210, 123, 0.45);
-}
 
 @keyframes whatsappMove {
+
   0%,
   100% {
+
     transform:
       translateY(0);
   }
 
   50% {
+
     transform:
       translateY(-10px);
 
     box-shadow:
       0 0 30px
-      rgba(201, 154, 62, 0.4);
+      rgba(201,154,62,.4);
   }
 }
+
 
 /* =====================================================
    FOOTER
 ===================================================== */
 
 footer {
+
   padding:
     60px 5% 30px;
 
@@ -1594,11 +1840,9 @@ footer {
     1px solid var(--border);
 }
 
-/* =====================================================
-   FOOTER MAIN
-===================================================== */
 
 .footer-main {
+
   display:
     flex;
 
@@ -1606,7 +1850,9 @@ footer {
     14px;
 }
 
+
 .footer-main img {
+
   width:
     65px;
 
@@ -1615,17 +1861,18 @@ footer {
 
   object-fit:
     contain;
-
-  flex-shrink:
-    0;
 }
 
+
 .footer-main h3 {
+
   color:
     var(--gold2);
 }
 
+
 .footer-main p {
+
   color:
     var(--muted);
 
@@ -1633,16 +1880,16 @@ footer {
     5px;
 }
 
+
 .footer-main .urdu {
+
   color:
     var(--gold);
 }
 
-/* =====================================================
-   FOOTER LINKS
-===================================================== */
 
 .footer-links {
+
   display:
     flex;
 
@@ -1650,7 +1897,9 @@ footer {
     column;
 }
 
+
 .footer-links h4 {
+
   color:
     var(--gold);
 
@@ -1664,7 +1913,9 @@ footer {
     12px;
 }
 
+
 .footer-links a {
+
   color:
     #9c9688;
 
@@ -1675,10 +1926,12 @@ footer {
     5px 0;
 
   transition:
-    0.25s;
+    .25s;
 }
 
+
 .footer-links a:hover {
+
   color:
     var(--gold2);
 
@@ -1686,11 +1939,9 @@ footer {
     translateX(4px);
 }
 
-/* =====================================================
-   FOOTER BOTTOM
-===================================================== */
 
 .footer-bottom {
+
   grid-column:
     1 / -1;
 
@@ -1699,7 +1950,7 @@ footer {
 
   border-top:
     1px solid
-    rgba(201, 154, 62, 0.08);
+    rgba(201,154,62,.08);
 
   text-align:
     center;
@@ -1711,16 +1962,18 @@ footer {
     12px;
 }
 
+
 /* =====================================================
    LOADING
 ===================================================== */
 
 .loading {
+
   min-width:
-    280px;
+    300px;
 
   padding:
-    50px 30px;
+    60px 30px;
 
   text-align:
     center;
@@ -1730,113 +1983,38 @@ footer {
 
   border:
     1px solid
-    rgba(201, 154, 62, 0.08);
+    rgba(201,154,62,.15);
 
   border-radius:
     15px;
 
   background:
-    rgba(255, 255, 255, 0.015);
+    rgba(255,255,255,.015);
 }
 
-/* =====================================================
-   SLIDER ARROWS
-===================================================== */
 
-.slider-btn {
-  width:
-    48px;
-
-  height:
-    48px;
-
-  flex-shrink:
-    0;
-
-  border:
-    1px solid var(--border);
-
-  border-radius:
-    50%;
-
-  background:
-    rgba(10, 10, 10, 0.9);
+.error-loading {
 
   color:
-    var(--gold2);
+    #e5b65d;
+}
+
+
+.error-loading small {
+
+  display:
+    inline-block;
+
+  margin-top:
+    10px;
+
+  color:
+    var(--muted);
 
   font-size:
-    32px;
-
-  line-height:
-    1;
-
-  cursor:
-    pointer;
-
-  transition:
-    transform 0.25s ease,
-    background 0.25s ease,
-    box-shadow 0.25s ease;
+    11px;
 }
 
-.slider-btn:hover {
-  transform:
-    scale(1.08);
-
-  background:
-    rgba(201, 154, 62, 0.12);
-
-  box-shadow:
-    0 0 25px
-    rgba(201, 154, 62, 0.25);
-}
-
-.slider-btn:active {
-  transform:
-    scale(0.94);
-}
-
-/* =====================================================
-   GOLDEN EDGE GLOW
-===================================================== */
-
-.slider-wrapper::before {
-  content:
-    "";
-
-  position:
-    absolute;
-
-  left:
-    50%;
-
-  bottom:
-    5px;
-
-  width:
-    70%;
-
-  height:
-    1px;
-
-  transform:
-    translateX(-50%);
-
-  background:
-    linear-gradient(
-      90deg,
-      transparent,
-      rgba(243, 210, 123, 0.35),
-      transparent
-    );
-
-  filter:
-    blur(1px);
-
-  pointer-events:
-    none;
-}
 
 /* =====================================================
    FOCUS
@@ -1845,6 +2023,7 @@ footer {
 a:focus-visible,
 button:focus-visible,
 textarea:focus-visible {
+
   outline:
     2px solid var(--gold2);
 
@@ -1852,18 +2031,22 @@ textarea:focus-visible {
     3px;
 }
 
+
 /* =====================================================
    MOBILE NAV
 ===================================================== */
 
-@media (max-width: 900px) {
+@media (max-width:900px) {
 
   .navbar {
+
     min-height:
       76px;
   }
 
+
   #mainNav {
+
     position:
       absolute;
 
@@ -1889,7 +2072,7 @@ textarea:focus-visible {
       12px;
 
     background:
-      rgba(3, 3, 3, 0.98);
+      rgba(3,3,3,.98);
 
     backdrop-filter:
       blur(18px);
@@ -1899,15 +2082,19 @@ textarea:focus-visible {
 
     box-shadow:
       0 15px 35px
-      rgba(0, 0, 0, 0.35);
+      rgba(0,0,0,.35);
   }
 
+
   #mainNav.open {
+
     display:
       flex;
   }
 
+
   #mainNav a {
+
     width:
       100%;
 
@@ -1918,8 +2105,10 @@ textarea:focus-visible {
       13px 12px;
   }
 
+
   .login-link,
   .admin-link {
+
     margin-left:
       0;
 
@@ -1927,37 +2116,54 @@ textarea:focus-visible {
       4px;
   }
 
+
   .menu-btn {
+
     display:
       block;
   }
 
+
   .social-grid {
+
     grid-template-columns:
-      repeat(2, 1fr);
+      repeat(2,1fr);
   }
 
+
   footer {
+
     grid-template-columns:
-      repeat(2, 1fr);
+      repeat(2,1fr);
   }
 }
 
+
 /* =====================================================
-   TABLET
+   TABLET / MOBILE SLIDER
 ===================================================== */
 
-@media (max-width: 700px) {
+@media (max-width:700px) {
+
+  .content-section {
+
+    padding:
+      75px 4%;
+  }
+
 
   .slider-wrapper {
+
     grid-template-columns:
-      38px minmax(0, 1fr) 38px;
+      38px minmax(0,1fr) 38px;
 
     gap:
       5px;
   }
 
+
   .slider-btn {
+
     width:
       38px;
 
@@ -1968,206 +2174,120 @@ textarea:focus-visible {
       25px;
   }
 
+
   .slider-track {
+
     gap:
       15px;
   }
 
+
   .content-card {
-    flex-basis:
-      82vw;
+
+    flex:
+      0 0 82vw;
   }
 
+
   .card-image {
+
     height:
       390px;
   }
-
-  .content-section {
-    padding:
-      75px 4%;
-  }
-
-  .about-section {
-    padding:
-      75px 4%;
-  }
 }
 
+
 /* =====================================================
-   MOBILE
+   SMALL MOBILE
 ===================================================== */
 
-@media (max-width: 600px) {
+@media (max-width:420px) {
 
   .navbar {
+
     padding:
       10px 4%;
   }
 
-  .logo-area {
-    gap:
-      8px;
-  }
-
-  .logo-area img {
-    width:
-      45px;
-
-    height:
-      45px;
-  }
 
   .logo-area strong {
+
     font-size:
       14px;
   }
 
-  .logo-area span {
-    font-size:
-      12px;
-  }
 
   .hero {
-    min-height:
-      calc(100vh - 76px);
 
     padding:
       65px 18px;
   }
 
+
   .hero-logo {
+
     width:
       105px;
 
     height:
       105px;
   }
+
 
   .hero h1 {
-    font-size:
-      clamp(40px, 14vw, 65px);
-  }
-
-  .hero h2 {
-    font-size:
-      30px;
-  }
-
-  .hero p {
-    font-size:
-      15px;
-  }
-
-  .content-section {
-    padding:
-      70px 4%;
-  }
-
-  .section-heading {
-    margin-bottom:
-      30px;
-  }
-
-  .section-heading h2 {
-    font-size:
-      38px;
-  }
-
-  .section-heading .urdu {
-    font-size:
-      20px;
-  }
-
-  .slider-wrapper {
-    grid-template-columns:
-      34px minmax(0, 1fr) 34px;
-
-    gap:
-      4px;
-  }
-
-  .slider-btn {
-    width:
-      34px;
-
-    height:
-      34px;
 
     font-size:
-      23px;
+      45px;
   }
 
-  .slider-track {
-    gap:
-      12px;
-  }
 
   .content-card {
-    flex-basis:
-      82vw;
 
-    border-radius:
-      16px;
+    flex:
+      0 0 86vw;
   }
 
+
   .card-image {
+
     height:
       350px;
   }
 
-  .card-body {
-    padding:
-      16px;
-  }
-
-  .card-actions {
-    gap:
-      3px;
-  }
-
-  .action-btn {
-    font-size:
-      10px;
-  }
 
   .social-grid {
+
     grid-template-columns:
       1fr;
   }
 
-  .about-box {
-    padding:
-      30px 20px;
-  }
 
   footer {
+
     grid-template-columns:
       1fr;
 
     text-align:
       center;
-
-    gap:
-      25px;
   }
 
+
   .footer-main {
+
     justify-content:
       center;
   }
 
+
   .footer-links {
+
     align-items:
       center;
   }
 
-  .footer-links a:hover {
-    transform:
-      translateY(-2px);
-  }
 
   .whatsapp-button {
+
     right:
       15px;
 
@@ -2179,86 +2299,9 @@ textarea:focus-visible {
 
     height:
       55px;
-
-    font-size:
-      24px;
   }
 }
 
-/* =====================================================
-   VERY SMALL MOBILE
-===================================================== */
-
-@media (max-width: 420px) {
-
-  .hero {
-    padding:
-      55px 15px;
-  }
-
-  .hero-logo {
-    width:
-      95px;
-
-    height:
-      95px;
-  }
-
-  .hero h1 {
-    font-size:
-      40px;
-  }
-
-  .hero h2 {
-    font-size:
-      27px;
-  }
-
-  .hero-buttons {
-    flex-direction:
-      column;
-
-    width:
-      100%;
-  }
-
-  .gold-btn,
-  .outline-btn {
-    width:
-      100%;
-  }
-
-  .content-card {
-    flex-basis:
-      86vw;
-  }
-
-  .card-image {
-    height:
-      350px;
-  }
-
-  .slider-wrapper {
-    grid-template-columns:
-      30px minmax(0, 1fr) 30px;
-  }
-
-  .slider-btn {
-    width:
-      30px;
-
-    height:
-      30px;
-
-    font-size:
-      21px;
-  }
-
-  .visitor-box {
-    font-size:
-      13px;
-  }
-}
 
 /* =====================================================
    REDUCED MOTION
@@ -2266,544 +2309,20 @@ textarea:focus-visible {
 
 @media (prefers-reduced-motion: reduce) {
 
-  html {
-    scroll-behavior:
-      auto;
-  }
-
   *,
   *::before,
   *::after {
+
     animation-duration:
-      0.01ms !important;
+      .01ms !important;
 
     animation-iteration-count:
       1 !important;
 
+    scroll-behavior:
+      auto !important;
+
     transition-duration:
-      0.01ms !important;
+      .01ms !important;
   }
-}
-/* =====================================================
-   AUTO MOVING SLIDER - CSS
-===================================================== */
-
-.slider-wrapper {
-  width: 100%;
-  max-width: 1450px;
-  margin: 0 auto;
-
-  display: grid;
-  grid-template-columns: 50px minmax(0, 1fr) 50px;
-
-  gap: 12px;
-  align-items: center;
-
-  position: relative;
-}
-
-
-/* =====================================================
-   SLIDER VIEWPORT
-===================================================== */
-
-.slider-viewport {
-  width: 100%;
-
-  overflow-x: auto;
-  overflow-y: hidden;
-
-  scroll-behavior: smooth;
-
-  scrollbar-width: none;
-
-  -webkit-overflow-scrolling: touch;
-
-  overscroll-behavior-x: contain;
-
-  padding: 15px 5px 30px;
-
-  cursor: grab;
-}
-
-.slider-viewport:active {
-  cursor: grabbing;
-}
-
-.slider-viewport::-webkit-scrollbar {
-  display: none;
-}
-
-
-/* =====================================================
-   SLIDER TRACK
-===================================================== */
-
-.slider-track {
-  width: max-content;
-
-  display: flex;
-
-  gap: 20px;
-
-  align-items: stretch;
-
-  will-change: transform;
-}
-
-
-/* =====================================================
-   CARDS
-===================================================== */
-
-.content-card {
-  flex: 0 0 300px;
-
-  width: 300px;
-
-  overflow: hidden;
-
-  border: 1px solid var(--border);
-
-  border-radius: 18px;
-
-  background:
-    linear-gradient(
-      145deg,
-      rgba(20,20,20,.97),
-      rgba(5,5,5,.98)
-    );
-
-  box-shadow:
-    0 15px 40px rgba(0,0,0,.35);
-
-  transition:
-    transform .35s ease,
-    border-color .35s ease,
-    box-shadow .35s ease;
-}
-
-.content-card:hover {
-  transform: translateY(-8px);
-
-  border-color:
-    rgba(243,210,123,.75);
-
-  box-shadow:
-    0 20px 50px rgba(0,0,0,.55),
-    0 0 30px rgba(201,154,62,.15);
-}
-
-
-/* =====================================================
-   BOOK IMAGE
-===================================================== */
-
-.card-image {
-  width: 100%;
-
-  height: 350px;
-
-  display: block;
-
-  object-fit: cover;
-
-  background: #050505;
-}
-
-
-/* =====================================================
-   VIDEO / SHORT
-===================================================== */
-
-.video-container {
-  width: 100%;
-
-  aspect-ratio: 16 / 10;
-
-  background: #000;
-
-  overflow: hidden;
-}
-
-.video-container video {
-  width: 100%;
-  height: 100%;
-
-  display: block;
-
-  object-fit: cover;
-}
-
-
-/* =====================================================
-   CARD BODY
-===================================================== */
-
-.card-body {
-  padding: 18px;
-}
-
-.card-body h3 {
-  color: var(--gold2);
-
-  font-size: 17px;
-
-  line-height: 1.4;
-}
-
-.urdu-title {
-  margin-top: 6px;
-
-  color: #d7ccb5;
-
-  direction: rtl;
-}
-
-.card-author {
-  margin-top: 8px;
-
-  color: var(--muted);
-
-  font-size: 13px;
-}
-
-
-/* =====================================================
-   STATS
-===================================================== */
-
-.card-stats {
-  display: flex;
-
-  gap: 14px;
-
-  margin-top: 12px;
-
-  color: var(--muted);
-
-  font-size: 12px;
-}
-
-.card-stats strong {
-  color: var(--gold2);
-}
-
-
-/* =====================================================
-   ACTION BUTTONS
-===================================================== */
-
-.card-actions {
-  display: grid;
-
-  grid-template-columns:
-    repeat(3, 1fr);
-
-  gap: 5px;
-
-  margin-top: 14px;
-
-  padding-top: 12px;
-
-  border-top:
-    1px solid
-    rgba(201,154,62,.12);
-}
-
-.action-btn {
-  min-height: 36px;
-
-  padding: 5px;
-
-  border:
-    1px solid transparent;
-
-  border-radius: 8px;
-
-  background: transparent;
-
-  color: #aaa;
-
-  cursor: pointer;
-
-  font-size: 11px;
-
-  transition: .25s;
-}
-
-.action-btn:hover {
-  color: var(--gold2);
-
-  border-color:
-    var(--border);
-
-  background:
-    rgba(201,154,62,.07);
-}
-
-.action-btn.liked {
-  color: var(--gold3);
-
-  background:
-    rgba(201,154,62,.14);
-
-  border-color:
-    rgba(243,210,123,.3);
-}
-
-
-/* =====================================================
-   READ BOOK BUTTON
-===================================================== */
-
-.read-btn {
-  display: inline-block;
-
-  margin-top: 14px;
-
-  padding: 9px 14px;
-
-  border:
-    1px solid var(--border);
-
-  border-radius: 9px;
-
-  color: var(--gold2);
-
-  transition: .25s;
-}
-
-.read-btn:hover {
-  background:
-    rgba(201,154,62,.1);
-
-  transform:
-    translateY(-2px);
-}
-
-
-/* =====================================================
-   COMMENT BOX
-===================================================== */
-
-.comment-box {
-  margin-top: 10px;
-}
-
-.comment-box textarea {
-  width: 100%;
-
-  min-height: 70px;
-
-  resize: vertical;
-
-  padding: 10px;
-
-  border:
-    1px solid var(--border);
-
-  border-radius: 8px;
-
-  outline: none;
-
-  background: #050505;
-
-  color: white;
-}
-
-.comment-box textarea:focus {
-  border-color:
-    var(--gold2);
-
-  box-shadow:
-    0 0 15px
-    rgba(201,154,62,.12);
-}
-
-.comment-submit {
-  margin-top: 7px;
-
-  padding: 8px 14px;
-
-  border: none;
-
-  border-radius: 8px;
-
-  background:
-    linear-gradient(
-      135deg,
-      var(--gold3),
-      var(--gold)
-    );
-
-  color: #050505;
-
-  font-weight: bold;
-
-  cursor: pointer;
-}
-
-
-/* =====================================================
-   ARROW BUTTONS
-===================================================== */
-
-.slider-btn {
-  width: 48px;
-  height: 48px;
-
-  flex-shrink: 0;
-
-  border:
-    1px solid var(--border);
-
-  border-radius: 50%;
-
-  background:
-    rgba(10,10,10,.9);
-
-  color: var(--gold2);
-
-  font-size: 32px;
-
-  cursor: pointer;
-
-  display: flex;
-
-  align-items: center;
-
-  justify-content: center;
-
-  transition:
-    transform .25s ease,
-    background .25s ease,
-    box-shadow .25s ease;
-}
-
-.slider-btn:hover {
-  transform: scale(1.08);
-
-  background:
-    rgba(201,154,62,.12);
-
-  box-shadow:
-    0 0 25px
-    rgba(201,154,62,.25);
-}
-
-.slider-btn:active {
-  transform: scale(.94);
-}
-
-
-/* =====================================================
-   LOADING
-===================================================== */
-
-.loading {
-  min-width: 280px;
-
-  padding: 50px 30px;
-
-  text-align: center;
-
-  color: var(--gold);
-}
-
-
-/* =====================================================
-   GOLDEN SLIDER GLOW
-===================================================== */
-
-.slider-viewport {
-  position: relative;
-}
-
-.slider-viewport::after {
-  content: "";
-
-  position: absolute;
-
-  left: 5%;
-
-  right: 5%;
-
-  bottom: 8px;
-
-  height: 1px;
-
-  background:
-    linear-gradient(
-      90deg,
-      transparent,
-      rgba(243,210,123,.5),
-      transparent
-    );
-
-  pointer-events: none;
-}
-
-
-/* =====================================================
-   MOBILE
-===================================================== */
-
-@media (max-width: 700px) {
-
-  .slider-wrapper {
-    grid-template-columns:
-      38px minmax(0,1fr) 38px;
-
-    gap: 5px;
-  }
-
-  .slider-btn {
-    width: 38px;
-    height: 38px;
-
-    font-size: 25px;
-  }
-
-  .slider-track {
-    gap: 15px;
-  }
-
-  .content-card {
-    flex: 0 0 82vw;
-
-    width: 82vw;
-  }
-
-  .card-image {
-    height: 390px;
-  }
-
-}
-
-
-/* =====================================================
-   SMALL MOBILE
-===================================================== */
-
-@media (max-width: 420px) {
-
-  .content-card {
-    flex: 0 0 86vw;
-
-    width: 86vw;
-  }
-
-  .card-image {
-    height: 350px;
-  }
-
-  .card-actions {
-    gap: 3px;
-  }
-
-  .action-btn {
-    font-size: 10px;
-  }
-
 }
