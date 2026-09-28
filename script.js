@@ -2001,3 +2001,253 @@ document.addEventListener(
 
   }
 );
+
+
+
+/* =========================================================
+   BAZAM-E-SAIM — BOOKS / VIDEOS / SHORTS SLIDER
+   Paste at the VERY END of script.js
+========================================================= */
+
+(function () {
+  "use strict";
+
+  function setupSlider(viewportId, direction) {
+    const viewport = document.getElementById(viewportId);
+
+    if (!viewport) return;
+
+    // Prevent duplicate initialization
+    if (viewport.dataset.sliderReady === "true") return;
+    viewport.dataset.sliderReady = "true";
+
+    let timer = null;
+    let isHovering = false;
+    let isDragging = false;
+    let startX = 0;
+    let startScroll = 0;
+
+    const track = viewport.querySelector(".slider-track");
+
+    if (!track) return;
+
+    /* -------------------------------------------------------
+       BUTTONS
+    ------------------------------------------------------- */
+
+    const wrapper = viewport.closest(".slider-wrapper");
+
+    if (wrapper) {
+      const prev = wrapper.querySelector(".prev-btn");
+      const next = wrapper.querySelector(".next-btn");
+
+      if (prev) {
+        prev.addEventListener("click", function () {
+          viewport.scrollBy({
+            left: -330,
+            behavior: "smooth"
+          });
+        });
+      }
+
+      if (next) {
+        next.addEventListener("click", function () {
+          viewport.scrollBy({
+            left: 330,
+            behavior: "smooth"
+          });
+        });
+      }
+    }
+
+    /* -------------------------------------------------------
+       AUTO MOVE
+    ------------------------------------------------------- */
+
+    function moveSlider() {
+      if (isHovering || isDragging) return;
+
+      const maxScroll =
+        viewport.scrollWidth - viewport.clientWidth;
+
+      if (maxScroll <= 5) return;
+
+      const current = viewport.scrollLeft;
+
+      if (direction === "left") {
+        if (current <= 5) {
+          viewport.scrollTo({
+            left: maxScroll,
+            behavior: "smooth"
+          });
+        } else {
+          viewport.scrollBy({
+            left: -320,
+            behavior: "smooth"
+          });
+        }
+      } else {
+        if (current >= maxScroll - 5) {
+          viewport.scrollTo({
+            left: 0,
+            behavior: "smooth"
+          });
+        } else {
+          viewport.scrollBy({
+            left: 320,
+            behavior: "smooth"
+          });
+        }
+      }
+    }
+
+    function startAuto() {
+      stopAuto();
+
+      timer = setInterval(function () {
+        moveSlider();
+      }, 3500);
+    }
+
+    function stopAuto() {
+      if (timer) {
+        clearInterval(timer);
+        timer = null;
+      }
+    }
+
+    /* -------------------------------------------------------
+       MOUSE HOVER
+    ------------------------------------------------------- */
+
+    viewport.addEventListener("mouseenter", function () {
+      isHovering = true;
+    });
+
+    viewport.addEventListener("mouseleave", function () {
+      isHovering = false;
+    });
+
+    /* -------------------------------------------------------
+       MOUSE DRAG
+    ------------------------------------------------------- */
+
+    viewport.addEventListener("mousedown", function (e) {
+      isDragging = true;
+
+      startX = e.pageX;
+      startScroll = viewport.scrollLeft;
+
+      viewport.classList.add("dragging");
+
+      stopAuto();
+    });
+
+    document.addEventListener("mousemove", function (e) {
+      if (!isDragging) return;
+
+      e.preventDefault();
+
+      const distance = e.pageX - startX;
+
+      viewport.scrollLeft =
+        startScroll - distance;
+    });
+
+    document.addEventListener("mouseup", function () {
+      if (!isDragging) return;
+
+      isDragging = false;
+
+      viewport.classList.remove("dragging");
+
+      startAuto();
+    });
+
+    /* -------------------------------------------------------
+       TOUCH SWIPE
+    ------------------------------------------------------- */
+
+    let touchStartX = 0;
+    let touchStartScroll = 0;
+
+    viewport.addEventListener(
+      "touchstart",
+      function (e) {
+        touchStartX = e.touches[0].pageX;
+        touchStartScroll = viewport.scrollLeft;
+
+        stopAuto();
+      },
+      { passive: true }
+    );
+
+    viewport.addEventListener(
+      "touchmove",
+      function (e) {
+        const currentX = e.touches[0].pageX;
+        const distance = currentX - touchStartX;
+
+        viewport.scrollLeft =
+          touchStartScroll - distance;
+      },
+      { passive: true }
+    );
+
+    viewport.addEventListener(
+      "touchend",
+      function () {
+        startAuto();
+      },
+      { passive: true }
+    );
+
+    /* -------------------------------------------------------
+       START
+    ------------------------------------------------------- */
+
+    // Wait until cards are actually loaded
+    setTimeout(function () {
+      startAuto();
+    }, 1500);
+  }
+
+
+  /* =========================================================
+     INITIALIZE ALL THREE
+  ========================================================= */
+
+  function initializeAllSliders() {
+    setupSlider("booksViewport", "right");
+    setupSlider("videosViewport", "right");
+    setupSlider("shortsViewport", "right");
+  }
+
+
+  /* ---------------------------------------------------------
+     WAIT FOR PAGE
+  --------------------------------------------------------- */
+
+  if (document.readyState === "loading") {
+    document.addEventListener(
+      "DOMContentLoaded",
+      initializeAllSliders
+    );
+  } else {
+    initializeAllSliders();
+  }
+
+
+  /* =========================================================
+     RE-CHECK AFTER JSON CARDS LOAD
+  ========================================================= */
+
+  setTimeout(function () {
+    initializeAllSliders();
+  }, 2500);
+
+  setTimeout(function () {
+    initializeAllSliders();
+  }, 5000);
+
+})();
