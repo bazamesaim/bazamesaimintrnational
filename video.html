@@ -1,354 +1,181 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
   <meta charset="UTF-8">
 
-  <meta name="viewport"
-        content="width=device-width, initial-scale=1.0">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
 
-  <meta name="theme-color"
-        content="#000000">
+  <title>Videos | Bazam-E-Saim</title>
 
-  <title>Video | Bazam-E-Saim</title>
+  <link
+    rel="icon"
+    type="image/png"
+    href="logo.png"
+  >
 
-  <link rel="icon"
-        type="image/png"
-        href="logo.png">
+  <link
+    rel="stylesheet"
+    href="style.css"
+  >
 
-  <link rel="stylesheet"
-        href="video.css">
+  <script
+    type="module"
+    src="script.js"
+  ></script>
+
 </head>
+
 
 <body>
 
-  <!-- ================= HEADER ================= -->
 
-  <header class="top-header">
+<header class="site-header">
 
-    <a href="index.html"
-       class="brand">
+  <a href="index.html" class="brand">
 
-      <img src="logo.png"
-           alt="Bazam-E-Saim Logo">
+    <img src="logo.png" alt="Bazam-E-Saim">
 
-      <div>
-        <strong>Bazam-E-Saim</strong>
-        <span>بزمِ صائم</span>
-      </div>
+    <div>
+      <strong>Bazam-E-Saim</strong>
+      <span>بزمِ صائم</span>
+    </div>
 
+  </a>
+
+
+  <nav class="main-nav">
+
+    <a href="index.html">Home</a>
+
+    <a
+      href="https://hassanbhai5559-lgtm.github.io/chishti-library/"
+      target="_blank"
+    >
+      Books
     </a>
 
-    <a href="index.html"
-       class="back-home">
-      ← Home
+    <a href="videos.html" class="active">
+      Videos
     </a>
 
-  </header>
+    <a href="shorts.html">
+      Shorts
+    </a>
 
+    <a
+      href="https://hassanbhai5559-lgtm.github.io/chishti-library/"
+      target="_blank"
+    >
+      Chishti Library
+    </a>
 
-  <!-- ================= MAIN ================= -->
+    <a href="login.html" class="nav-button">
+      Sign In
+    </a>
 
-  <main class="video-page">
+    <a href="admin.html" class="nav-button">
+      Admin
+    </a>
 
-    <!-- VIDEO PLAYER -->
+  </nav>
 
-    <section class="player-card">
+</header>
 
-      <div class="video-container"
-           id="videoContainer">
 
-        <video
-          id="videoPlayer"
-          preload="metadata"
-          playsinline
-          crossorigin="anonymous">
-        </video>
+<div class="visitor-counter">
 
+  <span>👁 Visitors</span>
 
-        <!-- CENTER PLAY -->
+  <strong id="visitorCount">0</strong>
 
-        <button
-          id="centerPlay"
-          class="center-play"
-          aria-label="Play">
-          ▶
-        </button>
+</div>
 
 
-        <!-- CONTROLS -->
+<section class="page-hero">
 
-        <div class="video-controls"
-             id="videoControls">
+  <img
+    src="logo.png"
+    alt="Bazam-E-Saim"
+  >
 
-          <!-- PROGRESS -->
+  <span>VIDEO COLLECTION</span>
 
-          <div class="progress-area">
+  <h1>Videos</h1>
 
-            <input
-              type="range"
-              id="progressBar"
-              min="0"
-              max="100"
-              value="0"
-              step="0.1">
+  <p class="urdu">ویڈیوز</p>
 
-          </div>
+  <p>
+    Watch all videos by Hazrat Allama Saim Chishti.
+  </p>
 
+</section>
 
-          <div class="controls-row">
 
-            <!-- PLAY / PAUSE -->
+<section class="content-section">
 
-            <button
-              id="playPauseBtn"
-              class="control-btn"
-              title="Play / Pause">
-              ▶
-            </button>
+  <div class="full-grid" id="videosPageGrid">
 
+    <div class="loading">
+      Loading Videos...
+    </div>
 
-            <!-- STOP -->
+  </div>
 
-            <button
-              id="stopBtn"
-              class="control-btn"
-              title="Stop">
-              ■
-            </button>
+</section>
 
 
-            <!-- BACK 10 -->
+<footer class="site-footer">
 
-            <button
-              id="backBtn"
-              class="control-btn"
-              title="Back 10 seconds">
-              ↶10
-            </button>
+  <div class="footer-brand">
 
+    <img src="logo.png" alt="Bazam-E-Saim">
 
-            <!-- FORWARD 10 -->
+    <div>
+      <strong>Bazam-E-Saim</strong>
+      <span>بزمِ صائم</span>
+    </div>
 
-            <button
-              id="forwardBtn"
-              class="control-btn"
-              title="Forward 10 seconds">
-              10↷
-            </button>
-
-
-            <!-- VOLUME -->
-
-            <button
-              id="muteBtn"
-              class="control-btn"
-              title="Mute">
-              🔊
-            </button>
-
-            <input
-              type="range"
-              id="volumeBar"
-              class="volume-bar"
-              min="0"
-              max="1"
-              step="0.01"
-              value="1">
-
-
-            <!-- TIME -->
-
-            <span
-              id="timeDisplay"
-              class="time-display">
-              0:00 / 0:00
-            </span>
-
-
-            <div class="control-spacer"></div>
-
-
-            <!-- SPEED -->
-
-            <select
-              id="speedSelect"
-              class="speed-select"
-              title="Playback speed">
-
-              <option value="0.5">0.5x</option>
-              <option value="0.75">0.75x</option>
-              <option value="1" selected>Normal</option>
-              <option value="1.25">1.25x</option>
-              <option value="1.5">1.5x</option>
-              <option value="1.75">1.75x</option>
-              <option value="2">2x</option>
-
-            </select>
-
-
-            <!-- PICTURE IN PICTURE -->
-
-            <button
-              id="pipBtn"
-              class="control-btn"
-              title="Picture in Picture">
-              ▣
-            </button>
-
-
-            <!-- FULLSCREEN -->
-
-            <button
-              id="fullscreenBtn"
-              class="control-btn"
-              title="Fullscreen">
-              ⛶
-            </button>
-
-          </div>
-
-        </div>
-
-      </div>
-
-
-      <!-- VIDEO INFO -->
-
-      <div class="video-info">
-
-        <h1 id="videoTitle">
-          Loading...
-        </h1>
-
-        <h2 id="videoTitleUrdu">
-        </h2>
-
-        <p id="videoDescription">
-        </p>
-
-
-        <!-- ACTIONS -->
-
-        <div class="video-actions">
-
-          <button
-            id="likeBtn"
-            class="action-btn">
-
-            <span class="action-icon">
-              ♡
-            </span>
-
-            <span>
-              Like
-            </span>
-
-            <span
-              id="likeCount">
-              0
-            </span>
-
-          </button>
-
-
-          <button
-            id="commentBtn"
-            class="action-btn">
-
-            💬
-            <span>
-              Comment
-            </span>
-
-          </button>
-
-
-          <button
-            id="shareBtn"
-            class="action-btn">
-
-            🔗
-            <span>
-              Share
-            </span>
-
-          </button>
-
-        </div>
-
-      </div>
-
-    </section>
-
-
-    <!-- ================= COMMENTS ================= -->
-
-    <section
-      id="commentsSection"
-      class="comments-section">
-
-      <div class="comments-header">
-
-        <h2>
-          Comments
-        </h2>
-
-        <span>
-          تبصرے
-        </span>
-
-      </div>
-
-
-      <form
-        id="commentForm"
-        class="comment-form">
-
-        <textarea
-          id="commentInput"
-          placeholder="Write your comment... / اپنا تبصرہ لکھیں..."
-          rows="3"
-          maxlength="500"
-          required>
-        </textarea>
-
-        <button
-          type="submit"
-          class="comment-submit">
-
-          Post Comment
-
-        </button>
-
-      </form>
-
-
-      <div
-        id="commentsList"
-        class="comments-list">
-
-        <p class="no-comments">
-          No comments yet.
-        </p>
-
-      </div>
-
-    </section>
-
-  </main>
-
-
-  <!-- TOAST -->
-
-  <div
-    id="videoToast"
-    class="video-toast">
   </div>
 
 
-  <script
-    src="video.js">
-  </script>
+  <div class="footer-links">
+
+    <a href="index.html">Home</a>
+
+    <a href="videos.html">Videos</a>
+
+    <a href="shorts.html">Shorts</a>
+
+    <a
+      href="https://hassanbhai5559-lgtm.github.io/chishti-library/"
+      target="_blank"
+    >
+      Chishti Library
+    </a>
+
+  </div>
+
+
+  <p>
+    © 2026 Bazam-E-Saim. All Rights Reserved.
+  </p>
+
+</footer>
+
+
+<a
+  href="https://wa.me/"
+  target="_blank"
+  class="whatsapp-float"
+>
+  ☎
+</a>
+
 
 </body>
 </html>
