@@ -2,274 +2,163 @@
 <html lang="en">
 <head>
 
-  <meta charset="UTF-8">
+    <meta charset="UTF-8">
 
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
 
-  <title>Shorts | Bazam-E-Saim</title>
+    <title>Shorts | Bazam-E-Saim</title>
 
-  <link
-    rel="icon"
-    type="image/png"
-    href="logo.png"
-  >
-
-  <link
-    rel="stylesheet"
-    href="style.css"
-  >
+    <link rel="stylesheet" href="style.css">
 
 </head>
 
+<body>
 
-<body class="shorts-page">
+<header class="site-header">
 
+    <a href="index.html" class="brand">
 
-  <!-- =====================================================
-       NAVBAR
-  ====================================================== -->
-
-  <header class="site-header">
-
-    <div class="nav-container">
-
-      <a
-        href="index.html"
-        class="brand"
-      >
-
-        <img
-          src="logo.png"
-          alt="Bazam-E-Saim Logo"
-          class="brand-logo"
-        >
+        <img src="logo.png" alt="Bazam-E-Saim Logo">
 
         <div class="brand-text">
-
-          <strong>
-            Bazam-E-Saim
-          </strong>
-
-          <span>
-            بزمِ صائم
-          </span>
-
+            <strong>Bazam-E-Saim</strong>
+            <span>بزمِ صائم</span>
         </div>
 
-      </a>
+    </a>
 
 
-      <nav class="nav-links">
+    <nav class="main-nav">
 
-        <a href="index.html">
-          Home
-        </a>
+        <a href="index.html">Home</a>
 
-        <a href="books.html">
-          Books
-        </a>
+        <a href="books.html">Books</a>
 
-        <a href="videos.html">
-          Videos
-        </a>
+        <a href="videos.html">Videos</a>
+
+        <a href="shorts.html" class="active">Shorts</a>
 
         <a
-          href="shorts.html"
-          class="active"
-        >
-          Shorts
+            href="https://hassanbhai5559-lgtm.github.io/chishti-library/"
+            target="_blank">
+            Chishti Library
         </a>
 
-        <a
-          href="https://hassanbhai5559-lgtm.github.io/chishti-library/"
-          target="_blank"
-          rel="noopener"
-        >
-          Chishti Library
+        <a href="login.html" class="nav-button">
+            Sign In
         </a>
 
-        <a
-          href="login.html"
-          class="nav-btn"
-        >
-          Sign In
+        <a href="admin.html" class="nav-button">
+            Admin
         </a>
 
-        <a
-          href="admin.html"
-          class="nav-btn"
-        >
-          Admin
-        </a>
+    </nav>
 
-      </nav>
-
-    </div>
-
-  </header>
+</header>
 
 
-  <!-- =====================================================
-       SHORTS
-  ====================================================== -->
+<main>
 
-  <main>
+<section class="page-hero">
 
-    <section
-      id="shorts"
-      class="content-section"
-    >
+    <span class="eyebrow">
+        SHORTS COLLECTION
+    </span>
 
-      <div class="section-heading">
+    <h1>
+        Shorts
+    </h1>
 
-        <span>
-          SHORTS COLLECTION
-        </span>
+    <p class="urdu">
+        شارٹس
+    </p>
 
-        <h1>
-          Shorts
-        </h1>
+    <p>
+        Watch short clips from Bazam-E-Saim.
+    </p>
 
-        <p class="urdu">
-          شارٹس
-        </p>
-
-        <p>
-          Watch short clips from Bazam-E-Saim.
-        </p>
-
-      </div>
+</section>
 
 
-      <div class="slider-wrapper">
+<section class="content-section">
+
+    <div class="slider-wrapper">
 
         <button
-          class="slider-btn prev-btn"
-          data-target="shortsViewport"
-          type="button"
-          aria-label="Previous shorts"
-        >
-          ‹
+            class="slider-btn"
+            data-target="shortsViewport"
+            data-direction="prev"
+            type="button">
+            ‹
         </button>
 
 
         <div
-          id="shortsViewport"
-          class="slider-viewport"
-        >
+            id="shortsViewport"
+            class="slider-viewport">
 
-          <div
-            id="shortsTrack"
-            class="slider-track"
-          >
+            <div
+                id="shortsTrack"
+                class="slider-track">
 
-            <div class="loading">
-              Loading Shorts...
+                <div class="loading">
+                    Loading Shorts...
+                </div>
+
             </div>
-
-          </div>
 
         </div>
 
 
         <button
-          class="slider-btn next-btn"
-          data-target="shortsViewport"
-          type="button"
-          aria-label="Next shorts"
-        >
-          ›
+            class="slider-btn"
+            data-target="shortsViewport"
+            data-direction="next"
+            type="button">
+            ›
         </button>
-
-      </div>
-
-    </section>
-
-  </main>
-
-
-  <!-- =====================================================
-       FOOTER
-  ====================================================== -->
-
-  <footer class="site-footer">
-
-    <div class="footer-content">
-
-      <div class="footer-brand">
-
-        <img
-          src="logo.png"
-          alt="Bazam-E-Saim"
-        >
-
-        <div>
-
-          <strong>
-            Bazam-E-Saim
-          </strong>
-
-          <span>
-            بزمِ صائم
-          </span>
-
-        </div>
-
-      </div>
-
-
-      <div class="footer-links">
-
-        <a href="index.html">
-          Home
-        </a>
-
-        <a href="books.html">
-          Books
-        </a>
-
-        <a href="videos.html">
-          Videos
-        </a>
-
-        <a href="shorts.html">
-          Shorts
-        </a>
-
-        <a
-          href="https://hassanbhai5559-lgtm.github.io/chishti-library/"
-          target="_blank"
-        >
-          Chishti Library
-        </a>
-
-      </div>
-
-
-      <p>
-        © 2026 Bazam-E-Saim. All Rights Reserved.
-      </p>
 
     </div>
 
-  </footer>
+</section>
+
+</main>
 
 
-  <a
-    href="https://wa.me/"
-    class="whatsapp-float"
-    target="_blank"
-    rel="noopener"
-    aria-label="WhatsApp"
-  >
-    ☎
-  </a>
+<footer class="site-footer">
+
+    <div class="footer-logo">
+
+        <img src="logo.png" alt="Bazam-E-Saim">
+
+        <div>
+            <strong>Bazam-E-Saim</strong>
+            <span>بزمِ صائم</span>
+        </div>
+
+    </div>
 
 
-  <script src="script.js"></script>
+    <div class="footer-links">
+
+        <a href="index.html">Home</a>
+        <a href="books.html">Books</a>
+        <a href="videos.html">Videos</a>
+        <a href="shorts.html">Shorts</a>
+
+    </div>
+
+
+    <p class="copyright">
+        © 2026 Bazam-E-Saim. All rights reserved.
+    </p>
+
+</footer>
+
+
+<script src="script.js"></script>
 
 </body>
 </html>
