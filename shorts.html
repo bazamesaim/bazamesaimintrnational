@@ -1,41 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <meta name="viewport"
-        content="width=device-width, initial-scale=1.0">
-
-  <title>Shorts - Bazam-E-Saim</title>
+  <title>Shorts | Bazam-E-Saim</title>
 
   <link rel="icon" href="logo.png">
-
   <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="shorts.css">
 
-  <!-- Firebase -->
-  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
 </head>
 
 <body>
 
-<header class="main-header">
+<header class="site-header">
 
   <div class="header-inner">
 
     <a href="index.html" class="brand">
+
       <img src="logo.png" alt="Bazam-E-Saim">
-      <span>Bazam-E-Saim</span>
+
+      <div>
+        <strong>Bazam-E-Saim</strong>
+        <span>بزمِ صائم</span>
+      </div>
+
     </a>
+
 
     <nav class="main-nav">
 
-      <a href="index.html">Home</a>
+      <a href="index.html">
+        Home
+      </a>
 
-      <a href="https://hassanbhai5559-lgtm.github.io/chishti-library/"
-         target="_blank">
+      <a href="books.html">
         Books
       </a>
 
@@ -43,20 +45,30 @@
         Videos
       </a>
 
-      <a href="shorts.html" class="active">
+      <a class="active" href="shorts.html">
         Shorts
       </a>
 
-      <a href="https://hassanbhai5559-lgtm.github.io/chishti-library/"
-         target="_blank">
+      <a
+        href="https://hassanbhai5559-lgtm.github.io/chishti-library/"
+        target="_blank">
         Chishti Library
       </a>
 
-      <a href="login.html" id="loginNav">
-        Sign In
-      </a>
-
     </nav>
+
+
+    <div class="header-actions">
+
+      <button id="loginButton" class="login-btn">
+        Login
+      </button>
+
+      <button id="logoutButton" class="logout-btn hidden">
+        Logout
+      </button>
+
+    </div>
 
   </div>
 
@@ -65,61 +77,45 @@
 
 <main>
 
-  <!-- HERO -->
+  <section class="page-hero">
 
-  <section class="shorts-hero">
+    <span>SHORTS COLLECTION</span>
 
-    <div class="shorts-hero-inner">
+    <h1>Shorts</h1>
 
-      <span>SHORTS COLLECTION</span>
+    <p class="urdu">
+      شارٹس
+    </p>
 
-      <h1>Shorts</h1>
-
-      <p class="urdu">شارٹس</p>
-
-      <p>
-        Watch beautiful Islamic Shorts from Bazam-E-Saim.
-      </p>
-
-    </div>
+    <p>
+      Watch short clips from Bazam-E-Saim.
+    </p>
 
   </section>
 
 
-  <!-- VISITOR -->
+  <section class="content-section">
 
-  <div class="visitor-counter">
-
-    <span>👁️ Visitors</span>
-
-    <strong id="visitorCount">0</strong>
-
-  </div>
-
-
-  <!-- SHORTS -->
-
-  <section class="shorts-section">
-
-    <div class="shorts-slider-wrapper">
+    <div class="slider-wrapper shorts-slider">
 
       <button
-        class="short-slider-btn"
-        id="shortPrev"
+        class="slider-btn"
+        data-slider="allShorts"
+        data-direction="prev"
         type="button">
         ‹
       </button>
 
 
       <div
-        class="shorts-viewport"
-        id="shortsViewport">
+        id="allShorts"
+        class="slider-viewport">
 
         <div
-          class="shorts-track"
-          id="shortsTrack">
+          id="allShortsTrack"
+          class="slider-track">
 
-          <div class="short-loading">
+          <div class="loading">
             Loading Shorts...
           </div>
 
@@ -129,8 +125,9 @@
 
 
       <button
-        class="short-slider-btn"
-        id="shortNext"
+        class="slider-btn"
+        data-slider="allShorts"
+        data-direction="next"
         type="button">
         ›
       </button>
@@ -139,35 +136,48 @@
 
   </section>
 
+</main>
 
-  <!-- LOGIN MESSAGE -->
 
-  <div
-    id="loginMessage"
-    class="short-login-message">
+<footer class="site-footer">
 
-    Login required for Like and Comment.
+  <img
+    src="logo.png"
+    class="footer-logo-img"
+    alt="Bazam-E-Saim">
 
-    <a href="login.html">
-      Sign In
+  <h3>Bazam-E-Saim</h3>
+
+  <p>بزمِ صائم</p>
+
+  <div class="footer-links">
+
+    <a href="index.html">
+      Home
+    </a>
+
+    <a href="videos.html">
+      Videos
+    </a>
+
+    <a href="books.html">
+      Books
+    </a>
+
+    <a href="https://www.youtube.com/@Saimtv5" target="_blank">
+      YouTube
     </a>
 
   </div>
 
-</main>
-
-
-<footer class="shorts-footer">
-
-  <p>
-    © <span id="currentYear"></span>
-    Bazam-E-Saim
+  <p class="copyright">
+    © <span id="year"></span> Bazam-E-Saim.
   </p>
 
 </footer>
 
 
-<script src="shorts.js"></script>
+<script type="module" src="script.js"></script>
 
 </body>
 </html>
