@@ -2,11 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <title>Bazam-E-Saim | Official Website</title>
 
@@ -16,13 +12,12 @@
 
 <body>
 
-  <!-- ================= HEADER ================= -->
+<header class="site-header">
 
-  <header class="site-header">
+  <div class="header-inner">
 
     <a href="index.html" class="brand">
       <img src="logo.png" alt="Bazam-E-Saim Logo">
-
       <div>
         <strong>Bazam-E-Saim</strong>
         <span>بزمِ صائم</span>
@@ -30,250 +25,322 @@
     </a>
 
     <nav class="main-nav">
-
-      <a href="index.html">Home</a>
-
+      <a class="active" href="index.html">Home</a>
       <a href="books.html">Books</a>
-
       <a href="videos.html">Videos</a>
-
       <a href="shorts.html">Shorts</a>
-
-      <a
-        href="https://hassanbhai5559-lgtm.github.io/chishti-library/"
-        target="_blank"
-        rel="noopener"
-      >
+      <a href="https://hassanbhai5559-lgtm.github.io/chishti-library/" target="_blank">
         Chishti Library
       </a>
-
-      <a href="login.html" id="loginNav">Sign In</a>
-
-      <button
-        type="button"
-        id="logoutNav"
-        class="nav-logout hidden"
-      >
-        Logout
-      </button>
-
     </nav>
 
-  </header>
+    <div class="header-actions">
+      <button id="loginButton" class="login-btn">Login</button>
+      <button id="logoutButton" class="logout-btn hidden">Logout</button>
+    </div>
+
+  </div>
+
+</header>
 
 
-  <!-- ================= HERO ================= -->
+<main>
 
-  <main>
+  <!-- HERO -->
 
-    <section class="hero-section">
+  <section class="hero-section">
 
-      <div class="hero-glow"></div>
+    <div class="hero-glow"></div>
 
-      <img
-        src="logo.png"
-        alt="Bazam-E-Saim"
-        class="hero-logo"
-      >
+    <div class="hero-content">
 
-      <span class="eyebrow">
-        OFFICIAL WEBSITE
-      </span>
+      <span class="eyebrow">OFFICIAL WEBSITE</span>
 
       <h1>Bazam-E-Saim</h1>
 
-      <div class="hero-urdu">
-        بزمِ صائم
-      </div>
+      <p class="hero-urdu">بزمِ صائم</p>
 
       <p>
-        Welcome to Bazam e Saim
+        Bazam e Saim ki janib se ap ko welcome
       </p>
 
-      <p class="urdu">
-        بزم صائم کی جانب سے آپ کو خوش آمدید
+      <p class="hero-small">
+        Videos, Shorts, Audios and Books by Hazrat Allama Saim Chishti.
       </p>
 
       <div class="hero-buttons">
-
-        <a href="books.html" class="gold-btn">
-          Explore Books
-        </a>
-
-        <a href="videos.html" class="outline-btn">
-          Watch Videos
-        </a>
-
+        <a href="#videos" class="gold-btn">Watch Videos</a>
+        <a href="shorts.html" class="dark-btn">Watch Shorts</a>
       </div>
 
+    </div>
 
-      <!-- VISITOR COUNTER -->
+  </section>
 
-      <div class="visitor-counter">
-        <span>◉</span>
-        Visitors
+
+  <!-- VISITORS -->
+
+  <section class="visitor-bar">
+
+    <div class="visitor-box">
+      <span class="visitor-icon">👁</span>
+      <div>
+        <small>Visitors</small>
         <strong id="visitorCount">0</strong>
       </div>
+    </div>
 
-    </section>
+  </section>
 
 
-    <!-- ================= HOME VIDEOS ================= -->
+  <!-- BOOKS -->
 
-    <section class="content-section">
+  <section id="books" class="content-section">
 
-      <div class="section-heading">
+    <div class="section-heading">
+      <span>BOOK LIBRARY</span>
+      <h2>Books</h2>
+      <p class="urdu">کتب</p>
+      <p>Explore books by Hazrat Allama Saim Chishti.</p>
+    </div>
 
-        <span>VIDEO COLLECTION</span>
+    <div class="library-card">
 
-        <h2>Latest Videos</h2>
+      <div class="library-icon">📚</div>
 
-        <p class="urdu">
-          تازہ ویڈیوز
-        </p>
+      <div>
+        <h3>Chishti Library</h3>
 
         <p>
-          Watch beautiful Islamic content by Hazrat Allama Saim Chishti.
+          Read and explore the complete collection of books
+          in Chishti Library.
         </p>
 
+        <a
+          href="https://hassanbhai5559-lgtm.github.io/chishti-library/"
+          target="_blank"
+          class="gold-btn">
+          Open Chishti Library
+        </a>
       </div>
 
+    </div>
 
-      <div class="slider-wrapper">
+  </section>
 
-        <button
-          class="slider-btn prev-btn"
-          data-target="homeVideosViewport"
-          type="button"
-          aria-label="Previous videos"
-        >
-          ‹
-        </button>
 
+  <!-- VIDEOS -->
+
+  <section id="videos" class="content-section dark-section">
+
+    <div class="section-heading">
+      <span>VIDEO COLLECTION</span>
+      <h2>Videos</h2>
+      <p class="urdu">ویڈیوز</p>
+      <p>Watch complete videos and beautiful Islamic content.</p>
+    </div>
+
+
+    <div class="slider-wrapper">
+
+      <button
+        class="slider-btn"
+        data-slider="homeVideos"
+        data-direction="prev"
+        type="button">
+        ‹
+      </button>
+
+      <div
+        id="homeVideos"
+        class="slider-viewport">
 
         <div
-          id="homeVideosViewport"
-          class="slider-viewport"
-        >
+          id="homeVideosTrack"
+          class="slider-track">
 
-          <div
-            id="homeVideosTrack"
-            class="slider-track"
-          >
-
-            <div class="loading">
-              Loading Videos...
-            </div>
-
+          <div class="loading">
+            Loading Videos...
           </div>
 
         </div>
 
-
-        <button
-          class="slider-btn next-btn"
-          data-target="homeVideosViewport"
-          type="button"
-          aria-label="Next videos"
-        >
-          ›
-        </button>
-
       </div>
 
+      <button
+        class="slider-btn"
+        data-slider="homeVideos"
+        data-direction="next"
+        type="button">
+        ›
+      </button>
 
-      <div class="section-more">
-
-        <a href="videos.html" class="gold-btn">
-          Watch More Videos
-        </a>
-
-      </div>
-
-    </section>
-
-
-    <!-- ================= BOOKS ================= -->
-
-    <section class="content-section dark-section">
-
-      <div class="section-heading">
-
-        <span>BOOK LIBRARY</span>
-
-        <h2>Books</h2>
-
-        <p class="urdu">
-          کتب
-        </p>
-
-        <p>
-          Explore books by Hazrat Allama Saim Chishti.
-        </p>
-
-      </div>
+    </div>
 
 
-      <div class="library-box">
+    <div class="more-button">
+      <a href="videos.html" class="gold-btn">
+        Watch More Videos
+      </a>
+    </div>
 
-        <img
-          src="logo.png"
-          alt="Chishti Library"
-        >
+  </section>
 
-        <div>
 
-          <h3>
-            Chishti Library
-          </h3>
+  <!-- SHORTS PREVIEW -->
 
-          <p>
-            Read and explore the complete book collection.
-          </p>
+  <section id="shorts" class="content-section">
 
-          <a
-            href="books.html"
-            class="gold-btn"
-          >
-            Open Chishti Library
-          </a>
+    <div class="section-heading">
+      <span>SHORTS COLLECTION</span>
+      <h2>Shorts</h2>
+      <p class="urdu">شارٹس</p>
+      <p>Watch short clips from Bazam-E-Saim.</p>
+    </div>
+
+
+    <div class="slider-wrapper">
+
+      <button
+        class="slider-btn"
+        data-slider="homeShorts"
+        data-direction="prev"
+        type="button">
+        ‹
+      </button>
+
+      <div
+        id="homeShorts"
+        class="slider-viewport">
+
+        <div
+          id="homeShortsTrack"
+          class="slider-track">
+
+          <div class="loading">
+            Loading Shorts...
+          </div>
 
         </div>
 
       </div>
 
-    </section>
+      <button
+        class="slider-btn"
+        data-slider="homeShorts"
+        data-direction="next"
+        type="button">
+        ›
+      </button>
 
-  </main>
-
-
-  <!-- ================= WHATSAPP ================= -->
-
-  <a
-    href="https://wa.me/"
-    class="whatsapp-float"
-    target="_blank"
-    rel="noopener"
-    aria-label="WhatsApp"
-  >
-    ☎
-  </a>
+    </div>
 
 
-  <footer class="site-footer">
+    <div class="more-button">
+      <a href="shorts.html" class="gold-btn">
+        Watch All Shorts
+      </a>
+    </div>
 
-    <p>
-      © 2026 Bazam-E-Saim International
+  </section>
+
+</main>
+
+
+<footer class="site-footer">
+
+  <div class="footer-logo">
+    <img src="logo.png" alt="Bazam-E-Saim">
+  </div>
+
+  <h3>Bazam-E-Saim</h3>
+
+  <p>بزمِ صائم</p>
+
+  <div class="footer-links">
+
+    <a href="https://web.facebook.com/Bazm.Saim" target="_blank">
+      Facebook
+    </a>
+
+    <a href="https://www.youtube.com/@Saimtv5" target="_blank">
+      YouTube
+    </a>
+
+    <a href="https://facebook.com/saimchishtiofficial" target="_blank">
+      Facebook Official
+    </a>
+
+    <a
+      href="https://hassanbhai5559-lgtm.github.io/chishti-library/"
+      target="_blank">
+      Chishti Library
+    </a>
+
+  </div>
+
+  <p class="copyright">
+    © <span id="year"></span> Bazam-E-Saim. All Rights Reserved.
+  </p>
+
+</footer>
+
+
+<!-- LOGIN MODAL -->
+
+<div id="loginModal" class="modal hidden">
+
+  <div class="modal-box">
+
+    <button id="closeLogin" class="modal-close">
+      ×
+    </button>
+
+    <h2>Official Website</h2>
+
+    <p class="modal-urdu">
+      بزمِ صائم
     </p>
 
     <p>
-      Hazrat Allama Saim Chishti
+      Sign in to like, share and comment on books,
+      videos and shorts.
     </p>
 
-  </footer>
+    <button id="googleLogin" class="google-btn">
+      Continue with Google
+    </button>
+
+    <div class="login-divider">
+      <span>OR</span>
+    </div>
+
+    <input
+      id="emailInput"
+      type="email"
+      placeholder="Email">
+
+    <input
+      id="passwordInput"
+      type="password"
+      placeholder="Password">
+
+    <button id="emailLogin" class="gold-btn full-btn">
+      Login
+    </button>
+
+    <button id="emailSignup" class="dark-btn full-btn">
+      Create Account
+    </button>
+
+    <p id="loginMessage" class="login-message"></p>
+
+  </div>
+
+</div>
 
 
-  <script type="module" src="script.js"></script>
+<script type="module" src="script.js"></script>
 
 </body>
 </html>
