@@ -1,164 +1,172 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 
-    <meta charset="UTF-8">
+  <meta charset="UTF-8">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
 
-    <title>Videos | Bazam-E-Saim</title>
+  <title>Bazam-E-Saim | Videos</title>
 
-    <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="logo.png">
+
+  <link rel="stylesheet" href="style.css">
 
 </head>
 
+
 <body>
 
-<header class="site-header">
+  <header class="site-header">
 
     <a href="index.html" class="brand">
 
-        <img src="logo.png" alt="Bazam-E-Saim Logo">
+      <img
+        src="logo.png"
+        alt="Bazam-E-Saim"
+      >
 
-        <div class="brand-text">
-            <strong>Bazam-E-Saim</strong>
-            <span>بزمِ صائم</span>
-        </div>
+      <div>
+
+        <strong>Bazam-E-Saim</strong>
+
+        <span>
+          بزمِ صائم
+        </span>
+
+      </div>
 
     </a>
 
 
     <nav class="main-nav">
 
-        <a href="index.html">Home</a>
+      <a href="index.html">
+        Home
+      </a>
 
-        <a href="books.html">Books</a>
+      <a href="books.html">
+        Books
+      </a>
 
-        <a href="videos.html" class="active">Videos</a>
+      <a href="videos.html" class="active">
+        Videos
+      </a>
 
-        <a href="shorts.html">Shorts</a>
+      <a href="shorts.html">
+        Shorts
+      </a>
 
-        <a
-            href="https://hassanbhai5559-lgtm.github.io/chishti-library/"
-            target="_blank">
-            Chishti Library
-        </a>
+      <a
+        href="https://hassanbhai5559-lgtm.github.io/chishti-library/"
+        target="_blank"
+        rel="noopener"
+      >
+        Chishti Library
+      </a>
 
-        <a href="login.html" class="nav-button">
-            Sign In
-        </a>
+      <a href="login.html" id="loginNav">
+        Sign In
+      </a>
 
-        <a href="admin.html" class="nav-button">
-            Admin
-        </a>
+      <button
+        type="button"
+        id="logoutNav"
+        class="nav-logout hidden"
+      >
+        Logout
+      </button>
 
     </nav>
 
-</header>
+  </header>
 
 
-<main>
+  <main>
 
-<section class="page-hero">
+    <section class="page-heading">
 
-    <span class="eyebrow">
+      <span>
         VIDEO COLLECTION
-    </span>
+      </span>
 
-    <h1>
+      <h1>
         Videos
-    </h1>
+      </h1>
 
-    <p class="urdu">
+      <p class="urdu">
         ویڈیوز
-    </p>
+      </p>
 
-    <p>
+      <p>
         Watch complete videos and beautiful Islamic content.
-    </p>
+      </p>
 
-</section>
+    </section>
 
 
-<section class="content-section dark-section">
+    <section class="content-section">
 
-    <div class="slider-wrapper">
+      <div class="slider-wrapper">
 
         <button
-            class="slider-btn"
-            data-target="videosViewport"
-            data-direction="prev"
-            type="button">
-            ‹
+          class="slider-btn prev-btn"
+          data-target="videosViewport"
+          type="button"
+        >
+          ‹
         </button>
 
 
         <div
-            id="videosViewport"
-            class="slider-viewport">
+          id="videosViewport"
+          class="slider-viewport"
+        >
 
-            <div
-                id="videosTrack"
-                class="slider-track">
+          <div
+            id="videosTrack"
+            class="slider-track"
+          >
 
-                <div class="loading">
-                    Loading Videos...
-                </div>
-
+            <div class="loading">
+              Loading Videos...
             </div>
+
+          </div>
 
         </div>
 
 
         <button
-            class="slider-btn"
-            data-target="videosViewport"
-            data-direction="next"
-            type="button">
-            ›
+          class="slider-btn next-btn"
+          data-target="videosViewport"
+          type="button"
+        >
+          ›
         </button>
 
-    </div>
+      </div>
 
-</section>
+    </section>
 
-</main>
-
-
-<footer class="site-footer">
-
-    <div class="footer-logo">
-
-        <img src="logo.png" alt="Bazam-E-Saim">
-
-        <div>
-            <strong>Bazam-E-Saim</strong>
-            <span>بزمِ صائم</span>
-        </div>
-
-    </div>
+  </main>
 
 
-    <div class="footer-links">
+  <footer class="site-footer">
 
-        <a href="index.html">Home</a>
-        <a href="books.html">Books</a>
-        <a href="videos.html">Videos</a>
-        <a href="shorts.html">Shorts</a>
-
-    </div>
-
-
-    <p class="copyright">
-        © 2026 Bazam-E-Saim. All rights reserved.
+    <p>
+      © 2026 Bazam-E-Saim International
     </p>
 
-</footer>
+  </footer>
 
 
-<script src="script.js"></script>
+  <script type="module" src="script.js"></script>
 
 </body>
+
 </html>
