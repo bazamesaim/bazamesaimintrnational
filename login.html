@@ -1,745 +1,117 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+  <meta charset="UTF-8">
 
-    <title>Sign In - Bazam-E-Saim</title>
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
 
-    <!-- Favicon -->
-    <link
-        rel="icon"
-        type="image/png"
-        href="logo.png"
-    >
+  <title>Bazam-E-Saim | Sign In</title>
 
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+  <link rel="icon" href="logo.png">
 
-        html,
-        body {
-            min-height: 100%;
-        }
+  <link rel="stylesheet" href="style.css">
 
-        body {
-            font-family:
-                Arial,
-                Helvetica,
-                sans-serif;
-
-            background:
-                radial-gradient(
-                    circle at 15% 20%,
-                    rgba(212, 175, 55, 0.10),
-                    transparent 30%
-                ),
-                radial-gradient(
-                    circle at 85% 80%,
-                    rgba(212, 175, 55, 0.08),
-                    transparent 32%
-                ),
-                #050505;
-
-            color: #ffffff;
-
-            min-height: 100vh;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            padding: 25px;
-
-            overflow-x: hidden;
-
-            position: relative;
-        }
-
-        /* Moving golden glow */
-        body::before {
-            content: "";
-            position: fixed;
-
-            width: 500px;
-            height: 500px;
-
-            border-radius: 50%;
-
-            background:
-                radial-gradient(
-                    circle,
-                    rgba(218, 175, 55, 0.12),
-                    transparent 68%
-                );
-
-            filter: blur(20px);
-
-            top: -180px;
-            left: -150px;
-
-            animation: glowMove 9s ease-in-out infinite alternate;
-
-            pointer-events: none;
-        }
-
-        body::after {
-            content: "";
-            position: fixed;
-
-            width: 450px;
-            height: 450px;
-
-            border-radius: 50%;
-
-            background:
-                radial-gradient(
-                    circle,
-                    rgba(218, 175, 55, 0.09),
-                    transparent 68%
-                );
-
-            filter: blur(25px);
-
-            right: -160px;
-            bottom: -170px;
-
-            animation: glowMove2 11s ease-in-out infinite alternate;
-
-            pointer-events: none;
-        }
-
-        @keyframes glowMove {
-            0% {
-                transform: translate(0, 0);
-            }
-
-            100% {
-                transform: translate(220px, 130px);
-            }
-        }
-
-        @keyframes glowMove2 {
-            0% {
-                transform: translate(0, 0);
-            }
-
-            100% {
-                transform: translate(-180px, -130px);
-            }
-        }
-
-        /* Main card */
-        .login-wrapper {
-            width: 100%;
-            max-width: 440px;
-
-            position: relative;
-            z-index: 2;
-        }
-
-        .login-card {
-            width: 100%;
-
-            background:
-                linear-gradient(
-                    145deg,
-                    rgba(25, 25, 25, 0.97),
-                    rgba(8, 8, 8, 0.98)
-                );
-
-            border: 1px solid rgba(212, 175, 55, 0.45);
-
-            border-radius: 18px;
-
-            padding: 32px 30px 28px;
-
-            box-shadow:
-                0 0 35px rgba(212, 175, 55, 0.08),
-                inset 0 0 30px rgba(255, 255, 255, 0.015);
-
-            backdrop-filter: blur(12px);
-        }
-
-        /* Logo */
-        .logo-area {
-            text-align: center;
-
-            margin-bottom: 24px;
-        }
-
-        .logo {
-            width: 92px;
-            height: 92px;
-
-            object-fit: contain;
-
-            display: block;
-
-            margin: 0 auto 14px;
-
-            filter:
-                drop-shadow(
-                    0 0 12px rgba(212, 175, 55, 0.35)
-                );
-        }
-
-        .site-name {
-            color: #f0d36b;
-
-            font-family:
-                Georgia,
-                "Times New Roman",
-                serif;
-
-            font-size: 25px;
-
-            font-weight: 700;
-
-            letter-spacing: 1px;
-
-            text-transform: uppercase;
-        }
-
-        .official {
-            color: #a9a9a9;
-
-            font-size: 13px;
-
-            margin-top: 5px;
-        }
-
-        .urdu-brand {
-            color: #d9b84c;
-
-            font-size: 20px;
-
-            margin-top: 10px;
-
-            direction: rtl;
-        }
-
-        /* Heading */
-        .heading {
-            text-align: center;
-
-            margin-bottom: 22px;
-        }
-
-        .heading h1 {
-            font-size: 27px;
-
-            margin-bottom: 10px;
-
-            color: #ffffff;
-        }
-
-        .heading p {
-            color: #bdbdbd;
-
-            font-size: 14px;
-
-            line-height: 1.7;
-        }
-
-        .heading .urdu {
-            direction: rtl;
-
-            margin-top: 8px;
-
-            font-size: 15px;
-
-            color: #cfcfcf;
-
-            line-height: 1.9;
-        }
-
-        /* Form */
-        .form-group {
-            margin-bottom: 17px;
-        }
-
-        .form-group label {
-            display: block;
-
-            margin-bottom: 8px;
-
-            color: #dedede;
-
-            font-size: 13px;
-
-            font-weight: 600;
-        }
-
-        .form-group input {
-            width: 100%;
-
-            height: 48px;
-
-            padding: 0 14px;
-
-            border-radius: 10px;
-
-            border: 1px solid #3b3b3b;
-
-            background: #0d0d0d;
-
-            color: #ffffff;
-
-            outline: none;
-
-            font-size: 14px;
-
-            transition:
-                border-color 0.25s ease,
-                box-shadow 0.25s ease;
-        }
-
-        .form-group input::placeholder {
-            color: #777777;
-        }
-
-        .form-group input:focus {
-            border-color: #d8b542;
-
-            box-shadow:
-                0 0 0 3px rgba(
-                    216,
-                    181,
-                    66,
-                    0.10
-                );
-        }
-
-        /* Buttons */
-        button {
-            font-family: inherit;
-        }
-
-        #login-button {
-            width: 100%;
-
-            height: 49px;
-
-            border: none;
-
-            border-radius: 10px;
-
-            background:
-                linear-gradient(
-                    135deg,
-                    #d8b33f,
-                    #f1d36a
-                );
-
-            color: #050505;
-
-            font-size: 15px;
-
-            font-weight: 700;
-
-            cursor: pointer;
-
-            transition:
-                transform 0.2s ease,
-                box-shadow 0.2s ease,
-                opacity 0.2s ease;
-
-            margin-top: 4px;
-        }
-
-        #login-button:hover {
-            transform: translateY(-1px);
-
-            box-shadow:
-                0 8px 22px rgba(
-                    212,
-                    175,
-                    55,
-                    0.20
-                );
-        }
-
-        #login-button:disabled {
-            opacity: 0.65;
-
-            cursor: wait;
-
-            transform: none;
-        }
-
-        /* Divider */
-        .divider {
-            display: flex;
-
-            align-items: center;
-
-            gap: 12px;
-
-            margin: 25px 0 20px;
-
-            color: #777777;
-
-            font-size: 12px;
-        }
-
-        .divider::before,
-        .divider::after {
-            content: "";
-
-            height: 1px;
-
-            flex: 1;
-
-            background: #333333;
-        }
-
-        /* Google */
-        #google-login {
-            width: 100%;
-
-            height: 49px;
-
-            border-radius: 10px;
-
-            border: 1px solid #3c3c3c;
-
-            background: #101010;
-
-            color: #ffffff;
-
-            cursor: pointer;
-
-            font-size: 14px;
-
-            font-weight: 700;
-
-            display: flex;
-
-            align-items: center;
-
-            justify-content: center;
-
-            gap: 11px;
-
-            transition:
-                border-color 0.2s ease,
-                background 0.2s ease,
-                transform 0.2s ease;
-        }
-
-        #google-login:hover {
-            border-color: #d4af37;
-
-            background: #151515;
-
-            transform: translateY(-1px);
-        }
-
-        #google-login:disabled {
-            opacity: 0.6;
-
-            cursor: wait;
-
-            transform: none;
-        }
-
-        /* Google G */
-        .google-g {
-            width: 21px;
-
-            height: 21px;
-
-            display: inline-flex;
-
-            align-items: center;
-
-            justify-content: center;
-
-            font-size: 20px;
-
-            font-weight: 800;
-
-            font-family: Arial, sans-serif;
-
-            background:
-                conic-gradient(
-                    from -45deg,
-                    #4285f4 0deg 90deg,
-                    #34a853 90deg 180deg,
-                    #fbbc05 180deg 270deg,
-                    #ea4335 270deg 360deg
-                );
-
-            -webkit-background-clip: text;
-
-            background-clip: text;
-
-            color: transparent;
-        }
-
-        /* Message */
-        #login-message {
-            display: none;
-
-            margin-top: 16px;
-
-            padding: 12px;
-
-            border-radius: 8px;
-
-            border: 1px solid #7b2525;
-
-            background: rgba(
-                100,
-                0,
-                0,
-                0.12
-            );
-
-            color: #ff9b9b;
-
-            text-align: center;
-
-            font-size: 13px;
-
-            line-height: 1.5;
-        }
-
-        /* Back */
-        .back-link {
-            display: block;
-
-            text-align: center;
-
-            margin-top: 23px;
-
-            color: #d9b84c;
-
-            text-decoration: none;
-
-            font-size: 13px;
-
-            transition: color 0.2s ease;
-        }
-
-        .back-link:hover {
-            color: #f2d979;
-
-            text-decoration: underline;
-        }
-
-        /* Footer */
-        .footer {
-            border-top: 1px solid #292929;
-
-            margin-top: 22px;
-
-            padding-top: 18px;
-
-            text-align: center;
-
-            color: #666666;
-
-            font-size: 11px;
-        }
-
-        .footer strong {
-            color: #d4af37;
-        }
-
-        /* Mobile */
-        @media (max-width: 520px) {
-
-            body {
-                padding: 15px;
-            }
-
-            .login-card {
-                padding: 28px 20px 23px;
-
-                border-radius: 15px;
-            }
-
-            .logo {
-                width: 80px;
-                height: 80px;
-            }
-
-            .site-name {
-                font-size: 21px;
-            }
-
-            .heading h1 {
-                font-size: 24px;
-            }
-
-            .heading p {
-                font-size: 13px;
-            }
-
-        }
-    </style>
 </head>
 
-<body>
 
-    <main class="login-wrapper">
+<body class="login-page">
 
-        <section class="login-card">
+  <main class="login-wrapper">
 
-            <!-- LOGO -->
-            <div class="logo-area">
+    <div class="login-card">
 
-                <img
-                    src="logo.png"
-                    alt="Bazam-E-Saim Logo"
-                    class="logo"
-                >
+      <img
+        src="logo.png"
+        alt="Bazam-E-Saim"
+        class="login-logo"
+      >
 
-                <div class="site-name">
-                    Bazam-E-Saim
-                </div>
+      <span class="eyebrow">
+        OFFICIAL WEBSITE
+      </span>
 
-                <div class="official">
-                    Official Website
-                </div>
+      <h1>
+        Bazam-E-Saim
+      </h1>
 
-                <div class="urdu-brand">
-                    بزمِ صائم
-                </div>
+      <div class="urdu login-urdu">
+        بزمِ صائم
+      </div>
 
-            </div>
-
-
-            <!-- HEADING -->
-            <div class="heading">
-
-                <h1>
-                    Sign In
-                </h1>
-
-                <p>
-                    Sign in to like, share and comment
-                    on books, videos and shorts.
-                </p>
-
-                <p class="urdu">
-                    کتابوں، ویڈیوز اور شارٹس پر لائک،
-                    شیئر اور کمنٹ کرنے کے لیے سائن اِن کریں
-                </p>
-
-            </div>
+      <p>
+        Sign in to like, share and comment on books, videos and shorts.
+      </p>
 
 
-            <!-- LOGIN FORM -->
-            <form id="login-form">
+      <form id="loginForm">
 
-                <div class="form-group">
+        <input
+          type="email"
+          id="loginEmail"
+          placeholder="Email"
+          required
+        >
 
-                    <label for="email">
-                        Email Address
-                    </label>
+        <input
+          type="password"
+          id="loginPassword"
+          placeholder="Password"
+          required
+        >
 
-                    <input
-                        id="email"
-                        type="email"
-                        autocomplete="email"
-                        placeholder="Enter your email"
-                        required
-                    >
+        <button
+          type="submit"
+          class="gold-btn full-btn"
+        >
+          Sign In
+        </button>
 
-                </div>
-
-
-                <div class="form-group">
-
-                    <label for="password">
-                        Password
-                    </label>
-
-                    <input
-                        id="password"
-                        type="password"
-                        autocomplete="current-password"
-                        placeholder="Enter your password"
-                        required
-                    >
-
-                </div>
+      </form>
 
 
-                <button
-                    id="login-button"
-                    type="submit"
-                >
-                    Sign In
-                </button>
-
-            </form>
-
-
-            <!-- DIVIDER -->
-            <div class="divider">
-                OR
-            </div>
+      <button
+        type="button"
+        id="googleLogin"
+        class="google-btn"
+      >
+        Continue with Google
+      </button>
 
 
-            <!-- GOOGLE LOGIN -->
-            <button
-                id="google-login"
-                type="button"
-            >
-                <span class="google-g">
-                    G
-                </span>
-
-                Continue with Google
-            </button>
+      <button
+        type="button"
+        id="signupBtn"
+        class="text-btn"
+      >
+        Create New Account
+      </button>
 
 
-            <!-- ERROR / SUCCESS MESSAGE -->
-            <div
-                id="login-message"
-                role="alert"
-            ></div>
+      <div
+        id="loginMessage"
+        class="login-message"
+      ></div>
 
 
-            <!-- BACK -->
-            <a
-                href="index.html"
-                class="back-link"
-            >
-                ← Back to Bazam-E-Saim
-            </a>
+      <a
+        href="index.html"
+        class="back-home"
+      >
+        ← Back to Website
+      </a>
+
+    </div>
+
+  </main>
 
 
-            <!-- FOOTER -->
-            <div class="footer">
-
-                © 2026
-                <strong>Bazam-E-Saim</strong>
-                — All Rights Reserved.
-
-            </div>
-
-        </section>
-
-    </main>
-
-
-    <!-- Firebase Login JS -->
-    <script
-        type="module"
-        src="login.js"
-    ></script>
+  <script type="module" src="script.js"></script>
 
 </body>
+
 </html>
